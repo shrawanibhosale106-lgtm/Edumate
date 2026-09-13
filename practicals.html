@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF8">
+    <title>EduMate - Practicals</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #555;
+            margin-bottom: 25px;
+        }
+
+        .selection {
+            background-color: white;
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #ccc;
+            margin-bottom: 20px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 10px;
+            border-radius: 6px;
+            border: 1px solid #aaa;
+        }
+
+        .practical {
+            background-color: white;
+            padding: 20px;
+            margin-top: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 6px #ccc;
+            cursor: pointer;
+        }
+
+        .practical:hover {
+            background-color: #f0f4ff;
+        }
+
+        .practical h3 {
+            margin-bottom: 8px;
+        }
+
+        .practical p {
+            color: #555;
+        }
+
+        #details {
+            display: none;
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px #ccc;
+        }
+
+        #details h2 {
+            margin-bottom: 20px;
+        }
+
+        #details h3 {
+            margin-top: 18px;
+            margin-bottom: 8px;
+        }
+
+        #details p {
+            line-height: 1.6;
+            white-space: pre-line;
+        }
+
+        pre {
+            background-color: #eee;
+            padding: 15px;
+            border-radius: 8px;
+            overflow-x: auto;
+            white-space: pre-wrap;
+        }
+
+        button {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        button:hover {
+            background-color: #555;
+        }
+
+        .back-dashboard {
+            display: block;
+            margin: 30px auto;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="container">
+
+    <h1>🧪 Practicals</h1>
+
+    <p class="subtitle">
+        Select a subject to view practicals
+    </p>
+
+
+    <!-- SUBJECT SELECTION -->
+
+    <div class="selection">
+
+        <label>Select Subject</label>
+
+        <select id="subject" onchange="showPracticals()">
+
+            <option value="">Select Subject</option>
+
+            <option value="DBMS">DBMS</option>
+
+            <option value="DLD">DLD</option>
+
+            <option value="CPP">C++</option>
+
+            <option value="JS">JavaScript</option>
+
+            <option value="CN">Computer Networks</option>
+
+        </select>
+
+    </div>
+
+
+    <!-- PRACTICAL LIST -->
+
+    <div id="practicalList"></div>
+
+
+    <!-- PRACTICAL DETAILS -->
+
+    <div id="details">
+
+        <h2 id="title"></h2>
+
+
+        <h3>Aim</h3>
+
+        <p id="aim"></p>
+
+
+        <h3>Theory</h3>
+
+        <p id="theory"></p>
+
+
+        <h3>Program</h3>
+
+        <pre id="program"></pre>
+
+
+        <h3>Output</h3>
+
+        <p id="output"></p>
+
+
+        <h3>Conclusion</h3>
+
+        <p id="conclusion"></p>
+
+
+        <button onclick="backToList()">
+            ← Back to Practicals
+        </button>
+
+    </div>
+
+
+    <button
+        class="back-dashboard"
+        onclick="goBack()">
+
+        ← Back to Dashboard
+
+    </button>
+
+
+</div>
+
+
+<script>
+
+
+// ==========================================
+// LOGIN CHECK
+// ==========================================
+
+let currentUser =
+    JSON.parse(localStorage.getItem("currentUser"));
+
+if (!currentUser) {
+
+    window.location.href = "index.html";
+
+}
+
+
+// ==========================================
+// BUILT-IN PRACTICAL DATA
+// ==========================================
+
+let practicalData = {
+
+    DBMS: [
+
+        {
+            title: "Practical 1 - Create Database and Table",
+
+            aim: "To create a database and table using SQL.",
+
+            theory:
+                "SQL is used to create and manage databases. CREATE DATABASE creates a new database and CREATE TABLE creates a new table.",
+
+            program:
+`CREATE DATABASE college;
+
+USE college;
+
+CREATE TABLE student (
+    id INT,
+    name VARCHAR(50)
+);`,
+
+            output:
+                "Database and student table created successfully.",
+
+            conclusion:
+                "Thus, the database and table were created successfully."
+        },
+
+
+        {
+            title: "Practical 2 - Alter Table",
+
+            aim: "To modify an existing table using ALTER TABLE.",
+
+            theory:
+                "ALTER TABLE is used to add, modify, or remove columns from an existing table.",
+
+            program:
+`ALTER TABLE student
+ADD age INT;
+
+ALTER TABLE student
+RENAME COLUMN name TO student_name;`,
+
+            output:
+                "Table structure modified successfully.",
+
+            conclusion:
+                "Thus, the table was successfully modified using ALTER TABLE."
+        }
+
+    ],
+
+
+    DLD: [
+
+        {
+            title: "Practical 1 - Logic Gates",
+
+            aim: "To study and verify basic logic gates.",
+
+            theory:
+                "Logic gates are electronic circuits that perform logical operations on binary inputs. Basic gates include AND, OR and NOT.",
+
+            program:
+                "Construct AND, OR and NOT gate circuits and verify their truth tables.",
+
+            output:
+                "Truth tables were verified successfully.",
+
+            conclusion:
+                "Thus, the basic logic gates were studied and verified."
+        }
+
+    ],
+
+
+    CPP: [
+
+        {
+            title: "Practical 1 - Class and Object",
+
+            aim: "To implement class and object in C++.",
+
+            theory:
+                "A class is a user-defined data type that contains data members and member functions. An object is an instance of a class.",
+
+            program:
+`#include <iostream>
+using namespace std;
+
+class Student {
+
+public:
+
+    string name;
+
+    void display() {
+        cout << name;
+    }
+};
+
+int main() {
+
+    Student s;
+
+    s.name = "EduMate";
+
+    s.display();
+
+    return 0;
+}`,
+
+            output:
+                "EduMate",
+
+            conclusion:
+                "Thus, class and object were implemented successfully."
+        }
+
+    ],
+
+
+    JS: [
+
+        {
+            title: "Practical 1 - JavaScript Events",
+
+            aim: "To implement JavaScript events.",
+
+            theory:
+                "JavaScript events are actions that occur in a webpage. Examples include click, mouseover, focus and submit.",
+
+            program:
+`<button onclick="showMessage()">
+Click Me
+</button>
+
+<script>
+
+function showMessage() {
+
+    alert("Hello EduMate");
+
+}
+
+<\/script>`,
+
+            output:
+                "A message is displayed when the button is clicked.",
+
+            conclusion:
+                "Thus, JavaScript events were implemented successfully."
+        }
+
+    ],
+
+
+    CN: [
+
+        {
+            title: "Practical 1 - File Sharing Between Two Computers",
+
+            aim: "To share a file between two computers using a network.",
+
+            theory:
+                "Computer networks allow computers to communicate and share resources. Two computers can be connected using suitable network media and configured with IP addresses.",
+
+            program:
+                "Configure IP addresses on both computers and use ping to test connectivity. Then share the required file.",
+
+            output:
+                "The two computers communicated successfully and the file was shared.",
+
+            conclusion:
+                "Thus, file sharing between two computers was successfully performed."
+        }
+
+    ]
+
+};
+
+
+// ==========================================
+// SHOW PRACTICALS
+// ==========================================
+
+function showPracticals() {
+
+    let subject =
+        document.getElementById("subject").value;
+
+    let list =
+        document.getElementById("practicalList");
+
+    let details =
+        document.getElementById("details");
+
+
+    details.style.display = "none";
+
+    list.innerHTML = "";
+
+
+    if (subject == "") {
+
+        return;
+
+    }
+
+
+    // Built-in practicals
+
+    let practicals =
+        practicalData[subject] || [];
+
+
+    practicals.forEach(function(practical, index) {
+
+        let div =
+            document.createElement("div");
+
+        div.className = "practical";
+
+        div.innerHTML =
+
+            "<h3>" +
+            practical.title +
+            "</h3>" +
+
+            "<p>Click to view practical</p>";
+
+
+        div.onclick = function() {
+
+            openPractical(
+                practical,
+                subject,
+                index
+            );
+
+        };
+
+
+        list.appendChild(div);
+
+    });
+
+
+    // ======================================
+    // TEACHER PRACTICALS
+    // ======================================
+
+    let teacherPracticals =
+        JSON.parse(
+            localStorage.getItem("teacherPracticals")
+        ) || [];
+
+
+    teacherPracticals.forEach(function(
+        practical,
+        index
+    ) {
+
+        if (practical.subject == subject) {
+
+            let div =
+                document.createElement("div");
+
+            div.className = "practical";
+
+            div.innerHTML =
+
+                "<h3>" +
+                practical.title +
+                "</h3>" +
+
+                "<p>Added by Teacher 👩‍🏫</p>";
+
+
+            div.onclick = function() {
+
+                openTeacherPractical(
+                    practical,
+                    index
+                );
+
+            };
+
+
+            list.appendChild(div);
+
+        }
+
+    });
+
+}
+
+
+// ==========================================
+// OPEN BUILT-IN PRACTICAL
+// ==========================================
+
+function openPractical(
+    practical,
+    subject,
+    index
+) {
+
+    // ======================================
+    // SAVE VIEWED PRACTICAL FOR THIS STUDENT
+    // ======================================
+
+    let key =
+        "viewedPracticals_" + currentUser.email;
+
+    let viewedPracticals =
+        JSON.parse(localStorage.getItem(key)) || [];
+
+    let practicalId =
+        subject + "-" + index;
+
+    if (!viewedPracticals.includes(practicalId)) {
+
+        viewedPracticals.push(practicalId);
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(viewedPracticals)
+        );
+
+        localStorage.setItem(
+            "practicalCount_" + currentUser.email,
+            viewedPracticals.length
+        );
+    }
+
+
+    // ======================================
+    // DISPLAY DETAILS
+    // ======================================
+
+    document.getElementById("practicalList")
+        .style.display = "none";
+
+    document.getElementById("details")
+        .style.display = "block";
+
+    document.getElementById("title")
+        .innerHTML = practical.title;
+
+    document.getElementById("aim")
+        .innerHTML = practical.aim;
+
+    document.getElementById("theory")
+        .innerHTML = practical.theory;
+
+    document.getElementById("program")
+        .textContent = practical.program;
+
+    document.getElementById("output")
+        .innerHTML = practical.output;
+
+    document.getElementById("conclusion")
+        .innerHTML = practical.conclusion;
+}
+
+
+// ==========================================
+// OPEN TEACHER PRACTICAL
+// ==========================================
+
+function openTeacherPractical(
+    practical,
+    index
+) {
+
+    // ======================================
+    // SAVE VIEWED TEACHER PRACTICAL
+    // FOR THIS STUDENT
+    // ======================================
+
+    let key =
+        "viewedPracticals_" + currentUser.email;
+
+    let viewedPracticals =
+        JSON.parse(localStorage.getItem(key)) || [];
+
+    let practicalId =
+        "teacher-" + index;
+
+    if (!viewedPracticals.includes(practicalId)) {
+
+        viewedPracticals.push(practicalId);
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(viewedPracticals)
+        );
+
+        localStorage.setItem(
+            "practicalCount_" + currentUser.email,
+            viewedPracticals.length
+        );
+    }
+
+
+    // ======================================
+    // DISPLAY DETAILS
+    // ======================================
+
+    document.getElementById("practicalList")
+        .style.display = "none";
+
+    document.getElementById("details")
+        .style.display = "block";
+
+    document.getElementById("title")
+        .innerHTML = practical.title;
+
+    document.getElementById("aim")
+        .innerHTML = practical.aim;
+
+    document.getElementById("theory")
+        .innerHTML = practical.theory;
+
+    document.getElementById("program")
+        .textContent = practical.program;
+
+    document.getElementById("output")
+        .innerHTML = practical.output;
+
+    document.getElementById("conclusion")
+        .innerHTML = practical.conclusion;
+}
+// ==========================================
+// BACK TO PRACTICAL LIST
+// ==========================================
+
+function backToList() {
+
+    document.getElementById("details")
+        .style.display = "none";
+
+
+    document.getElementById("practicalList")
+        .style.display = "block";
+
+}
+
+
+// ==========================================
+// BACK TO DASHBOARD
+// ==========================================
+
+function goBack() {
+
+    window.location.href =
+        "student.html";
+
+}
+
+</script>
+
+
+</body>
+
+</html>

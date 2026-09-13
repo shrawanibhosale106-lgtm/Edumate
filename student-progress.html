@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF8">
+    <title>EduMate - Student Progress</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .student-card {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .student-card h2 {
+            margin-bottom: 15px;
+        }
+
+        .info {
+            color: #555;
+            margin-bottom: 20px;
+        }
+
+        .progress-item {
+            margin: 18px 0;
+        }
+
+        .progress-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 7px;
+            font-weight: bold;
+        }
+
+        .bar {
+            width: 100%;
+            height: 14px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .fill {
+            height: 100%;
+            background-color: #2196F3;
+        }
+
+        .overall {
+            font-size: 30px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .no-students {
+            background: white;
+            padding: 30px;
+            text-align: center;
+            border-radius: 15px;
+            color: #666;
+        }
+
+        .back-btn {
+            display: block;
+            margin: 30px auto;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            font-size: 16px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 Student Progress</h1>
+
+    <p class="subtitle">
+        Monitor student learning activity
+    </p>
+
+    <div id="studentsContainer"></div>
+
+    <button class="back-btn" onclick="goBack()">
+        ← Back to Teacher Dashboard
+    </button>
+
+</div>
+
+
+<script>
+
+    // =========================
+    // CHECK TEACHER LOGIN
+    // =========================
+
+    let currentUser =
+        JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!currentUser) {
+        window.location.href = "index.html";
+    }
+
+
+    // =========================
+    // LOAD USERS
+    // =========================
+
+    let users =
+        JSON.parse(localStorage.getItem("users")) || [];
+
+
+    // Only show students
+    let students =
+        users.filter(function(user) {
+
+            return user.role == "Student";
+
+        });
+
+
+    // =========================
+    // CONTAINER
+    // =========================
+
+    let container =
+        document.getElementById("studentsContainer");
+
+
+    if (students.length == 0) {
+
+        container.innerHTML = `
+            <div class="no-students">
+                <h2>No students registered yet.</h2>
+                <p>Student progress will appear here.</p>
+            </div>
+        `;
+
+    }
+
+
+    // =========================
+    // SHOW EACH STUDENT
+    // =========================
+
+    students.forEach(function(student) {
+
+        // -------------------------
+        // DOUBTS
+        // -------------------------
+
+        let allDoubts =
+            JSON.parse(localStorage.getItem("doubts")) || [];
+
+        let studentDoubts =
+            allDoubts.filter(function(doubt) {
+
+                return doubt.studentEmail ==
+                    student.email;
+
+            });
+
+        let answeredDoubts =
+            studentDoubts.filter(function(doubt) {
+
+                return doubt.status == "Answered";
+
+            });
+
+        let doubtProgress = 0;
+
+        if (studentDoubts.length > 0) {
+
+            doubtProgress =
+                Math.round(
+                    (answeredDoubts.length /
+                    studentDoubts.length) * 100
+                );
+
+        }
+
+
+        // -------------------------
+        // LEARNING
+        // -------------------------
+
+        let learnProgress =
+            Number(localStorage.getItem("learnProgress")) || 0;
+
+
+        // -------------------------
+        // PRACTICALS
+        // -------------------------
+
+        let practicalCount =
+            Number(localStorage.getItem("practicalCount")) || 0;
+
+        let practicalProgress =
+            practicalCount > 0 ? 100 : 0;
+
+
+        // -------------------------
+        // VIVA
+        // -------------------------
+
+        let vivaData =
+            JSON.parse(localStorage.getItem("vivaScore"));
+
+        let vivaProgress = 0;
+
+        if (vivaData && vivaData.total > 0) {
+
+            vivaProgress =
+                Math.round(
+                    (vivaData.score /
+                    vivaData.total) * 100
+                );
+
+        }
+
+
+        // -------------------------
+        // STUDY PLANS
+        // -------------------------
+
+        let plans =
+            JSON.parse(localStorage.getItem("studyPlans")) || [];
+
+        let planProgress =
+            plans.length > 0 ? 100 : 0;
+
+
+        // -------------------------
+        // OVERALL
+        // -------------------------
+
+        let overall =
+            Math.round(
+                (
+                    learnProgress +
+                    practicalProgress +
+                    vivaProgress +
+                    doubtProgress +
+                    planProgress
+                ) / 5
+            );
+
+
+        // -------------------------
+        // STUDENT CARD
+        // -------------------------
+
+        let card =
+            document.createElement("div");
+
+        card.className = "student-card";
+
+
+        card.innerHTML = `
+
+            <h2>👩‍🎓 ${student.name}</h2>
+
+            <p class="info">
+                📧 ${student.email}
+            </p>
+
+            <div class="overall">
+                ⭐ Overall Progress: ${overall}%
+            </div>
+
+
+            <div class="progress-item">
+
+                <div class="progress-header">
+                    <span>📚 Learning</span>
+                    <span>${learnProgress}%</span>
+                </div>
+
+                <div class="bar">
+                    <div class="fill"
+                         style="width:${learnProgress}%">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="progress-item">
+
+                <div class="progress-header">
+                    <span>🧪 Practicals</span>
+                    <span>${practicalProgress}%</span>
+                </div>
+
+                <div class="bar">
+                    <div class="fill"
+                         style="width:${practicalProgress}%">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="progress-item">
+
+                <div class="progress-header">
+                    <span>🎤 Viva</span>
+                    <span>${vivaProgress}%</span>
+                </div>
+
+                <div class="bar">
+                    <div class="fill"
+                         style="width:${vivaProgress}%">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="progress-item">
+
+                <div class="progress-header">
+                    <span>❓ Doubts</span>
+                    <span>${doubtProgress}%</span>
+                </div>
+
+                <div class="bar">
+                    <div class="fill"
+                         style="width:${doubtProgress}%">
+                    </div>
+                </div>
+
+            </div>
+
+
+            <div class="progress-item">
+
+                <div class="progress-header">
+                    <span>📝 Study Plans</span>
+                    <span>${planProgress}%</span>
+                </div>
+
+                <div class="bar">
+                    <div class="fill"
+                         style="width:${planProgress}%">
+                    </div>
+                </div>
+
+            </div>
+
+        `;
+
+
+        container.appendChild(card);
+
+    });
+
+
+    // =========================
+    // BACK
+    // =========================
+
+    function goBack() {
+
+        window.location.href =
+            "teacher.html";
+
+    }
+
+</script>
+
+</body>
+</html>

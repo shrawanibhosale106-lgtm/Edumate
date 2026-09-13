@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF8">
+    <title>EduMate - Ask Doubt</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .box {
+            background-color: white;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 12px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        button {
+            padding: 10px 18px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-top: 5px;
+            margin-right: 8px;
+        }
+
+        button:hover {
+            opacity: 0.85;
+        }
+
+        .doubt {
+            background-color: #f8fafc;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 10px;
+            border-left: 4px solid #4f46e5;
+        }
+
+        .pending {
+            color: #d97706;
+            font-weight: bold;
+        }
+
+        .answered {
+            color: #16a34a;
+            font-weight: bold;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>💬 EduMate Doubts</h1>
+
+
+    <!-- BACK BUTTON -->
+
+    <button onclick="goBack()">
+        ← Back to Student Dashboard
+    </button>
+
+
+    <!-- ASK DOUBT -->
+
+    <div class="box">
+
+        <h2>📝 Ask Your Doubt</h2>
+
+
+        <label>Select Subject</label>
+
+        <select id="subject">
+
+            <option value="">
+                -- Select Subject --
+            </option>
+
+            <option value="DBMS">
+                DBMS
+            </option>
+
+            <option value="DLD">
+                DLD
+            </option>
+
+            <option value="C++">
+                C++
+            </option>
+
+            <option value="JavaScript">
+                JavaScript
+            </option>
+
+            <option value="Computer Networks">
+                Computer Networks
+            </option>
+
+        </select>
+
+
+        <label>Enter Topic</label>
+
+        <input
+            type="text"
+            id="topic"
+            placeholder="Example: Primary Key"
+        >
+
+
+        <label>Enter Your Doubt</label>
+
+        <textarea
+            id="doubt"
+            placeholder="Write your question here..."
+        ></textarea>
+
+
+        <button onclick="submitDoubt()">
+            📤 Submit Doubt
+        </button>
+
+    </div>
+
+
+    <!-- MY DOUBTS -->
+
+    <div class="box">
+
+        <h2>📚 My Doubts</h2>
+
+        <div id="myDoubts"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ==================================================
+   CHECK LOGIN
+================================================== */
+
+let currentUser =
+    JSON.parse(localStorage.getItem("currentUser"));
+
+
+if (!currentUser) {
+
+    window.location.href = "index.html";
+
+}
+
+
+/* ==================================================
+   SUBMIT DOUBT
+================================================== */
+
+function submitDoubt() {
+
+    let subject =
+        document.getElementById("subject").value;
+
+    let topic =
+        document.getElementById("topic").value.trim();
+
+    let doubt =
+        document.getElementById("doubt").value.trim();
+
+
+    if (
+        subject == "" ||
+        topic == "" ||
+        doubt == ""
+    ) {
+
+        alert("Please fill all fields.");
+
+        return;
+
+    }
+
+
+    /* Get existing doubts */
+
+    let doubts =
+        JSON.parse(
+            localStorage.getItem("doubts")
+        ) || [];
+
+
+    /* Create new doubt */
+
+    let newDoubt = {
+
+        studentName: currentUser.name,
+
+        studentEmail: currentUser.email,
+
+        subject: subject,
+
+        topic: topic,
+
+        doubt: doubt,
+
+        answer: "",
+
+        status: "Pending"
+
+    };
+
+
+    /* Add doubt */
+
+    doubts.push(newDoubt);
+
+
+    /* Save doubts */
+
+    localStorage.setItem(
+        "doubts",
+        JSON.stringify(doubts)
+    );
+
+
+    alert("Doubt submitted successfully! ✅");
+
+
+    /* Clear form */
+
+    document.getElementById("subject").value = "";
+
+    document.getElementById("topic").value = "";
+
+    document.getElementById("doubt").value = "";
+
+
+    /* Show updated doubts */
+
+    loadMyDoubts();
+
+}
+
+
+/* ==================================================
+   LOAD MY DOUBTS
+================================================== */
+
+function loadMyDoubts() {
+
+    let doubts =
+        JSON.parse(
+            localStorage.getItem("doubts")
+        ) || [];
+
+
+    let list =
+        document.getElementById("myDoubts");
+
+
+    list.innerHTML = "";
+
+
+    let myDoubts = [];
+
+
+    /* Find doubts of current student */
+
+    for (let i = 0; i < doubts.length; i++) {
+
+        if (
+            doubts[i].studentEmail ==
+            currentUser.email
+        ) {
+
+            myDoubts.push(doubts[i]);
+
+        }
+
+    }
+
+
+    if (myDoubts.length == 0) {
+
+        list.innerHTML =
+            "<p>You have not submitted any doubts yet.</p>";
+
+        return;
+
+    }
+
+
+    /* Display doubts */
+
+    for (let i = 0; i < myDoubts.length; i++) {
+
+        let doubt =
+            myDoubts[i];
+
+
+        let div =
+            document.createElement("div");
+
+
+        div.className = "doubt";
+
+
+        let statusClass =
+            doubt.status == "Answered"
+            ? "answered"
+            : "pending";
+
+
+        div.innerHTML =
+
+            "<h3>📌 " +
+            doubt.topic +
+            "</h3>" +
+
+            "<p><b>Subject:</b> " +
+            doubt.subject +
+            "</p>" +
+
+            "<p><b>Your Doubt:</b><br>" +
+            doubt.doubt +
+            "</p>" +
+
+            "<p class='" +
+            statusClass +
+            "'>" +
+            "Status: " +
+            doubt.status +
+            "</p>";
+
+
+        /* Show teacher answer */
+
+        if (
+            doubt.status == "Answered" &&
+            doubt.answer != ""
+        ) {
+
+            div.innerHTML +=
+
+                "<p><b>👩‍🏫 Teacher Answer:</b><br>" +
+                doubt.answer +
+                "</p>";
+
+        }
+
+
+        list.appendChild(div);
+
+    }
+
+}
+
+
+/* ==================================================
+   BACK
+================================================== */
+
+function goBack() {
+
+    window.location.href =
+        "student.html";
+
+}
+
+
+/* ==================================================
+   LOAD DOUBTS WHEN PAGE OPENS
+================================================== */
+
+loadMyDoubts();
+
+</script>
+
+</body>
+
+</html>

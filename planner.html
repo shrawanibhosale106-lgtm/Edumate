@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF8">
+    <title>EduMate - Exam Planner</title>
+
+    <style>
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+        }
+
+        .box {
+            background-color: white;
+            padding: 25px;
+            margin-top: 20px;
+            border-radius: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 6px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 15px;
+        }
+
+        textarea {
+            height: 100px;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 7px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .back {
+            background-color: #1e293b;
+            color: white;
+        }
+
+        .save {
+            background-color: #2563eb;
+            color: white;
+        }
+
+        .plan {
+            background-color: #f8fafc;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #2563eb;
+        }
+
+        .delete {
+            background-color: #dc2626;
+            color: white;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>⏰ EduMate Exam Planner</h1>
+
+
+    <!-- BACK BUTTON -->
+
+    <button class="back" onclick="goBack()">
+        ← Back to Student Dashboard
+    </button>
+
+
+    <!-- ADD PLAN -->
+
+    <div class="box">
+
+        <h2>➕ Create Study Plan</h2>
+
+
+        <label>Select Subject</label>
+
+        <select id="subject">
+
+            <option value="">
+                -- Select Subject --
+            </option>
+
+            <option value="DBMS">
+                DBMS
+            </option>
+
+            <option value="DLD">
+                DLD
+            </option>
+
+            <option value="C++">
+                C++
+            </option>
+
+            <option value="JavaScript">
+                JavaScript
+            </option>
+
+            <option value="Computer Networks">
+                Computer Networks
+            </option>
+
+        </select>
+
+
+        <label>Exam Date</label>
+
+        <input
+            type="date"
+            id="examDate"
+        >
+
+
+        <label>Topics to Study</label>
+
+        <textarea
+            id="topics"
+            placeholder="Example: DDL, DML, Keys, Constraints"
+        ></textarea>
+
+
+        <label>Priority</label>
+
+        <select id="priority">
+
+            <option value="">
+                -- Select Priority --
+            </option>
+
+            <option value="High">
+                🔴 High
+            </option>
+
+            <option value="Medium">
+                🟡 Medium
+            </option>
+
+            <option value="Low">
+                🟢 Low
+            </option>
+
+        </select>
+
+
+        <button class="save" onclick="savePlan()">
+            💾 Save Study Plan
+        </button>
+
+    </div>
+
+
+    <!-- SAVED PLANS -->
+
+    <div class="box">
+
+        <h2>📋 My Study Plans</h2>
+
+        <div id="planList"></div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+let currentUser =
+    JSON.parse(localStorage.getItem("currentUser"));
+
+if (!currentUser) {
+    window.location.href = "index.html";
+}
+
+/* ==================================================
+   SAVE STUDY PLAN
+   ================================================== */
+
+function savePlan() {
+
+    let subject =
+        document.getElementById("subject").value;
+
+    let examDate =
+        document.getElementById("examDate").value;
+
+    let topics =
+        document.getElementById("topics").value;
+
+    let priority =
+        document.getElementById("priority").value;
+
+
+    /* Check fields */
+
+    if (
+        subject == "" ||
+        examDate == "" ||
+        topics == "" ||
+        priority == ""
+    ) {
+
+        alert("Please fill all fields.");
+
+        return;
+
+    }
+
+
+    /* Get old plans */
+
+    let planKey =
+    "studyPlans_" + currentUser.email;
+
+let plans =
+    JSON.parse(
+        localStorage.getItem(planKey)
+    ) || [];
+
+    /* Create new plan */
+
+    let newPlan = {
+
+        subject: subject,
+
+        examDate: examDate,
+
+        topics: topics,
+
+        priority: priority
+
+    };
+
+
+    /* Add plan */
+
+    plans.push(newPlan);
+
+
+    /* Save plans */
+
+    localStorage.setItem(
+    planKey,
+    JSON.stringify(plans)
+);
+
+    alert("Study plan saved successfully!");
+
+
+    /* Clear form */
+
+    document.getElementById("subject").value = "";
+
+    document.getElementById("examDate").value = "";
+
+    document.getElementById("topics").value = "";
+
+    document.getElementById("priority").value = "";
+
+
+    /* Show plans */
+
+    loadPlans();
+
+}
+
+
+/* ==================================================
+   LOAD STUDY PLANS
+   ================================================== */
+
+function loadPlans() {
+
+    let planKey =
+        "studyPlans_" + currentUser.email;
+
+    let plans =
+        JSON.parse(
+            localStorage.getItem(planKey)
+        ) || [];
+
+    let list =
+        document.getElementById("planList");
+
+    list.innerHTML = "";
+
+    if (plans.length == 0) {
+
+        list.innerHTML =
+            "<p>No study plans added yet.</p>";
+
+        return;
+    }
+
+    for (let i = 0; i < plans.length; i++) {
+
+        let plan = plans[i];
+
+        let div =
+            document.createElement("div");
+
+        div.className = "plan";
+
+        div.innerHTML =
+
+            "<h3>📚 " +
+            plan.subject +
+            "</h3>" +
+
+            "<p><strong>Exam Date:</strong> " +
+            plan.examDate +
+            "</p>" +
+
+            "<p><strong>Topics:</strong><br>" +
+            plan.topics +
+            "</p>" +
+
+            "<p><strong>Priority:</strong> " +
+            plan.priority +
+            "</p>" +
+
+            "<button class='delete' " +
+            "onclick='deletePlan(" +
+            i +
+            ")'>" +
+            "🗑️ Delete" +
+            "</button>";
+
+        list.appendChild(div);
+    }
+}
+
+
+/* ==================================================
+   DELETE PLAN
+   ================================================== */
+
+function deletePlan(index) {
+
+    let planKey =
+        "studyPlans_" + currentUser.email;
+
+    let plans =
+        JSON.parse(
+            localStorage.getItem(planKey)
+        ) || [];
+
+    plans.splice(index, 1);
+
+    localStorage.setItem(
+        planKey,
+        JSON.stringify(plans)
+    );
+
+    loadPlans();
+}
+
+/* ==================================================
+   BACK
+   ================================================== */
+
+function goBack() {
+
+    window.location.href =
+        "student.html";
+
+}
+
+
+/* ==================================================
+   LOAD WHEN PAGE OPENS
+   ================================================== */
+
+loadPlans();
+
+</script>
+
+</body>
+
+</html>

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF8">
+    <title>EduMate - My Progress</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            padding: 30px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: auto;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #666;
+            margin-bottom: 30px;
+        }
+
+        .overall {
+            background: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+            margin-bottom: 25px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .overall h2 {
+            margin-bottom: 15px;
+        }
+
+        .overall-score {
+            font-size: 45px;
+            font-weight: bold;
+            margin-bottom: 15px;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background-color: #ddd;
+            border-radius: 20px;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #4CAF50;
+            transition: width 0.5s;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .card h2 {
+            margin-bottom: 10px;
+        }
+
+        .percentage {
+            font-size: 30px;
+            font-weight: bold;
+            margin: 10px 0;
+        }
+
+        .card-bar {
+            width: 100%;
+            height: 12px;
+            background-color: #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .card-fill {
+            height: 100%;
+            width: 0%;
+            background-color: #2196F3;
+        }
+
+        .back-btn {
+            display: block;
+            margin: 30px auto 0;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            background-color: #333;
+            color: white;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        @media (max-width: 600px) {
+            .cards {
+                grid-template-columns: 1fr;
+            }
+
+            body {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<div class="container">
+
+    <h1>📊 My Progress</h1>
+    <p class="subtitle">Track your learning journey</p>
+
+    <!-- Overall Progress -->
+    <div class="overall">
+
+        <h2>⭐ Overall Progress</h2>
+
+        <div class="overall-score" id="overallScore">
+            0%
+        </div>
+
+        <div class="progress-bar">
+            <div class="progress-fill" id="overallFill"></div>
+        </div>
+
+    </div>
+
+
+    <!-- Progress Cards -->
+    <div class="cards">
+
+        <div class="card">
+            <h2>📚 Learning</h2>
+            <div class="percentage" id="learnPercentage">0%</div>
+
+            <div class="card-bar">
+                <div class="card-fill" id="learnFill"></div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h2>🧪 Practicals</h2>
+            <div class="percentage" id="practicalPercentage">0%</div>
+
+            <div class="card-bar">
+                <div class="card-fill" id="practicalFill"></div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h2>🎤 Viva</h2>
+            <div class="percentage" id="vivaPercentage">0%</div>
+
+            <div class="card-bar">
+                <div class="card-fill" id="vivaFill"></div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h2>❓ Doubts</h2>
+            <div class="percentage" id="doubtPercentage">0%</div>
+
+            <div class="card-bar">
+                <div class="card-fill" id="doubtFill"></div>
+            </div>
+        </div>
+
+
+        <div class="card">
+            <h2>📝 Study Plans</h2>
+            <div class="percentage" id="planPercentage">0%</div>
+
+            <div class="card-bar">
+                <div class="card-fill" id="planFill"></div>
+            </div>
+        </div>
+
+    </div>
+
+
+    <button class="back-btn" onclick="goBack()">
+        ← Back to Dashboard
+    </button>
+
+</div>
+
+
+<script>
+
+    // =========================
+    // CHECK LOGGED-IN STUDENT
+    // =========================
+
+    let currentUser =
+        JSON.parse(localStorage.getItem("currentUser"));
+
+    if (!currentUser) {
+        window.location.href = "index.html";
+    }
+
+
+    // =========================
+    // LEARNING PROGRESS
+    // =========================
+
+    let allLearnProgress =
+        JSON.parse(localStorage.getItem("learnProgress")) || {};
+
+    let learnProgress =
+        allLearnProgress[currentUser.email] || 0;
+
+
+    // =========================
+    // PRACTICAL PROGRESS
+    // =========================
+
+    let practicalCount =
+    Number(
+        localStorage.getItem(
+            "practicalCount_" + currentUser.email
+        )
+    ) || 0;
+
+    let practicalProgress =
+        practicalCount > 0 ? 100 : 0;
+
+
+    // =========================
+    // VIVA PROGRESS
+    // =========================
+
+    let vivaData =
+    JSON.parse(
+        localStorage.getItem(
+            "vivaScore_" + currentUser.email
+        )
+    ); 
+    let vivaPercentage = 0;
+
+    if (vivaData && vivaData.total > 0) {
+
+        vivaPercentage =
+            Math.round(
+                (vivaData.score / vivaData.total) * 100
+            );
+    }
+
+
+    // =========================
+    // DOUBTS PROGRESS
+    // =========================
+
+    let allDoubts =
+        JSON.parse(localStorage.getItem("doubts")) || [];
+
+    let userDoubts =
+        allDoubts.filter(function(doubt) {
+
+            return doubt.studentEmail ==
+                currentUser.email;
+
+        });
+
+    let answeredDoubts =
+        userDoubts.filter(function(doubt) {
+
+            return doubt.status == "Answered";
+
+        });
+
+    let doubtProgress = 0;
+
+    if (userDoubts.length > 0) {
+
+        doubtProgress =
+            Math.round(
+                (answeredDoubts.length /
+                userDoubts.length) * 100
+            );
+    }
+
+
+    // =========================
+    // STUDY PLAN PROGRESS
+    // =========================
+
+    let plans =
+        JSON.parse(localStorage.getItem("studyPlans")) || [];
+
+    let planProgress =
+        plans.length > 0 ? 100 : 0;
+
+
+    // =========================
+    // OVERALL PROGRESS
+    // =========================
+
+    let overall =
+        Math.round(
+            (
+                learnProgress +
+                practicalProgress +
+                vivaPercentage +
+                doubtProgress +
+                planProgress
+            ) / 5
+        );
+
+
+    // =========================
+    // DISPLAY DATA
+    // =========================
+
+    document.getElementById("learnPercentage")
+        .innerHTML = learnProgress + "%";
+
+    document.getElementById("learnFill")
+        .style.width = learnProgress + "%";
+
+
+    document.getElementById("practicalPercentage")
+        .innerHTML = practicalProgress + "%";
+
+    document.getElementById("practicalFill")
+        .style.width = practicalProgress + "%";
+
+
+    document.getElementById("vivaPercentage")
+        .innerHTML = vivaPercentage + "%";
+
+    document.getElementById("vivaFill")
+        .style.width = vivaPercentage + "%";
+
+
+    document.getElementById("doubtPercentage")
+        .innerHTML = doubtProgress + "%";
+
+    document.getElementById("doubtFill")
+        .style.width = doubtProgress + "%";
+
+
+    document.getElementById("planPercentage")
+        .innerHTML = planProgress + "%";
+
+    document.getElementById("planFill")
+        .style.width = planProgress + "%";
+
+
+    document.getElementById("overallScore")
+        .innerHTML = overall + "%";
+
+    document.getElementById("overallFill")
+        .style.width = overall + "%";
+
+
+    // =========================
+    // BACK TO DASHBOARD
+    // =========================
+
+    function goBack() {
+
+        window.location.href = "student.html";
+
+    }
+
+</script>
+</body>
+</html>

@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="UTF8">
+    <title>EduMate</title>
+</head>
+
+<body>
+    <h1><center>EduMate</center></h1>
+<h3><center>Learn, Practice, Improve</center></h3>
+<hr>
+<!-- ================= REGISTRATION ================= -->
+
+<h2>Registration</h2><label>Enter Name</label>
+<br>
+
+<input type="text" id="regName" required>
+<br><br>
+
+<label>Enter Email</label><br>
+
+<input type="email" id="regEmail" required>
+<br><br>
+
+<label>Enter Password</label><br>
+
+<input type="password" id="regPassword" required>
+<br><br>
+
+<label>Confirm Password</label><br>
+
+<input type="password" id="regConfirmPassword" required>
+
+<br><br>
+
+<label>Select Role</label><br>
+
+<select id="regRole">
+    
+<option value="">Select Role</option>
+
+<option value="Student">Student</option>
+
+<option value="Teacher">Teacher</option>
+
+</select>
+
+<br><br>
+
+<input type="button" value="Register" onclick="register()"><hr>
+<!-- ================= LOGIN ================= -->
+
+<h2>Login</h2>
+
+<label>Enter Email</label><br>
+<input type="email" id="email">
+<br><br>
+
+<label>Enter Password</label><br>
+<input type="password" id="password">
+
+<button type="button" onclick="showPassword()">👁️</button>
+<br><br>
+
+<label>Select Role</label><br>
+<select id="role">
+<option value="">Select Role</option>
+<option value="Student">Student</option>
+<option value="Teacher">Teacher</option>
+</select>
+<br><br>
+
+<input type="checkbox" id="remember">
+<label>Remember Me</label>
+<br><br>
+
+<input type="button" value="Forgot Password" onclick="forgotPassword()">
+<br><br>
+
+<input type="button" value="Login" onclick="login()">
+
+<input type="button" value="Reset" onclick="resetForm()">
+
+<script>
+
+/* ================= REGISTER ================= */
+
+function register() {
+
+    let name = document.getElementById("regName").value;
+    
+    let email = document.getElementById("regEmail").value;
+    
+    let password = document.getElementById("regPassword").value;
+    
+    let confirmPassword =
+        document.getElementById("regConfirmPassword").value;
+        
+    let role = document.getElementById("regRole").value;
+
+    if (name == "" || email == "" || password == "" ||
+        confirmPassword == "" || role == "") {
+
+        alert("Please fill all registration fields");
+        return;
+    }
+
+    if (password != confirmPassword) {
+
+        alert("Passwords do not match");
+        return;
+    }
+
+    /* Get existing users */
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    /* Check duplicate email */
+
+    let existingUser = users.find(function(user) {
+        return user.email == email;
+    });
+
+    if (existingUser) {
+
+        alert("This email is already registered");
+        return;
+    }
+
+    /* Create new user */
+
+    let newUser = {
+        name: name,
+        email: email,
+        password: password,
+        role: role
+    };
+
+    users.push(newUser);
+
+    /* Save users */
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Registration successful!");
+
+    /* Clear registration form */
+
+    document.getElementById("regName").value = "";
+    document.getElementById("regEmail").value = "";
+    document.getElementById("regPassword").value = "";
+    document.getElementById("regConfirmPassword").value = "";
+    document.getElementById("regRole").selectedIndex = 0;
+}
+
+
+/* ================= LOGIN ================= */
+
+function login() {
+
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    let role = document.getElementById("role").value;
+
+    if (email == "" || password == "" || role == "") {
+        alert("Please enter all login details");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    let user = users.find(function(user) {
+
+        return user.email == email &&
+               user.password == password &&
+               user.role == role;
+
+    });
+
+    if (user) {
+
+        alert("Login successful! Welcome " + user.name);
+
+        /* Save current logged-in user */
+        localStorage.setItem("currentUser", JSON.stringify(user));
+
+        /* Remember email */
+        if (document.getElementById("remember").checked) {
+            localStorage.setItem("rememberedEmail", email);
+        }
+        else {
+            localStorage.removeItem("rememberedEmail");
+        }
+
+        /* Open correct page */
+        if (role == "Student") {
+            window.location.href = "student.html";
+        }
+        else if (role == "Teacher") {
+            window.location.href = "teacher.html";
+        }
+
+    }
+    else {
+
+        alert("Incorrect email, password or role");
+
+    }
+}
+
+
+
+/* ================= SHOW / HIDE PASSWORD ================= */
+
+function showPassword() {
+
+    let password =
+        document.getElementById("password");
+
+    if (password.type == "password") {
+
+        password.type = "text";
+
+    }
+    else {
+
+        password.type = "password";
+
+    }
+}
+
+
+/* ================= FORGOT PASSWORD ================= */
+
+function forgotPassword() {
+
+    let users =
+        JSON.parse(localStorage.getItem("users")) || [];
+
+    if (users.length == 0) {
+
+        alert("No registered account found");
+        return;
+    }
+
+    let email =
+        prompt("Enter your registered email");
+
+    if (email == null || email == "") {
+
+        return;
+    }
+
+    let user = users.find(function(user) {
+
+        return user.email == email;
+
+    });
+
+
+    if (user) {
+
+        let newPassword =
+            prompt("Enter your new password");
+
+        if (newPassword != null && newPassword != "") {
+
+            user.password = newPassword;
+
+            localStorage.setItem(
+                "users",
+                JSON.stringify(users)
+            );
+
+            alert("Password reset successfully!");
+
+        }
+        else {
+
+            alert("Password cannot be empty");
+
+        }
+
+    }
+    else {
+
+        alert("Email not found");
+
+    }
+}
+
+
+/* ================= RESET LOGIN FORM ================= */
+
+function resetForm() {
+
+    document.getElementById("email").value = "";
+
+    document.getElementById("password").value = "";
+
+    document.getElementById("role").selectedIndex = 0;
+
+    document.getElementById("remember").checked = false;
+
+}
+
+
+/* ================= REMEMBERED EMAIL ================= */
+
+window.onload = function() {
+
+    let rememberedEmail =
+        localStorage.getItem("rememberedEmail");
+
+    if (rememberedEmail != null) {
+
+        document.getElementById("email").value =
+            rememberedEmail;
+
+        document.getElementById("remember").checked = true;
+    }
+
+};
+
+</script>
+
+</body>
+
+</html>
