@@ -1,0 +1,1195 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+<meta charset="UTF8">
+    <title>EduMate - Teacher Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        header {
+            background-color: #263238;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .container {
+            padding: 25px;
+            max-width: 1000px;
+            margin: auto;
+        }
+
+        .welcome {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 25px;
+            box-shadow: 0 2px 8px #ccc;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px #ccc;
+            cursor: pointer;
+        }
+
+        .card:hover {
+            background-color: #e3f2fd;
+        }
+
+        .card h2 {
+            margin-bottom: 10px;
+        }
+
+        .card p {
+            color: #555;
+        }
+
+        button {
+            border: none;
+            padding: 12px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        .logout {
+            background-color: #d32f2f;
+            color: white;
+            margin-top: 25px;
+        }
+
+        .section {
+            display: none;
+            background-color: white;
+            padding: 25px;
+            margin-top: 25px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #ccc;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 10px;
+            margin-top: 8px;
+            margin-bottom: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        textarea {
+            height: 120px;
+            resize: vertical;
+        }
+
+        .save {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .note {
+            background-color: #f5f5f5;
+            padding: 15px;
+            margin-top: 15px;
+            border-radius: 8px;
+        }
+
+        .delete {
+            background-color: #d32f2f;
+            color: white;
+            margin-top: 10px;
+        }
+
+        .back {
+            background-color: #263238;
+            color: white;
+            margin-bottom: 15px;
+        }
+
+        @media (max-width: 600px) {
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<header>
+
+    <h1>🎓 EduMate</h1>
+
+    <p>Teacher Dashboard</p>
+
+</header>
+
+
+<div class="container">
+
+
+    <!-- ================= WELCOME ================= -->
+
+    <div class="welcome">
+
+        <h2 id="welcome">
+            Welcome, Teacher 👋
+        </h2>
+
+        <p>
+            Manage learning content and help students.
+        </p>
+
+    </div>
+
+
+    <!-- ================= DASHBOARD ================= -->
+
+    <div class="grid">
+
+
+        <div class="card" onclick="notes()">
+
+            <h2>📚</h2>
+
+            <h3>Manage Notes</h3>
+
+            <p>Add and manage study notes</p>
+
+        </div>
+
+
+        <div class="card" onclick="practicals()">
+
+            <h2>🧪</h2>
+
+            <h3>Manage Practicals</h3>
+
+            <p>Manage practical programs</p>
+
+        </div>
+
+
+        <div class="card" onclick="viva()">
+
+            <h2>🎤</h2>
+
+            <h3>Manage Viva Questions</h3>
+
+            <p>Add Viva questions and answers</p>
+
+        </div>
+
+
+        <div class="card" onclick="doubts()">
+
+            <h2>❓</h2>
+
+            <h3>Student Doubts</h3>
+
+            <p>Answer student doubts</p>
+
+        </div>
+
+
+        <div class="card" onclick="progress()">
+
+            <h2>📊</h2>
+
+            <h3>Student Progress</h3>
+
+            <p>View student activity</p>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ==================================================
+         MANAGE NOTES
+    ================================================== -->
+
+    <div id="notesSection" class="section">
+
+        <button class="back" onclick="closeNotes()">
+            ← Dashboard
+        </button>
+
+        <h2>📚 Manage Notes</h2>
+
+        <br>
+
+        <label>Subject</label>
+
+        <select id="noteSubject">
+
+            <option value="">Select Subject</option>
+
+            <option>DBMS</option>
+
+            <option>DLD</option>
+
+            <option>C++</option>
+
+            <option>JavaScript</option>
+
+            <option>C</option>
+
+           <option value="CN">Computer Networks</option>
+
+        </select>
+
+
+        <label>Note Title</label>
+
+        <input
+            type="text"
+            id="noteTitle"
+            placeholder="Enter note title"
+        >
+
+
+        <label>Note Content</label>
+
+        <textarea
+            id="noteContent"
+            placeholder="Write your note here..."
+        ></textarea>
+
+
+        <button
+            class="save"
+            onclick="saveNote()"
+        >
+            💾 Save Note
+        </button>
+
+
+        <h3 style="margin-top:25px;">
+            Saved Notes
+        </h3>
+
+
+        <div id="notesList"></div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         MANAGE PRACTICALS
+    ================================================== -->
+
+    <div id="practicalsSection" class="section">
+
+        <button class="back" onclick="closePracticals()">
+            ← Dashboard
+        </button>
+
+        <h2>🧪 Manage Practicals</h2>
+
+        <br>
+
+
+        <label>Subject</label>
+
+        <select id="practicalSubject">
+
+            <option value="">Select Subject</option>
+
+            <option>DBMS</option>
+
+            <option>DLD</option>
+
+            <option>C++</option>
+
+            <option>JavaScript</option>
+
+            <option>C</option>
+
+          <option value="CN">Computer Networks</option>
+
+        </select>
+
+
+        <label>Practical Title</label>
+
+        <input
+            type="text"
+            id="practicalTitle"
+            placeholder="Enter practical title"
+        >
+
+
+        <label>Aim</label>
+
+        <textarea
+            id="practicalAim"
+            placeholder="Enter practical aim"
+        ></textarea>
+
+
+        <label>Theory</label>
+
+        <textarea
+            id="practicalTheory"
+            placeholder="Enter practical theory"
+        ></textarea>
+
+
+        <label>Program</label>
+
+        <textarea
+            id="practicalProgram"
+            placeholder="Enter program/code"
+        ></textarea>
+
+
+        <label>Output</label>
+
+        <textarea
+            id="practicalOutput"
+            placeholder="Enter expected output"
+        ></textarea>
+
+
+        <label>Conclusion</label>
+
+        <textarea
+            id="practicalConclusion"
+            placeholder="Enter conclusion"
+        ></textarea>
+
+
+        <button
+            class="save"
+            onclick="savePractical()"
+        >
+            💾 Save Practical
+        </button>
+
+
+        <h3 style="margin-top:25px;">
+            Saved Practicals
+        </h3>
+
+
+        <div id="practicalsList"></div>
+
+    </div>
+
+
+
+    <!-- ==================================================
+         MANAGE VIVA QUESTIONS
+    ================================================== -->
+
+    <div id="vivaSection" class="section">
+
+        <button class="back" onclick="closeViva()">
+            ← Dashboard
+        </button>
+
+        <h2>🎤 Manage Viva Questions</h2>
+
+        <br>
+
+
+        <label>Subject</label>
+
+        <select id="vivaSubject">
+
+            <option value="">Select Subject</option>
+
+            <option>DBMS</option>
+
+            <option>DLD</option>
+
+            <option>C++</option>
+
+            <option>JavaScript</option>
+
+            <option>Computer Networks</option>
+
+        </select>
+
+
+        <label>Question</label>
+
+        <textarea
+            id="vivaQuestion"
+            placeholder="Enter viva question"
+        ></textarea>
+
+
+        <label>Answer</label>
+
+        <textarea
+            id="vivaAnswer"
+            placeholder="Enter correct answer"
+        ></textarea>
+
+
+        <button
+            class="save"
+            onclick="saveVivaQuestion()"
+        >
+            💾 Save Question
+        </button>
+
+
+        <h3 style="margin-top:25px;">
+            Saved Viva Questions
+        </h3>
+
+
+        <div id="vivaQuestionsList"></div>
+
+    </div>
+
+
+
+    <!-- ================= LOGOUT ================= -->
+
+    <button
+        class="logout"
+        onclick="logout()"
+    >
+        🚪 Logout
+    </button>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ==================================================
+   CHECK LOGIN
+================================================== */
+
+let loggedInUser =
+    JSON.parse(localStorage.getItem("currentUser"));
+
+
+if (loggedInUser) {
+
+    document.getElementById("welcome").innerHTML =
+        "Welcome, " + loggedInUser.name + " 👋";
+
+} else {
+
+    window.location.href = "index.html";
+
+}
+
+
+
+/* ==================================================
+   NOTES
+================================================== */
+
+function notes() {
+
+    document.getElementById("notesSection").style.display =
+        "block";
+
+    document.getElementById("practicalsSection").style.display =
+        "none";
+
+    document.getElementById("vivaSection").style.display =
+        "none";
+
+    loadNotes();
+
+}
+
+
+function closeNotes() {
+
+    document.getElementById("notesSection").style.display =
+        "none";
+
+}
+
+
+
+function saveNote() {
+
+    let subject =
+        document.getElementById("noteSubject").value;
+
+    let title =
+        document.getElementById("noteTitle").value.trim();
+
+    let content =
+        document.getElementById("noteContent").value.trim();
+
+
+    if (
+        subject == "" ||
+        title == "" ||
+        content == ""
+    ) {
+
+        alert("Please fill all fields.");
+
+        return;
+
+    }
+
+
+    let notes =
+        JSON.parse(localStorage.getItem("notes")) || [];
+
+
+    let newNote = {
+
+        subject: subject,
+
+        title: title,
+
+        content: content,
+
+        teacher: loggedInUser.name
+
+    };
+
+
+    notes.push(newNote);
+
+
+    localStorage.setItem(
+        "notes",
+        JSON.stringify(notes)
+    );
+
+
+    alert("Note added successfully! ✅");
+
+
+    document.getElementById("noteSubject").value = "";
+
+    document.getElementById("noteTitle").value = "";
+
+    document.getElementById("noteContent").value = "";
+
+
+    loadNotes();
+
+}
+
+
+
+function loadNotes() {
+
+    let notes =
+        JSON.parse(localStorage.getItem("notes")) || [];
+
+
+    let list =
+        document.getElementById("notesList");
+
+
+    list.innerHTML = "";
+
+
+    if (notes.length == 0) {
+
+        list.innerHTML =
+            "<p>No notes added yet.</p>";
+
+        return;
+
+    }
+
+
+    for (let i = 0; i < notes.length; i++) {
+
+        let div =
+            document.createElement("div");
+
+
+        div.className = "note";
+
+
+        div.innerHTML =
+
+            "<h3>📖 " +
+            notes[i].title +
+            "</h3>" +
+
+            "<p><b>Subject:</b> " +
+            notes[i].subject +
+            "</p>" +
+
+            "<p>" +
+            notes[i].content +
+            "</p>" +
+
+            "<p><small>👩‍🏫 Added by: " +
+            notes[i].teacher +
+            "</small></p>";
+
+
+        let deleteButton =
+            document.createElement("button");
+
+
+        deleteButton.className =
+            "delete";
+
+
+        deleteButton.innerHTML =
+            "🗑️ Delete";
+
+
+        deleteButton.onclick =
+            function() {
+
+                deleteNote(i);
+
+            };
+
+
+        div.appendChild(deleteButton);
+
+        list.appendChild(div);
+
+    }
+
+}
+
+
+
+function deleteNote(index) {
+
+    let notes =
+        JSON.parse(localStorage.getItem("notes")) || [];
+
+
+    notes.splice(index, 1);
+
+
+    localStorage.setItem(
+        "notes",
+        JSON.stringify(notes)
+    );
+
+
+    loadNotes();
+
+}
+
+
+
+/* ==================================================
+   PRACTICALS
+================================================== */
+
+function practicals() {
+
+    document.getElementById("practicalsSection").style.display =
+        "block";
+
+    document.getElementById("notesSection").style.display =
+        "none";
+
+    document.getElementById("vivaSection").style.display =
+        "none";
+
+    loadPracticals();
+
+}
+
+
+function closePracticals() {
+
+    document.getElementById("practicalsSection").style.display =
+        "none";
+
+}
+
+
+
+function savePractical() {
+
+    let subject =
+        document.getElementById("practicalSubject").value;
+
+    let title =
+        document.getElementById("practicalTitle").value.trim();
+
+    let aim =
+        document.getElementById("practicalAim").value.trim();
+
+    let theory =
+        document.getElementById("practicalTheory").value.trim();
+
+    let program =
+        document.getElementById("practicalProgram").value.trim();
+
+    let output =
+        document.getElementById("practicalOutput").value.trim();
+
+    let conclusion =
+        document.getElementById("practicalConclusion").value.trim();
+
+
+    if (
+        subject == "" ||
+        title == "" ||
+        aim == "" ||
+        theory == "" ||
+        program == "" ||
+        output == "" ||
+        conclusion == ""
+    ) {
+
+        alert("Please fill all fields.");
+
+        return;
+
+    }
+
+
+    let practicals =
+        JSON.parse(
+            localStorage.getItem("teacherPracticals")
+        ) || [];
+
+
+    let newPractical = {
+
+        subject: subject,
+
+        title: title,
+
+        aim: aim,
+
+        theory: theory,
+
+        program: program,
+
+        output: output,
+
+        conclusion: conclusion,
+
+        teacher: loggedInUser.name
+
+    };
+
+
+    practicals.push(newPractical);
+
+
+    localStorage.setItem(
+        "teacherPracticals",
+        JSON.stringify(practicals)
+    );
+
+
+    alert("Practical added successfully! ✅");
+
+
+    document.getElementById("practicalSubject").value = "";
+
+    document.getElementById("practicalTitle").value = "";
+
+    document.getElementById("practicalAim").value = "";
+
+    document.getElementById("practicalTheory").value = "";
+
+    document.getElementById("practicalProgram").value = "";
+
+    document.getElementById("practicalOutput").value = "";
+
+    document.getElementById("practicalConclusion").value = "";
+
+
+    loadPracticals();
+
+}
+
+
+
+function loadPracticals() {
+
+    let practicals =
+        JSON.parse(
+            localStorage.getItem("teacherPracticals")
+        ) || [];
+
+
+    let list =
+        document.getElementById("practicalsList");
+
+
+    list.innerHTML = "";
+
+
+    if (practicals.length == 0) {
+
+        list.innerHTML =
+            "<p>No practicals added yet.</p>";
+
+        return;
+
+    }
+
+
+    for (let i = 0; i < practicals.length; i++) {
+
+        let div =
+            document.createElement("div");
+
+
+        div.className = "note";
+
+
+        div.innerHTML =
+
+            "<h3>🧪 " +
+            practicals[i].title +
+            "</h3>" +
+
+            "<p><b>Subject:</b> " +
+            practicals[i].subject +
+            "</p>" +
+
+            "<p><b>Aim:</b> " +
+            practicals[i].aim +
+            "</p>" +
+
+            "<p><small>👩‍🏫 Added by: " +
+            practicals[i].teacher +
+            "</small></p>";
+
+
+        let deleteButton =
+            document.createElement("button");
+
+
+        deleteButton.className =
+            "delete";
+
+
+        deleteButton.innerHTML =
+            "🗑️ Delete";
+
+
+        deleteButton.onclick =
+            function() {
+
+                deletePractical(i);
+
+            };
+
+
+        div.appendChild(deleteButton);
+
+        list.appendChild(div);
+
+    }
+
+}
+
+
+
+function deletePractical(index) {
+
+    let practicals =
+        JSON.parse(
+            localStorage.getItem("teacherPracticals")
+        ) || [];
+
+
+    practicals.splice(index, 1);
+
+
+    localStorage.setItem(
+        "teacherPracticals",
+        JSON.stringify(practicals)
+    );
+
+
+    loadPracticals();
+
+}
+
+
+
+/* ==================================================
+   VIVA QUESTIONS
+================================================== */
+
+function viva() {
+
+    document.getElementById("vivaSection").style.display =
+        "block";
+
+    document.getElementById("notesSection").style.display =
+        "none";
+
+    document.getElementById("practicalsSection").style.display =
+        "none";
+
+    loadVivaQuestions();
+
+}
+
+
+function closeViva() {
+
+    document.getElementById("vivaSection").style.display =
+        "none";
+
+}
+
+
+
+function saveVivaQuestion() {
+
+    let subject =
+        document.getElementById("vivaSubject").value;
+
+    let question =
+        document.getElementById("vivaQuestion").value.trim();
+
+    let answer =
+        document.getElementById("vivaAnswer").value.trim();
+
+
+    if (
+        subject == "" ||
+        question == "" ||
+        answer == ""
+    ) {
+
+        alert("Please fill all fields.");
+
+        return;
+
+    }
+
+
+    let vivaQuestions =
+        JSON.parse(
+            localStorage.getItem("teacherVivaQuestions")
+        ) || [];
+
+
+    let newQuestion = {
+
+        subject: subject,
+
+        question: question,
+
+        answer: answer,
+
+        teacher: loggedInUser.name
+
+    };
+
+
+    vivaQuestions.push(newQuestion);
+
+
+    localStorage.setItem(
+        "teacherVivaQuestions",
+        JSON.stringify(vivaQuestions)
+    );
+
+
+    alert("Viva question added successfully! ✅");
+
+
+    document.getElementById("vivaSubject").value = "";
+
+    document.getElementById("vivaQuestion").value = "";
+
+    document.getElementById("vivaAnswer").value = "";
+
+
+    loadVivaQuestions();
+
+}
+
+
+
+function loadVivaQuestions() {
+
+    let vivaQuestions =
+        JSON.parse(
+            localStorage.getItem("teacherVivaQuestions")
+        ) || [];
+
+
+    let list =
+        document.getElementById("vivaQuestionsList");
+
+
+    list.innerHTML = "";
+
+
+    if (vivaQuestions.length == 0) {
+
+        list.innerHTML =
+            "<p>No viva questions added yet.</p>";
+
+        return;
+
+    }
+
+
+    for (let i = 0; i < vivaQuestions.length; i++) {
+
+        let div =
+            document.createElement("div");
+
+
+        div.className = "note";
+
+
+        div.innerHTML =
+
+            "<h3>❓ " +
+            vivaQuestions[i].question +
+            "</h3>" +
+
+            "<p><b>Subject:</b> " +
+            vivaQuestions[i].subject +
+            "</p>" +
+
+            "<p><b>Answer:</b> " +
+            vivaQuestions[i].answer +
+            "</p>" +
+
+            "<p><small>👩‍🏫 Added by: " +
+            vivaQuestions[i].teacher +
+            "</small></p>";
+
+
+        let deleteButton =
+            document.createElement("button");
+
+
+        deleteButton.className =
+            "delete";
+
+
+        deleteButton.innerHTML =
+            "🗑️ Delete";
+
+
+        deleteButton.onclick =
+            function() {
+
+                deleteVivaQuestion(i);
+
+            };
+
+
+        div.appendChild(deleteButton);
+
+        list.appendChild(div);
+
+    }
+
+}
+
+
+
+function deleteVivaQuestion(index) {
+
+    let vivaQuestions =
+        JSON.parse(
+            localStorage.getItem("teacherVivaQuestions")
+        ) || [];
+
+
+    vivaQuestions.splice(index, 1);
+
+
+    localStorage.setItem(
+        "teacherVivaQuestions",
+        JSON.stringify(vivaQuestions)
+    );
+
+
+    loadVivaQuestions();
+
+}
+
+
+
+/* ==================================================
+   STUDENT DOUBTS
+================================================== */
+
+function doubts() {
+
+    window.location.href =
+        "teacher-doubts.html";
+
+}
+
+
+
+/* ==================================================
+   STUDENT PROGRESS
+================================================== */
+
+function progress() {
+    window.location.href = "student-progress.html";
+}
+
+
+
+
+/* ==================================================
+   LOGOUT
+================================================== */
+
+function logout() {
+
+    localStorage.removeItem("currentUser");
+
+    window.location.href = "index.html";
+
+}
+</script>
+</body>
+</html>
