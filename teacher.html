@@ -1,0 +1,1719 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <title>EduMate - Teacher Dashboard</title>
+
+    <!-- Supabase -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+            min-height: 100vh;
+        }
+
+        .header {
+            background-color: #4a6cf7;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .header h1 {
+            margin-bottom: 5px;
+        }
+
+        .container {
+            width: 90%;
+            max-width: 1000px;
+            margin: 30px auto;
+        }
+
+        .welcome {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .card h3 {
+            margin-bottom: 15px;
+        }
+
+        button {
+            background-color: #4a6cf7;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        .logout {
+            background-color: #e74c3c;
+        }
+
+        .section {
+            background-color: white;
+            padding: 25px;
+            border-radius: 12px;
+            margin-top: 25px;
+            display: none;
+        }
+
+        .section h2 {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-top: 12px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        select,
+        textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+        }
+
+        textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        input[type="file"] {
+            background-color: #f8f8f8;
+        }
+
+        .upload-box {
+            background-color: #f7f9ff;
+            border: 1px dashed #4a6cf7;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .note-card {
+            border: 1px solid #ddd;
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 15px;
+        }
+
+        .note-card h3 {
+            margin-bottom: 8px;
+        }
+
+        .note-card p {
+            margin: 5px 0;
+        }
+
+        .pdf-button {
+            background-color: #28a745;
+        }
+
+        .delete-button {
+            background-color: #e74c3c;
+        }
+
+        .back {
+            background-color: #555;
+            margin-bottom: 15px;
+        }
+
+        .message {
+            margin-top: 15px;
+            padding: 10px;
+            border-radius: 6px;
+            display: none;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+        }
+
+        .loading {
+            color: #555;
+            margin-top: 15px;
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+
+<div class="header">
+
+    <h1>EduMate 👩‍🏫</h1>
+
+    <p>Teacher Dashboard</p>
+
+</div>
+
+
+<div class="container">
+
+
+    <div class="welcome">
+
+        <h2 id="welcome">
+            Welcome Teacher 👋
+        </h2>
+
+        <button class="logout" onclick="logout()">
+            Logout
+        </button>
+
+    </div>
+
+
+    <!-- ================= DASHBOARD CARDS ================= -->
+
+    <div class="cards" id="dashboardCards">
+
+
+        <div class="card">
+
+            <h3>📚 Manage Notes</h3>
+
+            <p>
+                Add notes and upload PDF files.
+            </p>
+
+            <button onclick="notes()">
+                Manage Notes
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>🧪 Manage Practicals</h3>
+
+            <p>
+                Add practical programs.
+            </p>
+
+            <button onclick="practicals()">
+                Manage Practicals
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>❓ Manage Viva</h3>
+
+            <p>
+                Add viva questions.
+            </p>
+
+            <button onclick="viva()">
+                Manage Viva
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>💬 Student Doubts</h3>
+
+            <p>
+                Answer student doubts.
+            </p>
+
+            <button onclick="doubts()">
+                View Doubts
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h3>📊 Student Progress</h3>
+
+            <p>
+                View student progress.
+            </p>
+
+            <button onclick="progress()">
+                View Progress
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- ================= MANAGE NOTES ================= -->
+
+    <div class="section" id="notesSection">
+
+        <button class="back" onclick="backToDashboard()">
+            ← Dashboard
+        </button>
+
+        <h2>📚 Manage Notes</h2>
+
+
+        <div class="upload-box">
+
+            <h3>➕ Add New Note</h3>
+
+
+            <label>
+                Subject
+            </label>
+
+            <select id="noteSubject">
+
+                <option value="">
+                    Select Subject
+                </option>
+
+                <option value="DBMS">
+                    DBMS
+                </option>
+
+                <option value="DLD">
+                    DLD
+                </option>
+
+                <option value="CPP">
+                    C++
+                </option>
+
+                <option value="JS">
+                    JavaScript
+                </option>
+
+                <option value="C">
+                    C Programming
+                </option>
+
+                <option value="CN">
+                    Computer Networks
+                </option>
+
+            </select>
+
+
+            <label>
+                Note Title
+            </label>
+
+            <input
+                type="text"
+                id="noteTitle"
+                placeholder="Enter note title"
+            >
+
+
+            <label>
+                Note Content
+            </label>
+
+            <textarea
+                id="noteContent"
+                placeholder="Enter short note content"
+            ></textarea>
+
+
+            <label>
+                Upload PDF
+            </label>
+
+            <input
+                type="file"
+                id="notePDF"
+                accept="application/pdf,.pdf"
+            >
+
+
+            <button onclick="uploadNote()">
+                📤 Upload Note
+            </button>
+
+
+            <div
+                id="uploadMessage"
+                class="message"
+            ></div>
+
+
+            <p class="loading" id="uploadStatus"></p>
+
+        </div>
+
+
+        <h3>
+            📋 Uploaded Notes
+        </h3>
+
+
+        <div id="notesList">
+
+            Loading notes...
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= MANAGE PRACTICALS ================= -->
+
+    <div class="section" id="practicalsSection">
+
+        <button class="back" onclick="backToDashboard()">
+            ← Dashboard
+        </button>
+
+        <h2>🧪 Manage Practicals</h2>
+
+
+        <label>
+            Subject
+        </label>
+
+        <select id="practicalSubject">
+
+            <option value="">
+                Select Subject
+            </option>
+
+            <option value="DBMS">
+                DBMS
+            </option>
+
+            <option value="DLD">
+                DLD
+            </option>
+
+            <option value="CPP">
+                C++
+            </option>
+
+            <option value="JS">
+                JavaScript
+            </option>
+
+            <option value="CN">
+                Computer Networks
+            </option>
+
+        </select>
+
+
+        <label>
+            Practical Title
+        </label>
+
+        <input
+            type="text"
+            id="practicalTitle"
+            placeholder="Enter practical title"
+        >
+
+
+        <label>
+            Aim
+        </label>
+
+        <textarea
+            id="practicalAim"
+            placeholder="Enter aim"
+        ></textarea>
+
+
+        <label>
+            Theory
+        </label>
+
+        <textarea
+            id="practicalTheory"
+            placeholder="Enter theory"
+        ></textarea>
+
+
+        <label>
+            Program
+        </label>
+
+        <textarea
+            id="practicalProgram"
+            placeholder="Enter program"
+        ></textarea>
+
+
+        <label>
+            Output
+        </label>
+
+        <textarea
+            id="practicalOutput"
+            placeholder="Enter output"
+        ></textarea>
+
+
+        <label>
+            Conclusion
+        </label>
+
+        <textarea
+            id="practicalConclusion"
+            placeholder="Enter conclusion"
+        ></textarea>
+
+
+        <button onclick="addPractical()">
+            Add Practical
+        </button>
+
+
+        <div id="practicalMessage"></div>
+
+    </div>
+
+
+    <!-- ================= MANAGE VIVA ================= -->
+
+    <div class="section" id="vivaSection">
+
+        <button class="back" onclick="backToDashboard()">
+            ← Dashboard
+        </button>
+
+        <h2>❓ Manage Viva Questions</h2>
+
+
+        <label>
+            Subject
+        </label>
+
+        <select id="vivaSubject">
+
+            <option value="">
+                Select Subject
+            </option>
+
+            <option value="DBMS">
+                DBMS
+            </option>
+
+            <option value="DLD">
+                DLD
+            </option>
+
+            <option value="CPP">
+                C++
+            </option>
+
+            <option value="JS">
+                JavaScript
+            </option>
+
+            <option value="CN">
+                Computer Networks
+            </option>
+
+        </select>
+
+
+        <label>
+            Question
+        </label>
+
+        <textarea
+            id="vivaQuestion"
+            placeholder="Enter viva question"
+        ></textarea>
+
+
+        <label>
+            Answer
+        </label>
+
+        <textarea
+            id="vivaAnswer"
+            placeholder="Enter answer"
+        ></textarea>
+
+
+        <button onclick="addViva()">
+            Add Viva Question
+        </button>
+
+
+        <div id="vivaMessage"></div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* =====================================================
+   SUPABASE CONFIGURATION
+   ===================================================== */
+
+
+/*
+   IMPORTANT:
+   Replace these two values with YOUR Supabase project
+   URL and Publishable/Anon key.
+*/
+
+
+const SUPABASE_URL =
+    "YOUR_SUPABASE_PROJECT_URL";
+
+
+const SUPABASE_KEY =
+    "YOUR_SUPABASE_PUBLISHABLE_KEY";
+
+
+const supabaseClient =
+    window.supabase.createClient(
+        SUPABASE_URL,
+        SUPABASE_KEY
+    );
+
+
+const PDF_BUCKET =
+    "edumate-pdfs";
+
+
+
+/* =====================================================
+   LOGIN CHECK
+   ===================================================== */
+
+
+let currentUser =
+    JSON.parse(
+        localStorage.getItem("currentUser")
+    );
+
+
+if (!currentUser) {
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+if (
+    currentUser &&
+    currentUser.role !== "Teacher"
+) {
+
+    window.location.href =
+        "student.html";
+
+}
+
+
+if (currentUser) {
+
+    document.getElementById("welcome").innerHTML =
+        "Welcome, " +
+        currentUser.name +
+        " 👋";
+
+}
+
+
+
+/* =====================================================
+   DASHBOARD NAVIGATION
+   ===================================================== */
+
+
+function hideAllSections() {
+
+    document.getElementById(
+        "notesSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "practicalsSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "vivaSection"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "dashboardCards"
+    ).style.display = "grid";
+
+}
+
+
+
+function notes() {
+
+    document.getElementById(
+        "dashboardCards"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "notesSection"
+    ).style.display = "block";
+
+
+    loadNotes();
+
+}
+
+
+
+function practicals() {
+
+    document.getElementById(
+        "dashboardCards"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "practicalsSection"
+    ).style.display = "block";
+
+}
+
+
+
+function viva() {
+
+    document.getElementById(
+        "dashboardCards"
+    ).style.display = "none";
+
+
+    document.getElementById(
+        "vivaSection"
+    ).style.display = "block";
+
+}
+
+
+
+function doubts() {
+
+    window.location.href =
+        "teacher-doubts.html";
+
+}
+
+
+
+function progress() {
+
+    window.location.href =
+        "student-progress.html";
+
+}
+
+
+
+function backToDashboard() {
+
+    hideAllSections();
+
+}
+
+
+
+/* =====================================================
+   PDF UPLOAD
+   ===================================================== */
+
+
+async function uploadNote() {
+
+
+    const subject =
+        document.getElementById(
+            "noteSubject"
+        ).value;
+
+
+    const title =
+        document.getElementById(
+            "noteTitle"
+        ).value.trim();
+
+
+    const content =
+        document.getElementById(
+            "noteContent"
+        ).value.trim();
+
+
+    const pdfInput =
+        document.getElementById(
+            "notePDF"
+        );
+
+
+    const message =
+        document.getElementById(
+            "uploadMessage"
+        );
+
+
+    const status =
+        document.getElementById(
+            "uploadStatus"
+        );
+
+
+    message.style.display = "none";
+
+    status.innerHTML = "";
+
+
+
+    /* Validation */
+
+    if (!subject) {
+
+        showMessage(
+            "Please select a subject.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (!title) {
+
+        showMessage(
+            "Please enter the note title.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    if (
+        !pdfInput.files ||
+        pdfInput.files.length === 0
+    ) {
+
+        showMessage(
+            "Please select a PDF file.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+    const file =
+        pdfInput.files[0];
+
+
+
+    /* Check PDF */
+
+    if (
+        file.type !== "application/pdf" &&
+        !file.name.toLowerCase().endsWith(".pdf")
+    ) {
+
+        showMessage(
+            "Only PDF files are allowed.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    /* 10 MB limit */
+
+    const maxSize =
+        10 * 1024 * 1024;
+
+
+    if (file.size > maxSize) {
+
+        showMessage(
+            "PDF must be smaller than 10 MB.",
+            "error"
+        );
+
+        return;
+
+    }
+
+
+
+    try {
+
+
+        status.innerHTML =
+            "⏳ Uploading PDF...";
+
+
+        /*
+          Create a unique file name.
+          This prevents two teachers from accidentally
+          using the same file name.
+        */
+
+
+        const safeName =
+            file.name
+                .replace(
+                    /[^a-zA-Z0-9.-]/g,
+                    "_"
+                );
+
+
+        const fileName =
+            Date.now() +
+            "_" +
+            safeName;
+
+
+        const filePath =
+            subject +
+            "/" +
+            fileName;
+
+
+
+        /* Upload PDF */
+
+        const {
+            data: uploadData,
+            error: uploadError
+        } =
+            await supabaseClient
+                .storage
+                .from(PDF_BUCKET)
+                .upload(
+                    filePath,
+                    file,
+                    {
+                        cacheControl: "3600",
+                        upsert: false,
+                        contentType:
+                            "application/pdf"
+                    }
+                );
+
+
+        if (uploadError) {
+
+            console.error(uploadError);
+
+            throw new Error(
+                uploadError.message
+            );
+
+        }
+
+
+
+        status.innerHTML =
+            "⏳ Saving note information...";
+
+
+
+        /* Get public URL */
+
+        const {
+            data: publicData
+        } =
+            supabaseClient
+                .storage
+                .from(PDF_BUCKET)
+                .getPublicUrl(
+                    filePath
+                );
+
+
+        const pdfURL =
+            publicData.publicUrl;
+
+
+
+        /* Save note information */
+
+        const {
+            data: noteData,
+            error: noteError
+        } =
+            await supabaseClient
+                .from("notes")
+                .insert([
+                    {
+                        subject:
+                            subject,
+
+                        title:
+                            title,
+
+                        content:
+                            content,
+
+                        teacher:
+                            currentUser.name,
+
+                        pdf_url:
+                            pdfURL,
+
+                        pdf_path:
+                            filePath
+                    }
+                ])
+                .select();
+
+
+        if (noteError) {
+
+            console.error(noteError);
+
+            /*
+              If database save fails, remove the
+              uploaded PDF so we don't leave an
+              unused file.
+            */
+
+            await supabaseClient
+                .storage
+                .from(PDF_BUCKET)
+                .remove([
+                    filePath
+                ]);
+
+            throw new Error(
+                noteError.message
+            );
+
+        }
+
+
+
+        /* Success */
+
+        status.innerHTML = "";
+
+        showMessage(
+            "✅ Note and PDF uploaded successfully!",
+            "success"
+        );
+
+
+        /* Clear form */
+
+        document.getElementById(
+            "noteSubject"
+        ).value = "";
+
+
+        document.getElementById(
+            "noteTitle"
+        ).value = "";
+
+
+        document.getElementById(
+            "noteContent"
+        ).value = "";
+
+
+        document.getElementById(
+            "notePDF"
+        ).value = "";
+
+
+        /* Refresh list */
+
+        loadNotes();
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        status.innerHTML = "";
+
+        showMessage(
+            "❌ Upload failed: " +
+            error.message,
+            "error"
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   MESSAGE
+   ===================================================== */
+
+
+function showMessage(
+    text,
+    type
+) {
+
+    const message =
+        document.getElementById(
+            "uploadMessage"
+        );
+
+
+    message.innerHTML =
+        text;
+
+
+    message.className =
+        "message " +
+        type;
+
+
+    message.style.display =
+        "block";
+
+}
+
+
+
+/* =====================================================
+   LOAD NOTES
+   ===================================================== */
+
+
+async function loadNotes() {
+
+
+    const notesList =
+        document.getElementById(
+            "notesList"
+        );
+
+
+    notesList.innerHTML =
+        "⏳ Loading notes...";
+
+
+    const {
+        data,
+        error
+    } =
+        await supabaseClient
+            .from("notes")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending: false
+                }
+            );
+
+
+    if (error) {
+
+        console.error(error);
+
+        notesList.innerHTML =
+            "<p>❌ Could not load notes.</p>";
+
+        return;
+
+    }
+
+
+    if (
+        !data ||
+        data.length === 0
+    ) {
+
+        notesList.innerHTML =
+            "<p>No notes uploaded yet.</p>";
+
+        return;
+
+    }
+
+
+    notesList.innerHTML = "";
+
+
+    data.forEach(
+        function(note) {
+
+
+            const card =
+                document.createElement(
+                    "div"
+                );
+
+
+            card.className =
+                "note-card";
+
+
+            card.innerHTML = `
+
+                <h3>
+                    📘 ${escapeHTML(note.title)}
+                </h3>
+
+                <p>
+                    <strong>Subject:</strong>
+                    ${escapeHTML(note.subject)}
+                </p>
+
+                <p>
+                    <strong>Teacher:</strong>
+                    ${escapeHTML(note.teacher)}
+                </p>
+
+                ${
+                    note.content
+                    ?
+                    `<p>
+                        ${escapeHTML(note.content)}
+                    </p>`
+                    :
+                    ""
+                }
+
+                ${
+                    note.pdf_url
+                    ?
+                    `<button
+                        class="pdf-button"
+                        onclick="viewPDF('${note.pdf_url}')"
+                    >
+                        📄 View PDF
+                    </button>`
+                    :
+                    ""
+                }
+
+                <button
+                    class="delete-button"
+                    onclick="deleteNote(${note.id}, '${note.pdf_path || ""}')"
+                >
+                    🗑️ Delete
+                </button>
+
+            `;
+
+
+            notesList.appendChild(
+                card
+            );
+
+        }
+    );
+
+}
+
+
+
+/* =====================================================
+   VIEW PDF
+   ===================================================== */
+
+
+function viewPDF(url) {
+
+    window.open(
+        url,
+        "_blank"
+    );
+
+}
+
+
+
+/* =====================================================
+   DELETE NOTE + PDF
+   ===================================================== */
+
+
+async function deleteNote(
+    noteId,
+    pdfPath
+) {
+
+
+    const confirmDelete =
+        confirm(
+            "Are you sure you want to delete this note?"
+        );
+
+
+    if (!confirmDelete) {
+
+        return;
+
+    }
+
+
+    try {
+
+
+        /* Delete database record */
+
+        const {
+            error: dbError
+        } =
+            await supabaseClient
+                .from("notes")
+                .delete()
+                .eq(
+                    "id",
+                    noteId
+                );
+
+
+        if (dbError) {
+
+            throw new Error(
+                dbError.message
+            );
+
+        }
+
+
+
+        /* Delete PDF */
+
+        if (pdfPath) {
+
+            const {
+                error: fileError
+            } =
+                await supabaseClient
+                    .storage
+                    .from(PDF_BUCKET)
+                    .remove([
+                        pdfPath
+                    ]);
+
+
+            if (fileError) {
+
+                console.error(
+                    "PDF deletion error:",
+                    fileError
+                );
+
+            }
+
+        }
+
+
+        alert(
+            "Note deleted successfully."
+        );
+
+
+        loadNotes();
+
+
+    }
+
+    catch (error) {
+
+        console.error(error);
+
+        alert(
+            "Could not delete note: " +
+            error.message
+        );
+
+    }
+
+}
+
+
+
+/* =====================================================
+   SECURITY — DISPLAY TEXT SAFELY
+   ===================================================== */
+
+
+function escapeHTML(text) {
+
+    if (!text) {
+
+        return "";
+
+    }
+
+
+    return text
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+        .replace(
+            /</g,
+            "&lt;"
+        )
+        .replace(
+            />/g,
+            "&gt;"
+        )
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* =====================================================
+   PRACTICALS
+   ===================================================== */
+
+
+function addPractical() {
+
+
+    const subject =
+        document.getElementById(
+            "practicalSubject"
+        ).value;
+
+
+    const title =
+        document.getElementById(
+            "practicalTitle"
+        ).value.trim();
+
+
+    const aim =
+        document.getElementById(
+            "practicalAim"
+        ).value.trim();
+
+
+    const theory =
+        document.getElementById(
+            "practicalTheory"
+        ).value.trim();
+
+
+    const program =
+        document.getElementById(
+            "practicalProgram"
+        ).value.trim();
+
+
+    const output =
+        document.getElementById(
+            "practicalOutput"
+        ).value.trim();
+
+
+    const conclusion =
+        document.getElementById(
+            "practicalConclusion"
+        ).value.trim();
+
+
+    if (!subject || !title) {
+
+        alert(
+            "Please enter subject and practical title."
+        );
+
+        return;
+
+    }
+
+
+    let practicals =
+        JSON.parse(
+            localStorage.getItem(
+                "teacherPracticals"
+            )
+        ) || [];
+
+
+    practicals.push({
+
+        subject:
+            subject,
+
+        title:
+            title,
+
+        aim:
+            aim,
+
+        theory:
+            theory,
+
+        program:
+            program,
+
+        output:
+            output,
+
+        conclusion:
+            conclusion,
+
+        teacher:
+            currentUser.name
+
+    });
+
+
+    localStorage.setItem(
+        "teacherPracticals",
+        JSON.stringify(
+            practicals
+        )
+    );
+
+
+    alert(
+        "Practical added successfully!"
+    );
+
+
+    document.getElementById(
+        "practicalSubject"
+    ).value = "";
+
+
+    document.getElementById(
+        "practicalTitle"
+    ).value = "";
+
+
+    document.getElementById(
+        "practicalAim"
+    ).value = "";
+
+
+    document.getElementById(
+        "practicalTheory"
+    ).value = "";
+
+
+    document.getElementById(
+        "practicalProgram"
+    ).value = "";
+
+
+    document.getElementById(
+        "practicalOutput"
+    ).value = "";
+
+
+    document.getElementById(
+        "practicalConclusion"
+    ).value = "";
+
+}
+
+
+
+/* =====================================================
+   VIVA
+   ===================================================== */
+
+
+function addViva() {
+
+
+    const subject =
+        document.getElementById(
+            "vivaSubject"
+        ).value;
+
+
+    const question =
+        document.getElementById(
+            "vivaQuestion"
+        ).value.trim();
+
+
+    const answer =
+        document.getElementById(
+            "vivaAnswer"
+        ).value.trim();
+
+
+    if (
+        !subject ||
+        !question ||
+        !answer
+    ) {
+
+        alert(
+            "Please fill all viva fields."
+        );
+
+        return;
+
+    }
+
+
+    let vivaQuestions =
+        JSON.parse(
+            localStorage.getItem(
+                "teacherVivaQuestions"
+            )
+        ) || [];
+
+
+    vivaQuestions.push({
+
+        subject:
+            subject,
+
+        question:
+            question,
+
+        answer:
+            answer,
+
+        teacher:
+            currentUser.name
+
+    });
+
+
+    localStorage.setItem(
+        "teacherVivaQuestions",
+        JSON.stringify(
+            vivaQuestions
+        )
+    );
+
+
+    alert(
+        "Viva question added successfully!"
+    );
+
+
+    document.getElementById(
+        "vivaSubject"
+    ).value = "";
+
+
+    document.getElementById(
+        "vivaQuestion"
+    ).value = "";
+
+
+    document.getElementById(
+        "vivaAnswer"
+    ).value = "";
+
+}
+
+
+
+/* =====================================================
+   LOGOUT
+   ===================================================== */
+
+
+function logout() {
+
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+
+    window.location.href =
+        "index.html";
+
+}
+
+
+</script>
+
+
+</body>
+
+</html>
