@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <title>EduMate - AI Learn</title>
+
+    <!-- Supabase SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    
+    <!-- Curriculum Data File -->
+    <script src="cirriculum.js"></script>
+
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f8;
+        }
+
+        header {
+            background-color: #263238;
+            color: white;
+            text-align: center;
+            padding: 20px;
+        }
+
+        header h1 {
+            margin-bottom: 5px;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .card {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px #cccccc;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .card:hover {
+            background-color: #e3f2fd;
+            transform: translateY(-2px);
+        }
+
+        .card h3 {
+            margin-top: 8px;
+        }
+
+        /* Hide sections initially */
+        #unitSection,
+        #topicSection,
+        #subtopicSection,
+        #aiSection,
+        #notesSection {
+            display: none;
+        }
+
+        /* Back button */
+        .back {
+            background-color: #263238;
+            color: white;
+            border: none;
+            padding: 10px 18px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .back:hover {
+            background-color: #37474f;
+        }
+
+        /* AI button */
+        .aiButton {
+            background-color: #673ab7;
+            color: white;
+            border: none;
+            padding: 14px 20px;
+            border-radius: 8px;
+            font-size: 16px;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .aiButton:hover {
+            background-color: #512da8;
+        }
+
+        /* AI box */
+        .aiBox {
+            background-color: white;
+            padding: 20px;
+            margin-top: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px #cccccc;
+        }
+
+        .aiBox h3 {
+            margin-bottom: 12px;
+        }
+
+        .aiBox p {
+            line-height: 1.6;
+        }
+
+        /* Teacher note */
+        .teacherNote {
+            background-color: #f5f5f5;
+            padding: 18px;
+            margin-top: 15px;
+            border-radius: 8px;
+            border-left: 5px solid #673ab7;
+        }
+
+        .teacherNote h3 {
+            margin-bottom: 10px;
+        }
+
+        .teacherNote p {
+            margin-bottom: 8px;
+        }
+
+        /* Complete button */
+        .completeButton {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin-top: 15px;
+            cursor: pointer;
+            font-size: 15px;
+        }
+
+        .completeButton:hover {
+            background-color: #388e3c;
+        }
+
+        .completeButton:disabled {
+            background-color: #777;
+            cursor: not-allowed;
+        }
+
+        /* Mobile */
+        @media (max-width: 600px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .container {
+                padding: 15px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+
+<!-- ================= HEADER ================= -->
+<header>
+    <h1>📚 EduMate</h1>
+    <p>AI Powered Learning</p>
+</header>
+
+<div class="container">
+
+    <!-- ================= SUBJECT SECTION ================= -->
+    <div id="subjectSection">
+        <h2>📚 Select Subject</h2>
+        <div class="grid">
+            <div class="card" onclick="showUnits('HDBS')">
+                <h2>🗄️</h2>
+                <h3>DBMS</h3>
+            </div>
+            <div class="card" onclick="showUnits('HDLD')">
+                <h2>💡</h2>
+                <h3>Digital Logic & Microprocessor</h3>
+            </div>
+            <div class="card" onclick="showUnits('HOOP')">
+                <h2>💻</h2>
+                <h3>OOP Using C++</h3>
+            </div>
+            <div class="card" onclick="showUnits('HCLS')">
+                <h2>🌐</h2>
+                <h3>Client Side Scripting</h3>
+            </div>
+            <div class="card" onclick="showUnits('HCON')">
+                <h2>📡</h2>
+                <h3>Computer Network</h3>
+            </div>
+            <div class="card" onclick="showUnits('HEIC')">
+                <h2>📜</h2>
+                <h3>Indian Constitution</h3>
+            </div>
+        </div>
+    </div>
+
+    <!-- ================= UNIT SECTION ================= -->
+    <div id="unitSection">
+        <button class="back" onclick="backToSubjects()">← Subjects</button>
+        <h2 id="unitTitle"></h2>
+        <div id="units" class="grid"></div>
+    </div>
+
+    <!-- ================= TOPIC SECTION ================= -->
+    <div id="topicSection">
+        <button class="back" onclick="backToUnits()">← Units</button>
+        <h2 id="topicTitle"></h2>
+        <div id="topics" class="grid"></div>
+    </div>
+
+    <!-- ================= SUBTOPIC SECTION ================= -->
+    <div id="subtopicSection">
+        <button class="back" onclick="backToTopics()">← Topics</button>
+        <h2 id="subtopicTitle"></h2>
+        <div id="subtopics" class="grid"></div>
+    </div>
+
+    <!-- ================= AI SECTION ================= -->
+    <div id="aiSection">
+        <button class="back" onclick="backToSubtopics()">← Subtopics</button>
+        <h2 id="selectedSubtopic"></h2>
+
+        <button class="aiButton" onclick="getAIExplanation()">🤖 Explain with AI</button>
+
+        <div class="aiBox">
+            <h3>📖 AI Explanation</h3>
+            <p id="aiResult">Select a subtopic and click "Explain with AI".</p>
+        </div>
+    </div>
+
+    <!-- ================= TEACHER NOTES SECTION ================= -->
+    <div id="notesSection">
+        <button class="back" onclick="backToSubtopics()">← Subtopics</button>
+        <h2>📚 Teacher Notes</h2>
+        <div id="teacherNotes"></div>
+    </div>
+
+</div>
+
+<script>
+const SUPABASE_URL = "https://gdzyfutuakotlnsmneml.supabase.co";
+const SUPABASE_KEY = "sb_publishable_g5kUKAcnVH3C6fQfPjbuCg_DAzntOwW";
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+/* ==================================================
+   LOGIN CHECK
+================================================== */
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser) {
+    window.location.href = "index.html";
+}
+
+/* ==================================================
+   STATE VARIABLES
+================================================== */
+let selectedSubject = "";
+let selectedUnit = null;      // Unit index
+let selectedTopic = null;     // Topic index
+let selectedSubtopic = "";    // Subtopic name
+
+/* ==================================================
+   NAVIGATION & UI RENDERERS
+================================================== */
+function showUnits(subjectKey) {
+    selectedSubject = subjectKey;
+    const subjectObj = syllabusData[subjectKey];
+
+    if (!subjectObj) {
+        alert("Syllabus data for " + subjectKey + " not found!");
+        return;
+    }
+
+    document.getElementById("subjectSection").style.display = "none";
+    document.getElementById("unitSection").style.display = "block";
+    document.getElementById("topicSection").style.display = "none";
+    document.getElementById("subtopicSection").style.display = "none";
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+
+    document.getElementById("unitTitle").innerHTML = "📖 " + subjectObj.subjectName + " - Select Unit";
+
+    let unitList = document.getElementById("units");
+    unitList.innerHTML = "";
+
+    subjectObj.units.forEach((unit, index) => {
+        let card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = "<h3>📘 " + unit.unitName + "</h3>";
+        card.onclick = function() {
+            showTopics(index);
+        };
+        unitList.appendChild(card);
+    });
+}
+
+function showTopics(unitIndex) {
+    selectedUnit = unitIndex;
+    const unitObj = syllabusData[selectedSubject].units[unitIndex];
+
+    document.getElementById("unitSection").style.display = "none";
+    document.getElementById("topicSection").style.display = "block";
+    document.getElementById("subtopicSection").style.display = "none";
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+
+    document.getElementById("topicTitle").innerHTML = "📚 " + unitObj.unitName + " - Select Topic";
+
+    let topicList = document.getElementById("topics");
+    topicList.innerHTML = "";
+
+    unitObj.topics.forEach((topic, index) => {
+        let card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = "<h3>📌 " + topic.topicName + "</h3>";
+        card.onclick = function() {
+            showSubtopics(index);
+        };
+        topicList.appendChild(card);
+    });
+}
+
+function showSubtopics(topicIndex) {
+    selectedTopic = topicIndex;
+    const topicObj = syllabusData[selectedSubject].units[selectedUnit].topics[topicIndex];
+
+    document.getElementById("topicSection").style.display = "none";
+    document.getElementById("subtopicSection").style.display = "block";
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+
+    document.getElementById("subtopicTitle").innerHTML = "📌 " + topicObj.topicName + " - Select Subtopic";
+
+    let subtopicList = document.getElementById("subtopics");
+    subtopicList.innerHTML = "";
+
+    topicObj.subtopics.forEach((subtopic) => {
+        let card = document.createElement("div");
+        card.className = "card";
+        card.innerHTML = "<h3>🔹 " + subtopic + "</h3>";
+        card.onclick = function() {
+            showAIScreen(subtopic);
+        };
+        subtopicList.appendChild(card);
+    });
+}
+
+function showAIScreen(subtopicName) {
+    selectedSubtopic = subtopicName;
+    const topicObj = syllabusData[selectedSubject].units[selectedUnit].topics[selectedTopic];
+
+    document.getElementById("subtopicSection").style.display = "none";
+    document.getElementById("aiSection").style.display = "block";
+    document.getElementById("notesSection").style.display = "block";
+
+    document.getElementById("selectedSubtopic").innerHTML =
+        "🤖 " + topicObj.topicName + " → " + selectedSubtopic;
+
+    document.getElementById("aiResult").innerHTML =
+        "Click the button above to generate an AI explanation.";
+
+    showTeacherNotes();
+    updateCompletionButtonState();
+}
+
+/* ==================================================
+   BACK BUTTONS
+================================================== */
+function backToSubjects() {
+    document.getElementById("unitSection").style.display = "none";
+    document.getElementById("subjectSection").style.display = "block";
+    document.getElementById("topicSection").style.display = "none";
+    document.getElementById("subtopicSection").style.display = "none";
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+}
+
+function backToUnits() {
+    document.getElementById("topicSection").style.display = "none";
+    document.getElementById("unitSection").style.display = "block";
+    document.getElementById("subtopicSection").style.display = "none";
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+}
+
+function backToTopics() {
+    document.getElementById("subtopicSection").style.display = "none";
+    document.getElementById("topicSection").style.display = "block";
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+}
+
+function backToSubtopics() {
+    document.getElementById("aiSection").style.display = "none";
+    document.getElementById("notesSection").style.display = "none";
+    document.getElementById("subtopicSection").style.display = "block";
+}
+
+/* ==================================================
+   COMPLETION & PROGRESS MANAGEMENT
+================================================== */
+function updateCompletionButtonState() {
+    let completeButton = document.getElementById("completeButton");
+
+    if (!completeButton) {
+        completeButton = document.createElement("button");
+        completeButton.id = "completeButton";
+        completeButton.className = "completeButton";
+        completeButton.onclick = markAsCompleted;
+        document.getElementById("aiSection").appendChild(completeButton);
+    }
+
+    let completed = JSON.parse(
+        localStorage.getItem("completedTopics_" + currentUser.email)
+    ) || [];
+
+    let key = selectedSubject + "_" + selectedUnit + "_" + selectedTopic + "_" + selectedSubtopic;
+
+    if (completed.includes(key)) {
+        completeButton.innerHTML = "✅ Completed";
+        completeButton.disabled = true;
+    } else {
+        completeButton.innerHTML = "✅ Mark as Completed";
+        completeButton.disabled = false;
+    }
+}
+
+function markAsCompleted() {
+    let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+    if (!currentUser) {
+        window.location.href = "index.html";
+        return;
+    }
+
+    let allProgress = JSON.parse(localStorage.getItem("learnProgress")) || {};
+    if (!allProgress[currentUser.email]) {
+        allProgress[currentUser.email] = 0;
+    }
+
+    // Calculate total subtopics dynamically from syllabusData
+    let totalSubtopics = 0;
+    for (let subjKey in syllabusData) {
+        syllabusData[subjKey].units.forEach(u => {
+            u.topics.forEach(t => {
+                totalSubtopics += t.subtopics.length;
+            });
+        });
+    }
+
+    let completedTopics = JSON.parse(
+        localStorage.getItem("completedTopics_" + currentUser.email)
+    ) || [];
+
+    let topicKey = selectedSubject + "_" + selectedUnit + "_" + selectedTopic + "_" + selectedSubtopic;
+
+    if (!completedTopics.includes(topicKey)) {
+        completedTopics.push(topicKey);
+    }
+
+    localStorage.setItem(
+        "completedTopics_" + currentUser.email,
+        JSON.stringify(completedTopics)
+    );
+
+    let progress = Math.round((completedTopics.length / totalSubtopics) * 100);
+    allProgress[currentUser.email] = progress;
+    localStorage.setItem("learnProgress", JSON.stringify(allProgress));
+
+    updateCompletionButtonState();
+
+    alert("Topic completed! 🎉\nYour Learning Progress: " + progress + "%");
+}
+
+/* ==================================================
+   AI EXPLANATION
+================================================== */
+function getAIExplanation() {
+    const topicObj = syllabusData[selectedSubject].units[selectedUnit].topics[selectedTopic];
+
+    document.getElementById("aiResult").innerHTML =
+        "AI explanation will appear here.<br><br>" +
+        "<b>Subject:</b> " + syllabusData[selectedSubject].subjectName + "<br>" +
+        "<b>Unit:</b> " + syllabusData[selectedSubject].units[selectedUnit].unitName + "<br>" +
+        "<b>Topic:</b> " + topicObj.topicName + "<br>" +
+        "<b>Subtopic:</b> " + selectedSubtopic;
+}
+
+/* ==================================================
+   SHOW TEACHER NOTES
+================================================== */
+async function showTeacherNotes() {
+    let noteBox = document.getElementById("teacherNotes");
+    noteBox.innerHTML = "<p>Loading teacher notes...</p>";
+
+    const { data, error } = await supabaseClient
+        .from("notes")
+        .select("*")
+        .eq("subject", selectedSubject)
+        .order("created_at", { ascending: false });
+
+    if (error) {
+        console.log(error);
+        noteBox.innerHTML = "<p>Could not load teacher notes.</p>";
+        return;
+    }
+
+    if (!data || data.length === 0) {
+        noteBox.innerHTML = "<p>No teacher notes available for this subject.</p>";
+        return;
+    }
+
+    noteBox.innerHTML = "";
+    data.forEach(function(note) {
+        let div = document.createElement("div");
+        div.className = "teacherNote";
+        div.innerHTML = `
+            <h3>📄 ${note.title}</h3>
+            <p>${note.content || ""}</p>
+            ${note.pdf_url ? `<br><a href="${note.pdf_url}" target="_blank">📥 View PDF</a>` : ""}
+            <p><small>👨‍🏫 Uploaded by: ${note.teacher}</small></p>
+        `;
+        noteBox.appendChild(div);
+    });
+}
+</script>
+
+</body>
+</html>
