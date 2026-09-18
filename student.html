@@ -1,0 +1,471 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF8">
+    <title>EduMate - Student Dashboard</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+}
+
+/* ===== SIDEBAR ===== */
+
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    background-color: #1e293b;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 20px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h2 {
+    margin-bottom: 5px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: white;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.menu button:hover {
+    background-color: #334155;
+}
+
+.logout {
+    margin-top: 20px;
+}
+
+
+/* ===== MAIN CONTENT ===== */
+
+.main {
+    margin-left: 230px;
+    padding: 25px;
+}
+
+.topbar {
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.welcome {
+    margin-bottom: 20px;
+}
+
+.welcome h1 {
+    margin-bottom: 8px;
+}
+
+
+/* ===== CARDS ===== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin-bottom: 10px;
+}
+
+.card button {
+    margin-top: 15px;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+/* ===== PROGRESS ===== */
+
+.progress-section {
+    background-color: white;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.subject {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    margin-top: 8px;
+}
+
+.progress {
+    height: 12px;
+    border-radius: 10px;
+}
+
+.dbms {
+    width: 80%;
+    background-color: #22c55e;
+}
+
+.dld {
+    width: 60%;
+    background-color: #3b82f6;
+}
+
+.cpp {
+    width: 90%;
+    background-color: #f59e0b;
+}
+
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+<body>
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+    <div class="logo">
+
+        <h2>🎓 EduMate</h2>
+
+        <p>Learn. Practice. Improve.</p>
+
+    </div>
+
+    <div class="menu">
+
+        <button onclick="home()">🏠 Home</button>
+
+        <button onclick="learn()">📚 Learn</button>
+
+        <button onclick="practicals()">🧪 Practicals</button>
+
+        <button onclick="viva()">🎤 Viva Practice</button>
+
+        <button onclick="doubts()">❓ Ask Doubt</button>
+
+        <button onclick="planner()">⏰ Exam Planner</button>
+
+        <button onclick="progress()">📊 My Progress</button>
+
+        <button class="logout" onclick="logout()">🚪 Logout</button>
+
+    </div>
+
+</div>
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<div class="main">
+
+    <div class="topbar">
+
+        <strong>Student Dashboard</strong>
+
+    </div>
+
+
+    <div class="welcome">
+
+        <h1 id="welcome"></h1>
+
+        <p>Ready to learn something new today? 📚</p>
+
+    </div>
+
+
+    <!-- ================= CARDS ================= -->
+
+    <div class="cards">
+
+        <div class="card">
+
+            <h2>📚 Learn</h2>
+
+            <p>
+                Study subjects and understand
+                difficult topics in simple language.
+            </p>
+
+            <button onclick="learn()">
+                Start Learning
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>🧪 Practicals</h2>
+
+            <p>
+                View practicals, theory,
+                programs and conclusions.
+            </p>
+
+            <button onclick="practicals()">
+                View Practicals
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>🎤 Viva</h2>
+
+            <p>
+                Practice viva questions and
+                improve your confidence.
+            </p>
+
+            <button onclick="viva()">
+                Start Viva
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>❓ Doubts</h2>
+
+            <p>
+                Ask questions and get help
+                from your teacher.
+            </p>
+
+            <button onclick="doubts()">
+                Ask a Doubt
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>⏰ Exam Planner</h2>
+
+            <p>
+                Plan your study according
+                to your upcoming exams.
+            </p>
+
+            <button onclick="planner()">
+                Plan Study
+            </button>
+
+        </div>
+
+
+        <div class="card">
+
+            <h2>📊 Progress</h2>
+
+            <p>
+                Check your learning progress
+                and viva performance.
+            </p>
+
+            <button onclick="progress()">
+                View Progress
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= PROGRESS ================= -->
+
+    <div class="progress-section">
+
+        <h2>📊 Your Progress</h2>
+
+
+        <div class="subject">
+
+            <strong>DBMS — 80%</strong>
+
+            <div class="progress-bar">
+                <div class="progress dbms"></div>
+            </div>
+
+        </div>
+
+
+        <div class="subject">
+
+            <strong>DLD — 60%</strong>
+
+            <div class="progress-bar">
+                <div class="progress dld"></div>
+            </div>
+
+        </div>
+
+
+        <div class="subject">
+
+            <strong>C++ — 90%</strong>
+
+            <div class="progress-bar">
+                <div class="progress cpp"></div>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<script>
+
+/* ================= USER ================= */
+
+/* Get the user saved by index.html */
+
+let loggedInUser =
+    JSON.parse(localStorage.getItem("currentUser"));
+
+
+/* ================= LOGIN CHECK ================= */
+
+if (loggedInUser) {
+
+    document.getElementById("welcome").innerHTML =
+        "Good Morning, " + loggedInUser.name + " 👋";
+
+}
+else {
+
+    window.location.href = "index.html";
+
+}
+
+
+/* ================= MENU FUNCTIONS ================= */
+
+function home() {
+
+    alert("You are already on the Home page.");
+
+}
+
+
+function learn() {
+
+    window.location.href = "learn.html";
+
+}
+
+
+function practicals() {
+
+    window.location.href = "practicals.html";
+
+}
+
+function viva() {
+
+    window.location.href = "viva.html";
+
+}
+
+function doubts() {
+
+    window.location.href = "doubts.html";
+
+}
+
+
+function planner() {
+
+    window.location.href = "planner.html";
+
+}
+
+
+function progress() {
+    window.location.href = "progress.html";
+}
+
+
+/* ================= LOGOUT ================= */
+
+function logout() {
+
+    localStorage.removeItem("currentUser");
+
+    window.location.href = "index.html";
+
+}
+
+</script>
+
+</body>
+
+</html>
