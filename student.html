@@ -1,0 +1,1380 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+    <meta charset="UTF8">
+
+    <title>EduMate - Student Dashboard</title>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+}
+
+
+/* ===== SIDEBAR ===== */
+
+.sidebar {
+    width: 230px;
+    height: 100vh;
+    background-color: #1e293b;
+    color: white;
+    position: fixed;
+    left: 0;
+    top: 0;
+    padding: 20px;
+}
+
+.logo {
+    text-align: center;
+    margin-bottom: 30px;
+}
+
+.logo h2 {
+    margin-bottom: 5px;
+}
+
+.menu button {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: none;
+    border-radius: 8px;
+    background-color: transparent;
+    color: white;
+    text-align: left;
+    font-size: 15px;
+    cursor: pointer;
+}
+
+.menu button:hover {
+    background-color: #334155;
+}
+
+.logout {
+    margin-top: 20px;
+}
+
+
+/* ===== MAIN CONTENT ===== */
+
+.main {
+    margin-left: 230px;
+    padding: 25px;
+}
+
+.topbar {
+    background-color: white;
+    padding: 15px 20px;
+    border-radius: 10px;
+    margin-bottom: 25px;
+}
+
+.welcome {
+    margin-bottom: 20px;
+}
+
+.welcome h1 {
+    margin-bottom: 8px;
+}
+
+
+/* ===== CARDS ===== */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.card {
+    background-color: white;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.card h2 {
+    margin-bottom: 10px;
+}
+
+.card button {
+    margin-top: 15px;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+}
+
+
+/* ===== PROGRESS ===== */
+
+.progress-section {
+    background-color: white;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 12px;
+}
+
+.subject {
+    margin-top: 20px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 12px;
+    background-color: #e5e7eb;
+    border-radius: 10px;
+    margin-top: 8px;
+}
+
+.progress {
+    height: 12px;
+    border-radius: 10px;
+}
+
+.dbms {
+    width: 80%;
+    background-color: #22c55e;
+}
+
+.dld {
+    width: 60%;
+    background-color: #3b82f6;
+}
+
+.cpp {
+    width: 90%;
+    background-color: #f59e0b;
+}
+
+
+/* ===== SUBMISSIONS ===== */
+
+.submission-section {
+    background-color: white;
+    margin-top: 25px;
+    padding: 25px;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.submission-tabs {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.submission-tabs button {
+    padding: 10px 15px;
+    border: none;
+    border-radius: 7px;
+    background-color: #e5e7eb;
+    cursor: pointer;
+}
+
+.submission-tabs button.active {
+    background-color: #1e293b;
+    color: white;
+}
+
+.submission-list {
+    display: grid;
+    gap: 15px;
+}
+
+.submission-item {
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    padding: 18px;
+}
+
+.submission-item h3 {
+    margin-bottom: 8px;
+}
+
+.submission-item p {
+    margin: 5px 0;
+}
+
+.submission-item input[type="file"] {
+    margin-top: 12px;
+    max-width: 100%;
+}
+
+.submit-work-btn {
+    margin-top: 12px;
+    padding: 9px 15px;
+    border: none;
+    border-radius: 6px;
+    background-color: #2563eb;
+    color: white;
+    cursor: pointer;
+}
+
+.submit-work-btn:hover {
+    background-color: #1d4ed8;
+}
+
+.submitted-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 9px;
+    border-radius: 15px;
+    background-color: #dcfce7;
+    color: #166534;
+    font-size: 13px;
+}
+
+.no-work {
+    padding: 15px;
+    background-color: #f8fafc;
+    border-radius: 8px;
+    color: #64748b;
+}
+
+
+/* ===== MOBILE ===== */
+
+@media (max-width: 800px) {
+
+    .sidebar {
+        width: 100%;
+        height: auto;
+        position: relative;
+    }
+
+    .main {
+        margin-left: 0;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<div class="sidebar">
+
+    <div class="logo">
+
+        <h2>🎓 EduMate</h2>
+
+        <p>Learn. Practice. Improve.</p>
+
+    </div>
+
+
+    <div class="menu">
+
+        <button onclick="home()">🏠 Home</button>
+
+        <button onclick="learn()">📚 Learn</button>
+
+        <button onclick="practicals()">🧪 Practicals</button>
+
+        <button onclick="viva()">🎤 Viva Practice</button>
+
+        <button onclick="doubts()">❓ Ask Doubt</button>
+
+        <button onclick="planner()">⏰ Exam Planner</button>
+
+        <button onclick="progress()">📊 My Progress</button>
+
+        <button onclick="submissions()">📤 Submissions</button>
+
+        <button class="logout" onclick="logout()">🚪 Logout</button>
+
+    </div>
+
+</div>
+
+
+
+<!-- ================= MAIN CONTENT ================= -->
+
+<div class="main">
+
+
+    <div class="topbar">
+
+        <strong>Student Dashboard</strong>
+
+    </div>
+
+
+
+    <div class="welcome">
+
+        <h1 id="welcome"></h1>
+
+        <p>Ready to learn something new today? 📚</p>
+
+    </div>
+
+
+
+    <!-- ================= CARDS ================= -->
+
+    <div class="cards">
+
+
+        <div class="card">
+
+            <h2>📚 Learn</h2>
+
+            <p>
+                Study subjects and understand
+                difficult topics in simple language.
+            </p>
+
+            <button onclick="learn()">
+                Start Learning
+            </button>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>🧪 Practicals</h2>
+
+            <p>
+                View practicals, theory,
+                programs and conclusions.
+            </p>
+
+            <button onclick="practicals()">
+                View Practicals
+            </button>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>🎤 Viva</h2>
+
+            <p>
+                Practice viva questions and
+                improve your confidence.
+            </p>
+
+            <button onclick="viva()">
+                Start Viva
+            </button>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>❓ Doubts</h2>
+
+            <p>
+                Ask questions and get help
+                from your teacher.
+            </p>
+
+            <button onclick="doubts()">
+                Ask a Doubt
+            </button>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>⏰ Exam Planner</h2>
+
+            <p>
+                Plan your study according
+                to your upcoming exams.
+            </p>
+
+            <button onclick="planner()">
+                Plan Study
+            </button>
+
+        </div>
+
+
+
+        <div class="card">
+
+            <h2>📊 Progress</h2>
+
+            <p>
+                Check your learning progress
+                and viva performance.
+            </p>
+
+            <button onclick="progress()">
+                View Progress
+            </button>
+
+        </div>
+
+
+
+        <!-- ===== SUBMISSION CARD ===== -->
+
+        <div class="card">
+
+            <h2>📤 Submissions</h2>
+
+            <p>
+                Upload and submit your
+                assignments, SLA and practical files.
+            </p>
+
+            <button onclick="submissions()">
+                Submit Work
+            </button>
+
+        </div>
+
+
+    </div>
+
+
+
+    <!-- ================= SUBMISSIONS ================= -->
+
+    <div id="submissionsSection"
+         class="submission-section"
+         style="display:none;">
+
+        <h2>📤 Submit Your Work</h2>
+
+        <p style="margin-top:8px;">
+            Select your work type and upload your file.
+        </p>
+
+
+
+        <div class="submission-tabs">
+
+            <button id="assignmentTab"
+                    class="active"
+                    onclick="showSubmissionType('Assignment')">
+
+                📝 Assignments
+
+            </button>
+
+
+            <button id="slaTab"
+                    onclick="showSubmissionType('SLA')">
+
+                📄 SLA
+
+            </button>
+
+
+            <button id="practicalTab"
+                    onclick="showSubmissionType('Practical')">
+
+                🧪 Practicals
+
+            </button>
+
+        </div>
+
+
+
+        <div id="submissionList"
+             class="submission-list">
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ================= PROGRESS ================= -->
+
+    <div class="progress-section">
+
+        <h2>📊 Your Progress</h2>
+
+
+        <div class="subject">
+
+            <strong>DBMS — 80%</strong>
+
+            <div class="progress-bar">
+
+                <div class="progress dbms"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="subject">
+
+            <strong>DLD — 60%</strong>
+
+            <div class="progress-bar">
+
+                <div class="progress dld"></div>
+
+            </div>
+
+        </div>
+
+
+        <div class="subject">
+
+            <strong>C++ — 90%</strong>
+
+            <div class="progress-bar">
+
+                <div class="progress cpp"></div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+</div>
+
+
+
+<script>
+
+
+/* ================= USER ================= */
+
+let loggedInUser =
+    JSON.parse(localStorage.getItem("currentUser"));
+
+
+
+/* ================= LOGIN CHECK ================= */
+
+if (loggedInUser) {
+
+    document.getElementById("welcome").innerHTML =
+        "Good Morning, " + loggedInUser.name + " 👋";
+
+}
+else {
+
+    window.location.href = "index.html";
+
+}
+
+
+
+/* ================= MENU FUNCTIONS ================= */
+
+function home() {
+
+    document.getElementById("submissionsSection")
+        .style.display = "none";
+
+    window.scrollTo(0, 0);
+
+}
+
+
+function learn() {
+
+    window.location.href = "learn.html";
+
+}
+
+
+function practicals() {
+
+    window.location.href = "practicals.html";
+
+}
+
+
+function viva() {
+
+    window.location.href = "viva.html";
+
+}
+
+
+function doubts() {
+
+    window.location.href = "doubts.html";
+
+}
+
+
+function planner() {
+
+    window.location.href = "planner.html";
+
+}
+
+
+function progress() {
+
+    window.location.href = "progress.html";
+
+}
+
+
+
+/* ================================================= */
+/*                STUDENT SUBMISSIONS                */
+/* ================================================= */
+
+
+let currentSubmissionType = "Assignment";
+
+
+
+/* ===== OPEN SUBMISSIONS ===== */
+
+function submissions() {
+
+    document.getElementById("submissionsSection")
+        .style.display = "block";
+
+    document.getElementById("submissionsSection")
+        .scrollIntoView({
+            behavior: "smooth"
+        });
+
+    showSubmissionType("Assignment");
+
+}
+
+
+
+/* ===== CHANGE TYPE ===== */
+
+function showSubmissionType(type) {
+
+    currentSubmissionType = type;
+
+
+    document.getElementById("assignmentTab")
+        .classList.remove("active");
+
+    document.getElementById("slaTab")
+        .classList.remove("active");
+
+    document.getElementById("practicalTab")
+        .classList.remove("active");
+
+
+    if (type === "Assignment") {
+
+        document.getElementById("assignmentTab")
+            .classList.add("active");
+
+    }
+
+
+    else if (type === "SLA") {
+
+        document.getElementById("slaTab")
+            .classList.add("active");
+
+    }
+
+
+    else {
+
+        document.getElementById("practicalTab")
+            .classList.add("active");
+
+    }
+
+
+    displaySubmissionWork(type);
+
+}
+
+
+
+/* ===== GET STUDENT NAME ===== */
+
+function getCurrentStudentName() {
+
+    if (
+        loggedInUser &&
+        loggedInUser.name
+    ) {
+
+        return loggedInUser.name;
+
+    }
+
+    return "Student";
+
+}
+
+
+
+/* ===== GET SAVED SUBMISSIONS ===== */
+
+function getSubmissions() {
+
+    return JSON.parse(
+        localStorage.getItem(
+            "eduMateSubmissions"
+        )
+    ) || [];
+
+}
+
+
+
+/* ===== SAVE SUBMISSIONS ===== */
+
+function saveSubmissions(data) {
+
+    localStorage.setItem(
+        "eduMateSubmissions",
+        JSON.stringify(data)
+    );
+
+}
+
+
+
+/* ===== GET TEACHER WORK ===== */
+
+function getWorkList(type) {
+
+
+    if (type === "Assignment") {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "eduMateAssignments"
+            )
+        ) || [];
+
+    }
+
+
+    if (type === "SLA") {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "eduMateSLA"
+            )
+        ) || [];
+
+    }
+
+
+    if (type === "Practical") {
+
+        return JSON.parse(
+            localStorage.getItem(
+                "eduMatePracticals"
+            )
+        ) || [];
+
+    }
+
+
+    return [];
+
+}
+
+
+
+/* ===== DISPLAY ASSIGNMENT / SLA / PRACTICAL ===== */
+
+function displaySubmissionWork(type) {
+
+
+    const list =
+        document.getElementById(
+            "submissionList"
+        );
+
+
+    const works =
+        getWorkList(type);
+
+
+    const submissionsData =
+        getSubmissions();
+
+
+    const studentName =
+        getCurrentStudentName();
+
+
+    list.innerHTML = "";
+
+
+
+    if (works.length === 0) {
+
+        list.innerHTML = `
+
+            <div class="no-work">
+
+                No ${type.toLowerCase()}
+                has been added by the teacher yet.
+
+            </div>
+
+        `;
+
+        return;
+
+    }
+
+
+
+    works.forEach(function(work, index) {
+
+
+        const workId =
+            work.id ||
+            work.assignmentId ||
+            work.slaId ||
+            (type + "_" + index);
+
+
+
+        const alreadySubmitted =
+            submissionsData.find(function(item) {
+
+                return (
+
+                    String(
+                        item.studentName ||
+                        item.student
+                    )
+                    ===
+                    String(studentName)
+
+                    &&
+
+                    String(item.workId)
+                    ===
+                    String(workId)
+
+                    &&
+
+                    String(item.type)
+                    ===
+                    String(type)
+
+                );
+
+            });
+
+
+
+        const title =
+            work.title ||
+            work.name ||
+            work.assignmentTitle ||
+            "Untitled " + type;
+
+
+
+        const subject =
+            work.subject ||
+            "Not specified";
+
+
+
+        const description =
+            work.description ||
+            work.instructions ||
+            "No description provided.";
+
+
+
+        const dueDate =
+            work.dueDate ||
+            work.submissionDate ||
+            work.date ||
+            "Not specified";
+
+
+
+        const item =
+            document.createElement("div");
+
+
+        item.className =
+            "submission-item";
+
+
+
+        item.innerHTML = `
+
+            <h3>
+                ${escapeHTML(title)}
+            </h3>
+
+
+            <p>
+                <b>Subject:</b>
+                ${escapeHTML(subject)}
+            </p>
+
+
+            <p>
+                <b>Description:</b>
+                ${escapeHTML(description)}
+            </p>
+
+
+            <p>
+                <b>Due Date:</b>
+                ${escapeHTML(dueDate)}
+            </p>
+
+
+            ${
+                alreadySubmitted
+
+                ?
+
+                `
+
+                <span class="submitted-badge">
+
+                    ✅ Submitted
+
+                </span>
+
+
+                <p>
+
+                    <b>File:</b>
+
+                    ${escapeHTML(
+                        alreadySubmitted.fileName
+                        ||
+                        "File submitted"
+                    )}
+
+                </p>
+
+
+                <p>
+
+                    <b>Status:</b>
+
+                    ${escapeHTML(
+                        alreadySubmitted.status
+                        ||
+                        "Submitted"
+                    )}
+
+                </p>
+
+                `
+
+                :
+
+                `
+
+                <input
+                    type="file"
+                    id="file_${index}"
+                    accept=".pdf,.doc,.docx,.ppt,.pptx,.txt,.jpg,.jpeg,.png,.zip"
+                >
+
+
+                <button
+                    class="submit-work-btn"
+                    onclick="
+                        submitWork(
+                            '${escapeJS(workId)}',
+                            '${escapeJS(type)}',
+                            ${index}
+                        )
+                    "
+                >
+
+                    📤 Submit ${type}
+
+                </button>
+
+                `
+            }
+
+        `;
+
+
+        list.appendChild(item);
+
+    });
+
+}
+
+
+
+/* ===== SUBMIT WORK ===== */
+
+function submitWork(
+    workId,
+    type,
+    index
+) {
+
+
+    const fileInput =
+        document.getElementById(
+            "file_" + index
+        );
+
+
+
+    if (
+        !fileInput ||
+        !fileInput.files.length
+    ) {
+
+        alert(
+            "Please choose your file first."
+        );
+
+        return;
+
+    }
+
+
+
+    const file =
+        fileInput.files[0];
+
+
+
+    const works =
+        getWorkList(type);
+
+
+
+    const work =
+        works.find(function(item, i) {
+
+
+            const id =
+                item.id ||
+                item.assignmentId ||
+                item.slaId ||
+                (type + "_" + i);
+
+
+            return String(id)
+                ===
+                String(workId);
+
+        });
+
+
+
+    const reader =
+        new FileReader();
+
+
+
+    reader.onload =
+        function(event) {
+
+
+            const submissionsData =
+                getSubmissions();
+
+
+
+            const studentName =
+                getCurrentStudentName();
+
+
+
+            const existingIndex =
+                submissionsData.findIndex(
+                    function(item) {
+
+                        return (
+
+                            String(
+                                item.studentName ||
+                                item.student
+                            )
+                            ===
+                            String(studentName)
+
+                            &&
+
+                            String(item.workId)
+                            ===
+                            String(workId)
+
+                            &&
+
+                            String(item.type)
+                            ===
+                            String(type)
+
+                        );
+
+                    }
+                );
+
+
+
+            const submission = {
+
+
+                id: Date.now(),
+
+
+                workId: workId,
+
+
+                studentName:
+                    studentName,
+
+
+                type: type,
+
+
+                title: work
+
+                    ?
+
+                    (
+                        work.title ||
+                        work.name ||
+                        work.assignmentTitle ||
+                        type
+                    )
+
+                    :
+
+                    type,
+
+
+                subject: work
+
+                    ?
+
+                    (
+                        work.subject ||
+                        "Not specified"
+                    )
+
+                    :
+
+                    "Not specified",
+
+
+                submittedDate:
+                    new Date()
+                        .toLocaleString(),
+
+
+                status:
+                    "Submitted",
+
+
+                fileName:
+                    file.name,
+
+
+                fileType:
+                    file.type,
+
+
+                fileSize:
+                    file.size,
+
+
+                fileData:
+                    event.target.result,
+
+
+                answer:
+                    "File submitted: "
+                    + file.name,
+
+
+                marks:
+                    "",
+
+
+                feedback:
+                    ""
+
+            };
+
+
+
+            if (
+                existingIndex !== -1
+            ) {
+
+                submissionsData[
+                    existingIndex
+                ] = submission;
+
+            }
+
+            else {
+
+                submissionsData.push(
+                    submission
+                );
+
+            }
+
+
+
+            try {
+
+
+                saveSubmissions(
+                    submissionsData
+                );
+
+
+                alert(
+                    type +
+                    " submitted successfully! ✅"
+                );
+
+
+                displaySubmissionWork(
+                    type
+                );
+
+
+            }
+
+            catch (error) {
+
+
+                alert(
+                    "File is too large for browser storage. " +
+                    "Please choose a smaller file."
+                );
+
+
+            }
+
+        };
+
+
+
+    reader.readAsDataURL(file);
+
+}
+
+
+
+/* ===== ESCAPE HTML ===== */
+
+function escapeHTML(value) {
+
+    return String(value ?? "")
+
+        .replace(
+            /&/g,
+            "&amp;"
+        )
+
+        .replace(
+            /</g,
+            "&lt;"
+        )
+
+        .replace(
+            />/g,
+            "&gt;"
+        )
+
+        .replace(
+            /"/g,
+            "&quot;"
+        )
+
+        .replace(
+            /'/g,
+            "&#039;"
+        );
+
+}
+
+
+
+/* ===== ESCAPE JAVASCRIPT ===== */
+
+function escapeJS(value) {
+
+    return String(value ?? "")
+
+        .replace(
+            /\\/g,
+            "\\\\"
+        )
+
+        .replace(
+            /'/g,
+            "\\'"
+        );
+
+}
+
+
+
+/* ================= LOGOUT ================= */
+
+function logout() {
+
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+    window.location.href =
+        "index.html";
+
+}
+
+</script>
+
+
+</body>
+
+</html>
