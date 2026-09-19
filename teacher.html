@@ -1,0 +1,2137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EduMate - Teacher Dashboard</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f6f9;
+        }
+
+        /* ===== SIDEBAR ===== */
+
+        .sidebar {
+            width: 230px;
+            height: 100vh;
+            background-color: #263238;
+            color: white;
+            position: fixed;
+            left: 0;
+            top: 0;
+            padding: 20px;
+        }
+
+        .sidebar h2 {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .sidebar button {
+            width: 100%;
+            padding: 12px;
+            margin-bottom: 10px;
+            border: none;
+            background-color: transparent;
+            color: white;
+            text-align: left;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 15px;
+        }
+
+        .sidebar button:hover {
+            background-color: #455a64;
+        }
+
+        .logout {
+            margin-top: 20px;
+            background-color: #d32f2f !important;
+            text-align: center !important;
+        }
+
+        /* ===== MAIN CONTENT ===== */
+
+        .main {
+            margin-left: 230px;
+            padding: 25px;
+        }
+
+        .header {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .header h1 {
+            color: #263238;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #666;
+        }
+
+        /* ===== SECTIONS ===== */
+
+        .section {
+            display: none;
+        }
+
+        .section.active {
+            display: block;
+        }
+
+        /* ===== DASHBOARD CARDS ===== */
+
+        .cards {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .card {
+            background-color: white;
+            padding: 25px;
+            border-radius: 8px;
+            width: 220px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .card h3 {
+            margin-bottom: 10px;
+            color: #263238;
+        }
+
+        .card p {
+            font-size: 25px;
+            color: #1976d2;
+        }
+
+        /* ===== FORM ===== */
+
+        .form-box {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .form-box h2 {
+            margin-bottom: 15px;
+            color: #263238;
+        }
+
+        .form-box label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .form-box input,
+        .form-box textarea,
+        .form-box select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .form-box textarea {
+            height: 80px;
+            resize: vertical;
+        }
+
+        .form-box button {
+            margin-top: 15px;
+            padding: 10px 18px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1976d2;
+            color: white;
+            cursor: pointer;
+        }
+
+        .form-box button:hover {
+            background-color: #1565c0;
+        }
+
+        .cancel-btn {
+            background-color: #757575 !important;
+            margin-left: 5px;
+        }
+
+        /* ===== LIST ===== */
+
+        .item {
+            background-color: white;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        .item h3 {
+            color: #263238;
+            margin-bottom: 8px;
+        }
+
+        .item p {
+            margin: 5px 0;
+            color: #555;
+        }
+
+        .edit-btn,
+        .delete-btn {
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+            margin-top: 10px;
+            margin-right: 5px;
+        }
+
+        .edit-btn {
+            background-color: #f9a825;
+        }
+
+        .delete-btn {
+            background-color: #d32f2f;
+        }
+
+        .empty {
+            background-color: white;
+            padding: 20px;
+            border-radius: 8px;
+            color: #777;
+        }
+
+
+        /* ===== STUDENT SUBMISSIONS ===== */
+
+        .submission-stats {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+        }
+
+        .submission-stat {
+            background-color: white;
+            padding: 18px;
+            border-radius: 8px;
+            min-width: 160px;
+            flex: 1;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08);
+        }
+
+        .submission-stat h3 {
+            font-size: 15px;
+            color: #555;
+            margin-bottom: 8px;
+        }
+
+        .submission-stat p {
+            font-size: 26px;
+            color: #1976d2;
+            font-weight: bold;
+        }
+
+        .submission-filters {
+            background-color: white;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .submission-filters select,
+        .submission-filters input {
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            font-size: 14px;
+        }
+
+        .submission-table-box {
+            background-color: white;
+            padding: 18px;
+            border-radius: 8px;
+            overflow-x: auto;
+        }
+
+        .submission-table {
+            width: 100%;
+            border-collapse: collapse;
+            min-width: 750px;
+        }
+
+        .submission-table th,
+        .submission-table td {
+            padding: 12px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .submission-table th {
+            background-color: #f4f6f9;
+            color: #263238;
+        }
+
+        .status {
+            display: inline-block;
+            padding: 5px 9px;
+            border-radius: 15px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .status-submitted {
+            background-color: #fff3cd;
+            color: #856404;
+        }
+
+        .status-checked {
+            background-color: #d4edda;
+            color: #155724;
+        }
+
+        .status-pending {
+            background-color: #eeeeee;
+            color: #555;
+        }
+
+        .view-btn {
+            padding: 7px 11px;
+            border: none;
+            border-radius: 5px;
+            background-color: #1976d2;
+            color: white;
+            cursor: pointer;
+        }
+
+        .view-btn:hover {
+            background-color: #1565c0;
+        }
+
+        .no-submissions {
+            text-align: center;
+            padding: 30px;
+            color: #777;
+        }
+
+        /* ===== SUBMISSION MODAL ===== */
+
+        .submission-modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.5);
+            padding: 30px;
+            overflow-y: auto;
+        }
+
+        .submission-modal-content {
+            background-color: white;
+            max-width: 650px;
+            margin: 20px auto;
+            padding: 25px;
+            border-radius: 8px;
+        }
+
+        .submission-modal-content h2 {
+            margin-bottom: 15px;
+            color: #263238;
+        }
+
+        .submission-detail {
+            margin-bottom: 12px;
+        }
+
+        .submission-answer {
+            background-color: #f4f6f9;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 8px 0 15px;
+            white-space: pre-wrap;
+            min-height: 80px;
+        }
+
+        .submission-modal-content label {
+            display: block;
+            margin-top: 10px;
+            margin-bottom: 5px;
+        }
+
+        .submission-modal-content input,
+        .submission-modal-content textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+        }
+
+        .submission-modal-content textarea {
+            min-height: 80px;
+            resize: vertical;
+        }
+
+        .modal-buttons {
+            margin-top: 15px;
+        }
+
+        .save-review-btn,
+        .close-modal-btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            cursor: pointer;
+        }
+
+        .save-review-btn {
+            background-color: #1976d2;
+        }
+
+        .close-modal-btn {
+            background-color: #757575;
+            margin-left: 5px;
+        }
+
+        /* ===== MOBILE ===== */
+
+        @media (max-width: 700px) {
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .sidebar h2 {
+                margin-bottom: 15px;
+            }
+
+            .main {
+                margin-left: 0;
+                padding: 15px;
+            }
+
+            .cards {
+                flex-direction: column;
+            }
+
+            .card {
+                width: 100%;
+            }
+        }
+
+    </style>
+
+</head>
+
+<body>
+
+    <!-- ===== SIDEBAR ===== -->
+
+    <div class="sidebar">
+
+        <h2>EduMate</h2>
+
+        <button onclick="showSection('dashboard')">
+            🏠 Dashboard
+        </button>
+
+        <button onclick="showSection('assignments')">
+            📚 Manage Assignments
+        </button>
+
+        <button onclick="showSection('sla')">
+            📋 Manage SLA
+        </button>
+
+        <button onclick="showSection('practicals')">
+            🧪 Manage Practicals
+        </button>
+
+        <button onclick="showSection('submissions')">
+            👨‍🎓 Student Submissions
+        </button>
+
+        <button onclick="showSection('performance')">
+            📊 Student Performance
+        </button>
+
+        <button class="logout" onclick="logout()">
+            🚪 Logout
+        </button>
+
+    </div>
+
+
+    <!-- ===== MAIN ===== -->
+
+    <div class="main">
+
+        <!-- HEADER -->
+
+        <div class="header">
+
+            <h1>Teacher Dashboard 👩‍🏫</h1>
+
+            <p>
+                Welcome to EduMate Teacher Panel
+            </p>
+
+        </div>
+
+
+        <!-- ================= DASHBOARD ================= -->
+
+        <div id="dashboard" class="section active">
+
+            <h2>Dashboard</h2>
+
+            <br>
+
+            <div class="cards">
+
+                <div class="card">
+
+                    <h3>Assignments</h3>
+
+                    <p id="assignmentCount">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>SLA Activities</h3>
+
+                    <p id="slaCount">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>Practicals</h3>
+
+                    <p id="practicalCount">
+                        0
+                    </p>
+
+                </div>
+
+
+                <div class="card">
+
+                    <h3>Students</h3>
+
+                    <p>
+                        --
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= MANAGE ASSIGNMENTS ================= -->
+
+        <div id="assignments" class="section">
+
+            <h2>📚 Manage Assignments</h2>
+
+            <br>
+
+
+            <!-- ADD ASSIGNMENT FORM -->
+
+            <div class="form-box">
+
+                <h2 id="assignmentFormTitle">
+                    Add New Assignment
+                </h2>
+
+                <input type="hidden" id="assignmentEditIndex">
+
+
+                <label>
+                    Assignment Title
+                </label>
+
+                <input
+                    type="text"
+                    id="assignmentTitle"
+                    placeholder="Enter assignment title"
+                >
+
+
+                <label>
+                    Subject
+                </label>
+
+                <select id="assignmentSubject">
+
+                    <option value="">
+                        Select Subject
+                    </option>
+
+                    <option value="DBMS">
+                        DBMS
+                    </option>
+
+                    <option value="DLD">
+                        DLD
+                    </option>
+
+                    <option value="OOP">
+                        OOP
+                    </option>
+
+                    <option value="Computer Networks">
+                        Computer Networks
+                    </option>
+
+                    <option value="JavaScript">
+                        JavaScript
+                    </option>
+
+                    <option value="C Programming">
+                        C Programming
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Description
+                </label>
+
+                <textarea
+                    id="assignmentDescription"
+                    placeholder="Enter assignment instructions"
+                ></textarea>
+
+
+                <label>
+                    Due Date
+                </label>
+
+                <input
+                    type="date"
+                    id="assignmentDueDate"
+                >
+
+
+                <button onclick="saveAssignment()">
+                    Save Assignment
+                </button>
+
+                <button
+                    id="assignmentCancel"
+                    class="cancel-btn"
+                    onclick="cancelAssignmentEdit()"
+                    style="display:none;"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <!-- ASSIGNMENT LIST -->
+
+            <h2>All Assignments</h2>
+
+            <br>
+
+            <div id="assignmentList"></div>
+
+        </div>
+
+
+        <!-- ================= MANAGE SLA ================= -->
+
+        <div id="sla" class="section">
+
+            <h2>📋 Manage SLA</h2>
+
+            <br>
+
+
+            <!-- ADD SLA FORM -->
+
+            <div class="form-box">
+
+                <h2 id="slaFormTitle">
+                    Add New SLA
+                </h2>
+
+                <input type="hidden" id="slaEditIndex">
+
+
+                <label>
+                    SLA Activity Title
+                </label>
+
+                <input
+                    type="text"
+                    id="slaTitle"
+                    placeholder="Enter SLA activity title"
+                >
+
+
+                <label>
+                    Subject
+                </label>
+
+                <select id="slaSubject">
+
+                    <option value="">
+                        Select Subject
+                    </option>
+
+                    <option value="DBMS">
+                        DBMS
+                    </option>
+
+                    <option value="DLD">
+                        DLD
+                    </option>
+
+                    <option value="OOP">
+                        OOP
+                    </option>
+
+                    <option value="Computer Networks">
+                        Computer Networks
+                    </option>
+
+                    <option value="JavaScript">
+                        JavaScript
+                    </option>
+
+                    <option value="C Programming">
+                        C Programming
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Description
+                </label>
+
+                <textarea
+                    id="slaDescription"
+                    placeholder="Enter SLA activity details"
+                ></textarea>
+
+
+                <label>
+                    Submission Date
+                </label>
+
+                <input
+                    type="date"
+                    id="slaDate"
+                >
+
+
+                <button onclick="saveSLA()">
+                    Save SLA
+                </button>
+
+                <button
+                    id="slaCancel"
+                    class="cancel-btn"
+                    onclick="cancelSLAEdit()"
+                    style="display:none;"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <!-- SLA LIST -->
+
+            <h2>All SLA Activities</h2>
+
+            <br>
+
+            <div id="slaList"></div>
+
+        </div>
+
+
+        <!-- ================= MANAGE PRACTICALS ================= -->
+
+        <div id="practicals" class="section">
+
+            <h2>🧪 Manage Practicals</h2>
+
+            <br>
+
+
+            <!-- ADD PRACTICAL FORM -->
+
+            <div class="form-box">
+
+                <h2 id="practicalFormTitle">
+                    Add New Practical
+                </h2>
+
+                <input type="hidden" id="practicalEditIndex">
+
+
+                <label>
+                    Practical Title / Number
+                </label>
+
+                <input
+                    type="text"
+                    id="practicalTitle"
+                    placeholder="e.g. Practical 1: SQL Queries"
+                >
+
+
+                <label>
+                    Subject
+                </label>
+
+                <select id="practicalSubject">
+
+                    <option value="">
+                        Select Subject
+                    </option>
+
+                    <option value="DBMS">
+                        DBMS
+                    </option>
+
+                    <option value="DLD">
+                        DLD
+                    </option>
+
+                    <option value="OOP">
+                        OOP
+                    </option>
+
+                    <option value="Computer Networks">
+                        Computer Networks
+                    </option>
+
+                    <option value="JavaScript">
+                        JavaScript
+                    </option>
+
+                    <option value="C Programming">
+                        C Programming
+                    </option>
+
+                </select>
+
+
+                <label>
+                    Description / Instructions
+                </label>
+
+                <textarea
+                    id="practicalDescription"
+                    placeholder="Enter practical aim, steps, or code requirements"
+                ></textarea>
+
+
+                <label>
+                    Submission Date
+                </label>
+
+                <input
+                    type="date"
+                    id="practicalDate"
+                >
+
+
+                <button onclick="savePractical()">
+                    Save Practical
+                </button>
+
+                <button
+                    id="practicalCancel"
+                    class="cancel-btn"
+                    onclick="cancelPracticalEdit()"
+                    style="display:none;"
+                >
+                    Cancel
+                </button>
+
+            </div>
+
+
+            <!-- PRACTICAL LIST -->
+
+            <h2>All Practicals</h2>
+
+            <br>
+
+            <div id="practicalList"></div>
+
+        </div>
+
+
+        <!-- ================= SUBMISSIONS ================= -->
+
+        <div id="submissions" class="section">
+
+            <h2>👨‍🎓 Student Submissions</h2>
+
+            <br>
+
+            <!-- SUBMISSION SUMMARY -->
+
+            <div class="submission-stats">
+
+                <div class="submission-stat">
+                    <h3>Total Submissions</h3>
+                    <p id="totalSubmissionCount">0</p>
+                </div>
+
+                <div class="submission-stat">
+                    <h3>Submitted</h3>
+                    <p id="submittedSubmissionCount">0</p>
+                </div>
+
+                <div class="submission-stat">
+                    <h3>Checked</h3>
+                    <p id="checkedSubmissionCount">0</p>
+                </div>
+
+                <div class="submission-stat">
+                    <h3>Pending</h3>
+                    <p id="pendingSubmissionCount">0</p>
+                </div>
+
+            </div>
+
+
+            <!-- FILTERS -->
+
+            <div class="submission-filters">
+
+                <select id="submissionTypeFilter"
+                        onchange="displaySubmissions()">
+
+                    <option value="All">All Types</option>
+                    <option value="Assignment">Assignment</option>
+                    <option value="SLA">SLA</option>
+                    <option value="Practical">Practical</option>
+
+                </select>
+
+
+                <select id="submissionSubjectFilter"
+                        onchange="displaySubmissions()">
+
+                    <option value="All">All Subjects</option>
+                    <option value="DBMS">DBMS</option>
+                    <option value="DLD">DLD</option>
+                    <option value="OOP">OOP</option>
+                    <option value="Computer Networks">Computer Networks</option>
+                    <option value="JavaScript">JavaScript</option>
+                    <option value="C Programming">C Programming</option>
+
+                </select>
+
+
+                <input
+                    type="text"
+                    id="submissionSearch"
+                    placeholder="Search student or work..."
+                    oninput="displaySubmissions()"
+                >
+
+            </div>
+
+
+            <!-- SUBMISSION TABLE -->
+
+            <div class="submission-table-box">
+
+                <table class="submission-table">
+
+                    <thead>
+
+                        <tr>
+                            <th>Student</th>
+                            <th>Type</th>
+                            <th>Work</th>
+                            <th>Subject</th>
+                            <th>Submitted On</th>
+                            <th>Status</th>
+                            <th>Action</th>
+                        </tr>
+
+                    </thead>
+
+                    <tbody id="submissionTableBody">
+                    </tbody>
+
+                </table>
+
+                <div id="noSubmissions"
+                     class="no-submissions"
+                     style="display:none;">
+
+                    No student submissions found.
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= SUBMISSION VIEW MODAL ================= -->
+
+        <div id="submissionModal" class="submission-modal">
+
+            <div class="submission-modal-content">
+
+                <h2>📄 Submission Details</h2>
+
+                <div class="submission-detail">
+                    <strong>Student:</strong>
+                    <span id="viewStudent"></span>
+                </div>
+
+                <div class="submission-detail">
+                    <strong>Type:</strong>
+                    <span id="viewType"></span>
+                </div>
+
+                <div class="submission-detail">
+                    <strong>Work:</strong>
+                    <span id="viewTitle"></span>
+                </div>
+
+                <div class="submission-detail">
+                    <strong>Subject:</strong>
+                    <span id="viewSubject"></span>
+                </div>
+
+                <div class="submission-detail">
+                    <strong>Submitted On:</strong>
+                    <span id="viewDate"></span>
+                </div>
+
+                <strong>Student Answer / File:</strong>
+
+                <div id="viewAnswer" class="submission-answer">
+                </div>
+
+
+                <label>
+                    Marks
+                </label>
+
+                <input
+                    type="number"
+                    id="reviewMarks"
+                    min="0"
+                    placeholder="Enter marks"
+                >
+
+
+                <label>
+                    Feedback
+                </label>
+
+                <textarea
+                    id="reviewFeedback"
+                    placeholder="Write feedback for the student"
+                ></textarea>
+
+
+                <div class="modal-buttons">
+
+                    <button
+                        class="save-review-btn"
+                        onclick="saveReview()"
+                    >
+                        ✅ Save Review
+                    </button>
+
+                    <button
+                        class="close-modal-btn"
+                        onclick="closeSubmissionModal()"
+                    >
+                        Close
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- ================= PERFORMANCE ================= -->
+
+        <div id="performance" class="section">
+
+            <h2>📊 Student Performance</h2>
+
+            <br>
+
+            <div class="empty">
+
+                Student performance reports will be
+                available here in the future.
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- ================= JAVASCRIPT ================= -->
+
+    <script>
+
+
+        /* =========================================
+           SECTION NAVIGATION
+        ========================================= */
+
+        function showSection(sectionName) {
+
+            let sections =
+                document.querySelectorAll(".section");
+
+            sections.forEach(function(section) {
+
+                section.classList.remove("active");
+
+            });
+
+
+            document
+                .getElementById(sectionName)
+                .classList.add("active");
+
+        }
+
+
+
+        /* =========================================
+           ASSIGNMENT DATA
+        ========================================= */
+
+        let assignments =
+            JSON.parse(
+                localStorage.getItem("eduMateAssignments")
+            ) || [];
+
+
+        /* SAVE ASSIGNMENT */
+
+        function saveAssignment() {
+
+            let title =
+                document
+                .getElementById("assignmentTitle")
+                .value
+                .trim();
+
+
+            let subject =
+                document
+                .getElementById("assignmentSubject")
+                .value;
+
+
+            let description =
+                document
+                .getElementById("assignmentDescription")
+                .value
+                .trim();
+
+
+            let dueDate =
+                document
+                .getElementById("assignmentDueDate")
+                .value;
+
+
+            let editIndex =
+                document
+                .getElementById("assignmentEditIndex")
+                .value;
+
+
+            if (
+                title === "" ||
+                subject === "" ||
+                description === "" ||
+                dueDate === ""
+            ) {
+
+                alert("Please fill all assignment fields.");
+
+                return;
+
+            }
+
+
+            let assignment = {
+
+                title: title,
+
+                subject: subject,
+
+                description: description,
+
+                dueDate: dueDate
+
+            };
+
+
+            if (editIndex !== "") {
+
+                assignments[editIndex] = assignment;
+
+                alert("Assignment updated successfully!");
+
+            } else {
+
+                assignments.push(assignment);
+
+                alert("Assignment added successfully!");
+
+            }
+
+
+            localStorage.setItem(
+                "eduMateAssignments",
+                JSON.stringify(assignments)
+            );
+
+
+            clearAssignmentForm();
+
+            displayAssignments();
+
+            updateCounts();
+
+        }
+
+
+        /* DISPLAY ASSIGNMENTS */
+
+        function displayAssignments() {
+
+            let list =
+                document.getElementById("assignmentList");
+
+
+            list.innerHTML = "";
+
+
+            if (assignments.length === 0) {
+
+                list.innerHTML =
+                    '<div class="empty">No assignments added yet.</div>';
+
+                return;
+
+            }
+
+
+            assignments.forEach(function(assignment, index) {
+
+                list.innerHTML += `
+
+                    <div class="item">
+
+                        <h3>
+                            ${escapeHTML(assignment.title)}
+                        </h3>
+
+                        <p>
+                            <strong>Subject:</strong>
+                            ${escapeHTML(assignment.subject)}
+                        </p>
+
+                        <p>
+                            <strong>Description:</strong>
+                            ${escapeHTML(assignment.description)}
+                        </p>
+
+                        <p>
+                            <strong>Due Date:</strong>
+                            ${escapeHTML(assignment.dueDate)}
+                        </p>
+
+                        <button
+                            class="edit-btn"
+                            onclick="editAssignment(${index})"
+                        >
+                            ✏️ Edit
+                        </button>
+
+                        <button
+                            class="delete-btn"
+                            onclick="deleteAssignment(${index})"
+                        >
+                            🗑️ Delete
+                        </button>
+
+                    </div>
+
+                `;
+
+            });
+
+        }
+
+
+        /* EDIT ASSIGNMENT */
+
+        function editAssignment(index) {
+
+            let assignment = assignments[index];
+
+
+            document.getElementById("assignmentTitle").value = assignment.title;
+
+            document.getElementById("assignmentSubject").value = assignment.subject;
+
+            document.getElementById("assignmentDescription").value = assignment.description;
+
+            document.getElementById("assignmentDueDate").value = assignment.dueDate;
+
+            document.getElementById("assignmentEditIndex").value = index;
+
+
+            document.getElementById("assignmentFormTitle").innerText = "Edit Assignment";
+
+            document.getElementById("assignmentCancel").style.display = "inline-block";
+
+        }
+
+
+        /* DELETE ASSIGNMENT */
+
+        function deleteAssignment(index) {
+
+            let confirmDelete = confirm("Are you sure you want to delete this assignment?");
+
+
+            if (confirmDelete) {
+
+                assignments.splice(index, 1);
+
+                localStorage.setItem("eduMateAssignments", JSON.stringify(assignments));
+
+                displayAssignments();
+
+                updateCounts();
+
+            }
+
+        }
+
+
+        /* CLEAR ASSIGNMENT FORM */
+
+        function clearAssignmentForm() {
+
+            document.getElementById("assignmentTitle").value = "";
+
+            document.getElementById("assignmentSubject").value = "";
+
+            document.getElementById("assignmentDescription").value = "";
+
+            document.getElementById("assignmentDueDate").value = "";
+
+            document.getElementById("assignmentEditIndex").value = "";
+
+
+            document.getElementById("assignmentFormTitle").innerText = "Add New Assignment";
+
+            document.getElementById("assignmentCancel").style.display = "none";
+
+        }
+
+
+        function cancelAssignmentEdit() {
+
+            clearAssignmentForm();
+
+        }
+
+
+
+        /* =========================================
+           SLA DATA
+        ========================================= */
+
+        let slaList =
+            JSON.parse(
+                localStorage.getItem("eduMateSLA")
+            ) || [];
+
+
+        /* SAVE SLA */
+
+        function saveSLA() {
+
+            let title = document.getElementById("slaTitle").value.trim();
+
+            let subject = document.getElementById("slaSubject").value;
+
+            let description = document.getElementById("slaDescription").value.trim();
+
+            let date = document.getElementById("slaDate").value;
+
+            let editIndex = document.getElementById("slaEditIndex").value;
+
+
+            if (title === "" || subject === "" || description === "" || date === "") {
+
+                alert("Please fill all SLA fields.");
+
+                return;
+
+            }
+
+
+            let sla = {
+
+                title: title,
+
+                subject: subject,
+
+                description: description,
+
+                date: date
+
+            };
+
+
+            if (editIndex !== "") {
+
+                slaList[editIndex] = sla;
+
+                alert("SLA updated successfully!");
+
+            } else {
+
+                slaList.push(sla);
+
+                alert("SLA added successfully!");
+
+            }
+
+
+            localStorage.setItem("eduMateSLA", JSON.stringify(slaList));
+
+
+            clearSLAForm();
+
+            displaySLA();
+
+            updateCounts();
+
+        }
+
+
+        /* DISPLAY SLA */
+
+        function displaySLA() {
+
+            let list = document.getElementById("slaList");
+
+            list.innerHTML = "";
+
+
+            if (slaList.length === 0) {
+
+                list.innerHTML = '<div class="empty">No SLA activities added yet.</div>';
+
+                return;
+
+            }
+
+
+            slaList.forEach(function(sla, index) {
+
+                list.innerHTML += `
+
+                    <div class="item">
+
+                        <h3>${escapeHTML(sla.title)}</h3>
+
+                        <p><strong>Subject:</strong> ${escapeHTML(sla.subject)}</p>
+
+                        <p><strong>Description:</strong> ${escapeHTML(sla.description)}</p>
+
+                        <p><strong>Submission Date:</strong> ${escapeHTML(sla.date)}</p>
+
+                        <button class="edit-btn" onclick="editSLA(${index})">✏️ Edit</button>
+
+                        <button class="delete-btn" onclick="deleteSLA(${index})">🗑️ Delete</button>
+
+                    </div>
+
+                `;
+
+            });
+
+        }
+
+
+        /* EDIT SLA */
+
+        function editSLA(index) {
+
+            let sla = slaList[index];
+
+
+            document.getElementById("slaTitle").value = sla.title;
+
+            document.getElementById("slaSubject").value = sla.subject;
+
+            document.getElementById("slaDescription").value = sla.description;
+
+            document.getElementById("slaDate").value = sla.date;
+
+            document.getElementById("slaEditIndex").value = index;
+
+
+            document.getElementById("slaFormTitle").innerText = "Edit SLA";
+
+            document.getElementById("slaCancel").style.display = "inline-block";
+
+        }
+
+
+        /* DELETE SLA */
+
+        function deleteSLA(index) {
+
+            let confirmDelete = confirm("Are you sure you want to delete this SLA?");
+
+
+            if (confirmDelete) {
+
+                slaList.splice(index, 1);
+
+                localStorage.setItem("eduMateSLA", JSON.stringify(slaList));
+
+                displaySLA();
+
+                updateCounts();
+
+            }
+
+        }
+
+
+        /* CLEAR SLA FORM */
+
+        function clearSLAForm() {
+
+            document.getElementById("slaTitle").value = "";
+
+            document.getElementById("slaSubject").value = "";
+
+            document.getElementById("slaDescription").value = "";
+
+            document.getElementById("slaDate").value = "";
+
+            document.getElementById("slaEditIndex").value = "";
+
+
+            document.getElementById("slaFormTitle").innerText = "Add New SLA";
+
+            document.getElementById("slaCancel").style.display = "none";
+
+        }
+
+
+        function cancelSLAEdit() {
+
+            clearSLAForm();
+
+        }
+
+
+
+        /* =========================================
+           PRACTICAL DATA
+        ========================================= */
+
+        let practicalList =
+            JSON.parse(
+                localStorage.getItem("eduMatePracticals")
+            ) || [];
+
+
+        /* SAVE PRACTICAL */
+
+        function savePractical() {
+
+            let title = document.getElementById("practicalTitle").value.trim();
+
+            let subject = document.getElementById("practicalSubject").value;
+
+            let description = document.getElementById("practicalDescription").value.trim();
+
+            let date = document.getElementById("practicalDate").value;
+
+            let editIndex = document.getElementById("practicalEditIndex").value;
+
+
+            if (title === "" || subject === "" || description === "" || date === "") {
+
+                alert("Please fill all Practical fields.");
+
+                return;
+
+            }
+
+
+            let practical = {
+
+                title: title,
+
+                subject: subject,
+
+                description: description,
+
+                date: date
+
+            };
+
+
+            if (editIndex !== "") {
+
+                practicalList[editIndex] = practical;
+
+                alert("Practical updated successfully!");
+
+            } else {
+
+                practicalList.push(practical);
+
+                alert("Practical added successfully!");
+
+            }
+
+
+            localStorage.setItem("eduMatePracticals", JSON.stringify(practicalList));
+
+
+            clearPracticalForm();
+
+            displayPracticals();
+
+            updateCounts();
+
+        }
+
+
+        /* DISPLAY PRACTICALS */
+
+        function displayPracticals() {
+
+            let list = document.getElementById("practicalList");
+
+            list.innerHTML = "";
+
+
+            if (practicalList.length === 0) {
+
+                list.innerHTML = '<div class="empty">No practicals added yet.</div>';
+
+                return;
+
+            }
+
+
+            practicalList.forEach(function(practical, index) {
+
+                list.innerHTML += `
+
+                    <div class="item">
+
+                        <h3>${escapeHTML(practical.title)}</h3>
+
+                        <p><strong>Subject:</strong> ${escapeHTML(practical.subject)}</p>
+
+                        <p><strong>Description:</strong> ${escapeHTML(practical.description)}</p>
+
+                        <p><strong>Submission Date:</strong> ${escapeHTML(practical.date)}</p>
+
+                        <button class="edit-btn" onclick="editPractical(${index})">✏️ Edit</button>
+
+                        <button class="delete-btn" onclick="deletePractical(${index})">🗑️ Delete</button>
+
+                    </div>
+
+                `;
+
+            });
+
+        }
+
+
+        /* EDIT PRACTICAL */
+
+        function editPractical(index) {
+
+            let practical = practicalList[index];
+
+
+            document.getElementById("practicalTitle").value = practical.title;
+
+            document.getElementById("practicalSubject").value = practical.subject;
+
+            document.getElementById("practicalDescription").value = practical.description;
+
+            document.getElementById("practicalDate").value = practical.date;
+
+            document.getElementById("practicalEditIndex").value = index;
+
+
+            document.getElementById("practicalFormTitle").innerText = "Edit Practical";
+
+            document.getElementById("practicalCancel").style.display = "inline-block";
+
+        }
+
+
+        /* DELETE PRACTICAL */
+
+        function deletePractical(index) {
+
+            let confirmDelete = confirm("Are you sure you want to delete this practical?");
+
+
+            if (confirmDelete) {
+
+                practicalList.splice(index, 1);
+
+                localStorage.setItem("eduMatePracticals", JSON.stringify(practicalList));
+
+                displayPracticals();
+
+                updateCounts();
+
+            }
+
+        }
+
+
+        /* CLEAR PRACTICAL FORM */
+
+        function clearPracticalForm() {
+
+            document.getElementById("practicalTitle").value = "";
+
+            document.getElementById("practicalSubject").value = "";
+
+            document.getElementById("practicalDescription").value = "";
+
+            document.getElementById("practicalDate").value = "";
+
+            document.getElementById("practicalEditIndex").value = "";
+
+
+            document.getElementById("practicalFormTitle").innerText = "Add New Practical";
+
+            document.getElementById("practicalCancel").style.display = "none";
+
+        }
+
+
+        function cancelPracticalEdit() {
+
+            clearPracticalForm();
+
+        }
+
+
+
+        /* =========================================
+           STUDENT SUBMISSIONS
+        ========================================= */
+
+        let submissions =
+            JSON.parse(
+                localStorage.getItem("eduMateSubmissions")
+            ) || [];
+
+        let currentSubmissionIndex = -1;
+
+
+        /* DISPLAY SUBMISSIONS */
+
+        function displaySubmissions() {
+
+            let tableBody = document.getElementById("submissionTableBody");
+
+            let noSubmissions = document.getElementById("noSubmissions");
+
+            let typeFilter = document.getElementById("submissionTypeFilter").value;
+
+            let subjectFilter = document.getElementById("submissionSubjectFilter").value;
+
+            let searchText = document.getElementById("submissionSearch").value.toLowerCase().trim();
+
+            tableBody.innerHTML = "";
+
+            let filtered = submissions.filter(function(submission) {
+
+                let type = submission.type || "Assignment";
+
+                let subject = submission.subject || "";
+
+                let student = submission.studentName || submission.student || "Unknown Student";
+
+                let title = submission.title || submission.work || submission.assignmentTitle || "Untitled";
+
+                let matchesType = typeFilter === "All" || type === typeFilter;
+
+                let matchesSubject = subjectFilter === "All" || subject === subjectFilter;
+
+                let matchesSearch = student.toLowerCase().includes(searchText) || title.toLowerCase().includes(searchText);
+
+                return matchesType && matchesSubject && matchesSearch;
+
+            });
+
+
+            if (filtered.length === 0) {
+
+                noSubmissions.style.display = "block";
+
+            } else {
+
+                noSubmissions.style.display = "none";
+
+            }
+
+
+            filtered.forEach(function(submission) {
+
+                let originalIndex = submissions.indexOf(submission);
+
+                let student = submission.studentName || submission.student || "Unknown Student";
+
+                let type = submission.type || "Assignment";
+
+                let title = submission.title || submission.work || submission.assignmentTitle || "Untitled";
+
+                let subject = submission.subject || "-";
+
+                let date = submission.submittedDate || submission.date || submission.submittedOn || "-";
+
+                let status = submission.status || "Submitted";
+
+                let statusClass = "status-submitted";
+
+                if (status.toLowerCase() === "checked") {
+
+                    statusClass = "status-checked";
+
+                }
+
+                if (status.toLowerCase() === "pending") {
+
+                    statusClass = "status-pending";
+
+                }
+
+
+                tableBody.innerHTML += `
+
+                    <tr>
+
+                        <td>${escapeHTML(student)}</td>
+
+                        <td>${escapeHTML(type)}</td>
+
+                        <td>${escapeHTML(title)}</td>
+
+                        <td>${escapeHTML(subject)}</td>
+
+                        <td>${escapeHTML(date)}</td>
+
+                        <td>
+                            <span class="status ${statusClass}">
+                                ${escapeHTML(status)}
+                            </span>
+                        </td>
+
+                        <td>
+
+                            <button
+                                class="view-btn"
+                                onclick="viewSubmission(${originalIndex})"
+                            >
+                                👁️ View
+                            </button>
+
+                        </td>
+
+                    </tr>
+
+                `;
+
+            });
+
+
+            updateSubmissionCounts();
+
+        }
+
+
+        /* VIEW SUBMISSION */
+
+        function viewSubmission(index) {
+
+            let submission = submissions[index];
+
+            currentSubmissionIndex = index;
+
+
+            document.getElementById("viewStudent").innerText = submission.studentName || submission.student || "Unknown Student";
+
+            document.getElementById("viewType").innerText = submission.type || "Assignment";
+
+            document.getElementById("viewTitle").innerText = submission.title || submission.work || submission.assignmentTitle || "Untitled";
+
+            document.getElementById("viewSubject").innerText = submission.subject || "-";
+
+            document.getElementById("viewDate").innerText = submission.submittedDate || submission.date || submission.submittedOn || "-";
+
+            document.getElementById("viewAnswer").innerText = submission.answer || submission.content || submission.response || "No answer was provided.";
+
+            document.getElementById("reviewMarks").value = submission.marks !== undefined ? submission.marks : "";
+
+            document.getElementById("reviewFeedback").value = submission.feedback || "";
+
+
+            document.getElementById("submissionModal").style.display = "block";
+
+        }
+
+
+        /* SAVE MARKS AND FEEDBACK */
+
+        function saveReview() {
+
+            if (currentSubmissionIndex === -1) {
+
+                return;
+
+            }
+
+            let marks = document.getElementById("reviewMarks").value;
+
+            let feedback = document.getElementById("reviewFeedback").value.trim();
+
+
+            if (marks === "") {
+
+                alert("Please enter marks.");
+
+                return;
+
+            }
+
+
+            submissions[currentSubmissionIndex].marks = Number(marks);
+
+            submissions[currentSubmissionIndex].feedback = feedback;
+
+            submissions[currentSubmissionIndex].status = "Checked";
+
+
+            localStorage.setItem("eduMateSubmissions", JSON.stringify(submissions));
+
+
+            alert("Submission reviewed successfully!");
+
+            closeSubmissionModal();
+
+            displaySubmissions();
+
+        }
+
+
+        /* CLOSE MODAL */
+
+        function closeSubmissionModal() {
+
+            document.getElementById("submissionModal").style.display = "none";
+
+            currentSubmissionIndex = -1;
+
+        }
+
+
+        /* UPDATE SUBMISSION COUNTS */
+
+        function updateSubmissionCounts() {
+
+            let total = submissions.length;
+
+            let submitted = submissions.filter(function(submission) {
+
+                return (submission.status || "Submitted").toLowerCase() === "submitted";
+
+            }).length;
+
+            let checked = submissions.filter(function(submission) {
+
+                return (submission.status || "").toLowerCase() === "checked";
+
+            }).length;
+
+            let pending = submissions.filter(function(submission) {
+
+                return (submission.status || "").toLowerCase() === "pending";
+
+            }).length;
+
+
+            document.getElementById("totalSubmissionCount").innerText = total;
+
+            document.getElementById("submittedSubmissionCount").innerText = submitted;
+
+            document.getElementById("checkedSubmissionCount").innerText = checked;
+
+            document.getElementById("pendingSubmissionCount").innerText = pending;
+
+        }
+
+
+        /* BASIC HTML SAFETY */
+
+        function escapeHTML(value) {
+
+            return String(value)
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;")
+                .replace(/"/g, "&quot;")
+                .replace(/'/g, "&#039;");
+
+        }
+
+
+        /* CLOSE MODAL WHEN CLICKING OUTSIDE */
+
+        window.addEventListener("click", function(event) {
+
+            let modal = document.getElementById("submissionModal");
+
+            if (event.target === modal) {
+
+                closeSubmissionModal();
+
+            }
+
+        });
+
+
+        /* =========================================
+           UPDATE DASHBOARD COUNTS
+        ========================================= */
+
+        function updateCounts() {
+
+            document.getElementById("assignmentCount").innerText = assignments.length;
+
+            document.getElementById("slaCount").innerText = slaList.length;
+
+            document.getElementById("practicalCount").innerText = practicalList.length;
+
+        }
+
+
+
+        /* =========================================
+           LOGOUT
+        ========================================= */
+
+        function logout() {
+
+            let confirmLogout = confirm("Do you want to logout?");
+
+
+            if (confirmLogout) {
+
+                window.location.href = "index.html";
+
+            }
+
+        }
+
+
+
+        /* =========================================
+           LOAD DATA WHEN PAGE OPENS
+        ========================================= */
+
+        displayAssignments();
+
+        displaySLA();
+
+        displayPracticals();
+
+        displaySubmissions();
+
+        updateCounts();
+
+
+    </script>
+
+</body>
+
+</html>
