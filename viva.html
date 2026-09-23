@@ -1,0 +1,746 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduMate - Viva Practice</title>
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f9;margin:0;padding:20px;color:#263238}
+.container{max-width:950px;margin:auto}
+h1{text-align:center}
+.box{background:white;padding:25px;margin-top:20px;border-radius:12px;box-shadow:0 2px 8px rgba(0,0,0,.08)}
+label{display:block;font-weight:bold;margin-top:15px}
+select,textarea{width:100%;padding:12px;font-size:16px;margin-top:8px;box-sizing:border-box;border:1px solid #ccc;border-radius:7px}
+textarea{min-height:150px;resize:vertical}
+button{padding:10px 18px;border:0;border-radius:7px;cursor:pointer;margin-top:15px;margin-right:8px;background:#263238;color:white}
+button:hover{opacity:.88}
+.secondary{background:#607d8b}
+.quiz,.result{display:none}
+.question{font-size:21px;font-weight:bold;margin-top:15px;line-height:1.5}
+.badge{display:inline-block;padding:6px 10px;border-radius:20px;background:#eee;font-size:13px;margin:4px 5px 8px 0}
+.teacher-badge{background:#eadcf4} .builtin-badge{background:#dcecff}
+.feedback{padding:15px;margin-top:15px;border-radius:8px;display:none}
+.correct{background:#e8f5e9;border:1px solid #66bb6a}
+.wrong{background:#ffebee;border:1px solid #ef5350}
+.answer-box{background:#f1f5f9;padding:18px;margin-top:15px;border-radius:8px;display:none}
+.answer-content{white-space:pre-wrap;line-height:1.6;font-size:15px}
+.diagram{font-family:monospace;white-space:pre;overflow:auto;background:#fff;border:1px solid #cfd8dc;border-radius:8px;padding:14px;margin-top:12px}
+.score{font-size:28px;font-weight:bold}
+.small-text{color:#666;font-size:14px}
+.review-item{padding:15px;margin-top:10px;border-radius:8px;background:#f7f7f7;line-height:1.6}
+.review-correct{border-left:5px solid #43a047} .review-wrong{border-left:5px solid #e53935}
+.no-questions{color:#777;margin-top:10px}
+</style>
+</head>
+<body>
+<div class="container">
+<h1>🎤 EduMate Viva Practice</h1>
+<button type="button" class="secondary" onclick="goBack()">← Back to Student Dashboard</button>
+
+<div class="box" id="setupBox">
+<h2>Start Viva Practice</h2>
+<label for="subject">Select Subject</label>
+<select id="subject" onchange="loadTopics()">
+<option value="">-- Select Subject --</option>
+<option value="DBMS">DBMS</option>
+<option value="DLD">DLD & Microprocessor</option>
+<option value="OOP">OOP (C++)</option>
+<option value="JavaScript">Client Side Scripting (JavaScript)</option>
+<option value="Computer Networks">Computer Networks</option>
+<option value="C Programming">C Programming</option>
+</select>
+
+<label for="topic">Select Topic</label>
+<select id="topic"><option value="">-- Select Topic --</option></select>
+
+<label for="questionType">Question Type</label>
+<select id="questionType">
+<option value="builtin">📚 Built-in Questions</option>
+<option value="teacher">👩‍🏫 Teacher Added Questions</option>
+<option value="all">📖 All Questions</option>
+</select>
+<button type="button" onclick="startQuiz()">Start Viva</button>
+<p id="setupMessage" class="small-text"></p>
+</div>
+
+<div class="box quiz" id="quizBox">
+<div><span id="sourceBadge" class="badge"></span><span id="topicBadge" class="badge"></span></div>
+<p id="questionNumber"></p>
+<div class="question" id="question"></div>
+<label for="studentAnswer">Your Answer</label>
+<textarea id="studentAnswer" placeholder="Type your answer here..."></textarea>
+<button type="button" onclick="submitAnswer()" id="submitButton">Submit Answer</button>
+<div id="feedback" class="feedback"></div>
+<div id="answerBox" class="answer-box">
+<strong>📖 Model Answer:</strong>
+<div id="correctAnswer" class="answer-content"></div>
+</div>
+<button type="button" onclick="nextQuestion()" id="nextButton" style="display:none;">➡️ Next Question</button>
+</div>
+
+<div class="box result" id="resultBox">
+<h2>🎉 Viva Completed!</h2>
+<p class="score" id="score"></p>
+<p id="percentage"></p>
+<p id="message"></p>
+<div id="reviewBox"></div>
+<button type="button" onclick="restartQuiz()">🔄 Try Again</button>
+<button type="button" class="secondary" onclick="goBack()">← Student Dashboard</button>
+</div>
+</div>
+
+<script>
+const topicMap = {
+    "DBMS": [
+        "Introduction to DBMS",
+        "Relational Model",
+        "SQL",
+        "Normalization",
+        "PL / SQL",
+        "Database Security and Transaction Processing"
+    ],
+    "DLD": [
+        "Number Systems and Logic Gates",
+        "Combinational Logic Circuits",
+        "Sequential Logic Circuits",
+        "Introduction to 8086 Microprocessor",
+        "Assembly Language Programming of 8086"
+    ],
+    "OOP": [
+        "Principles of Object Oriented Programming",
+        "Classes and Objects",
+        "Constructors and Destructors",
+        "Extending Classes using Inheritance",
+        "Pointers and Polymorphism in C++",
+        "File Operations"
+    ],
+    "JavaScript": [
+        "Introduction to JavaScript",
+        "Array, Functions and String",
+        "Form & Event Handling",
+        "Cookies, Session & Regular Expression",
+        "Object & Document Object Model",
+        "JavaScript Framework & Cross-Platform Runtime Environment"
+    ],
+    "Computer Networks": [
+        "Fundamentals of Data Communication and Computer Network",
+        "Line Configuration",
+        "Network Reference Model and Network Devices",
+        "Error Detection and Correction",
+        "TCP/IP Protocol",
+        "Remote Logging, Electronic Mail and File Transfer Protocol"
+    ],
+    "C Programming": [
+        "Basics of C Programming",
+        "Control Structures",
+        "Arrays and Strings",
+        "Functions",
+        "Structures",
+        "Pointers"
+    ]
+};
+const vivaData = [
+    {
+        "subject": "DBMS",
+        "topic": "Introduction to DBMS",
+        "question": "What is DBMS? Explain its purpose and advantages.",
+        "answer": "DBMS stands for Database Management System. It is system software used to create, store, organize, retrieve and manage data in a database. It provides an interface between users/applications and the database.\n\nMain functions include data storage, data retrieval, security, integrity, backup and concurrent access.\n\nDiagram:\n+---------+       +----------------+       +------------+\n|  User / | ----> |      DBMS      | ----> |  Database |\n|  App    | <---- |                | <---- |   Data     |\n+---------+       +----------------+       +------------+\n\nAdvantages:\n1. Reduces data redundancy.\n2. Provides data security.\n3. Maintains data integrity.\n4. Supports backup and recovery.\n5. Allows multiple users to access data."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Introduction to DBMS",
+        "question": "Differentiate DBMS and traditional file system.",
+        "answer": "A traditional file system stores data in separate files, while a DBMS manages related data using a structured database and provides controlled access.\n\nFile System:\nApplication -> Separate Files -> Data\n\nDBMS:\nApplications -> DBMS -> Database\n\nDBMS provides better security, integrity, concurrency control, backup and recovery. It also reduces unnecessary duplication of data. Therefore, DBMS is suitable when data is large, shared and needs controlled management."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Relational Model",
+        "question": "What is the relational model?",
+        "answer": "The relational model represents data in the form of tables called relations. A table contains rows and columns. A row is called a tuple and a column is called an attribute.\n\nExample:\n+--------+----------+-------+\n| RollNo | Name     | Marks |\n+--------+----------+-------+\n| 101    | Asha     | 85    |\n| 102    | Ravi     | 78    |\n+--------+----------+-------+\n\nThe relational model uses keys and constraints to identify records and maintain correct relationships between tables. SQL is commonly used to operate on relational databases."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Relational Model",
+        "question": "What are primary key and foreign key?",
+        "answer": "A primary key is an attribute or set of attributes that uniquely identifies each record in a table. It cannot contain duplicate values and normally cannot be NULL.\n\nA foreign key is an attribute that refers to the primary key of another table. It creates a relationship between tables.\n\nDiagram:\nSTUDENT                    DEPARTMENT\n+--------+---------+       +--------+----------+\n| RollNo | DeptID  |       | DeptID | DeptName |\n+--------+---------+       +--------+----------+\n    PK  <------------- FK\n\nThis relationship helps maintain referential integrity."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "SQL",
+        "question": "What is SQL? Explain its main categories.",
+        "answer": "SQL stands for Structured Query Language. It is used to create, retrieve, modify and control data in relational databases.\n\nMajor categories:\n1. DDL - CREATE, ALTER, DROP\n2. DML - INSERT, UPDATE, DELETE\n3. DQL - SELECT\n4. DCL - GRANT, REVOKE\n5. TCL - COMMIT, ROLLBACK, SAVEPOINT\n\nSQL provides a standard way for users and applications to communicate with a relational database."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "SQL",
+        "question": "What is a view in SQL?",
+        "answer": "A view is a virtual table created from the result of an SQL query. It generally does not store a separate copy of the underlying data.\n\nSyntax:\nCREATE VIEW view_name AS\nSELECT column1, column2\nFROM table_name\nWHERE condition;\n\nDiagram:\nBase Table -> SELECT Query -> View -> User\n\nViews can simplify complex queries and can restrict access to selected columns or rows, improving data security and convenience."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Normalization",
+        "question": "What is normalization? Explain its purpose.",
+        "answer": "Normalization is the process of organizing data in database tables to reduce redundancy and avoid update anomalies. It divides large tables into smaller related tables and establishes relationships between them.\n\nCommon normal forms are 1NF, 2NF, 3NF and BCNF.\n\nDiagram:\nUnorganized Table\n       |\n       v\n     1NF\n       |\n       v\n     2NF\n       |\n       v\n     3NF\n\nNormalization improves consistency and makes insertion, deletion and update operations safer."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Normalization",
+        "question": "Explain 1NF, 2NF and 3NF.",
+        "answer": "1NF: Each field contains atomic, indivisible values and repeating groups are removed.\n\n2NF: The table is in 1NF and every non-key attribute is fully dependent on the whole primary key.\n\n3NF: The table is in 2NF and non-key attributes do not depend transitively on another non-key attribute.\n\nThe general progression is:\n1NF -> remove partial dependency -> 2NF -> remove transitive dependency -> 3NF."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "PL / SQL",
+        "question": "What is PL/SQL?",
+        "answer": "PL/SQL stands for Procedural Language/SQL. It extends SQL with procedural programming features such as variables, conditions, loops, procedures and exception handling.\n\nBasic block structure:\n+------------------+\n| DECLARE          |\n| variables        |\n+------------------+\n| BEGIN            |\n| executable code  |\n+------------------+\n| EXCEPTION        |\n| error handling   |\n+------------------+\n| END;             |\n+------------------+\n\nPL/SQL is useful when multiple SQL statements and programming logic must be executed together."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "PL / SQL",
+        "question": "What is exception handling in PL/SQL?",
+        "answer": "Exception handling is used to handle runtime errors without abruptly stopping the program. PL/SQL provides an EXCEPTION section where errors can be handled.\n\nFlow:\nBEGIN\n  |\n  v\nExecute statements\n  |\n Error? ---- No ----> END\n  |\n Yes\n  v\nEXCEPTION handler\n  |\n  v\nEND\n\nIt improves reliability because expected errors can be identified and handled appropriately."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Database Security and Transaction Processing",
+        "question": "What is a database transaction?",
+        "answer": "A transaction is a logical unit of database work containing one or more operations. A transaction should preserve the correctness of the database.\n\nExample:\nTransfer ₹500:\n1. Debit ₹500 from Account A.\n2. Credit ₹500 to Account B.\n\nTransaction flow:\nBEGIN -> Operations -> COMMIT\n                                   -> ROLLBACK on failure\n\nTransactions are commonly described using ACID properties: Atomicity, Consistency, Isolation and Durability."
+    },
+    {
+        "subject": "DBMS",
+        "topic": "Database Security and Transaction Processing",
+        "question": "Explain ACID properties.",
+        "answer": "ACID properties ensure reliable transaction processing.\n\nA - Atomicity: Either all operations of a transaction occur or none occur.\nC - Consistency: The transaction takes the database from one valid state to another.\nI - Isolation: Concurrent transactions should not improperly interfere with each other.\nD - Durability: Committed changes remain stored even after a failure.\n\nDiagram:\nTransaction -> Atomicity -> Consistency -> Isolation -> Durability -> Reliable DB"
+    },
+    {
+        "subject": "DLD",
+        "topic": "Number Systems and Logic Gates",
+        "question": "Explain basic number systems and their use in digital electronics.",
+        "answer": "Digital systems commonly use binary, decimal, octal and hexadecimal number systems. Binary uses base 2, decimal uses base 10, octal uses base 8 and hexadecimal uses base 16.\n\nExample:\nDecimal 10 = Binary 1010 = Hexadecimal A\n\nBinary is especially important because digital circuits represent two states, normally 0 and 1.\n\nDiagram:\nDecimal (10)\n     |\n     +----> Binary (1010)\n     |\n     +----> Hex (A)"
+    },
+    {
+        "subject": "DLD",
+        "topic": "Number Systems and Logic Gates",
+        "question": "What are logic gates? Explain AND, OR and NOT gates.",
+        "answer": "A logic gate is a digital circuit that performs a Boolean operation on one or more binary inputs.\n\nAND: output is 1 only when all inputs are 1.\nOR: output is 1 when at least one input is 1.\nNOT: output is the complement of the input.\n\nSimple representation:\nA ----       [AND] ---- Y\nB ----/\n\nA ----       [ OR] ---- Y\nB ----/\n\nA ----[NOT]---- Y\n\nTruth tables are used to describe the output for every possible input combination."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Combinational Logic Circuits",
+        "question": "What is a combinational circuit?",
+        "answer": "A combinational circuit is a digital circuit whose output depends only on the present input values. It does not store previous states.\n\nDiagram:\nInputs -> Combinational Logic -> Outputs\n\nExamples include half adder, full adder, multiplexer, demultiplexer, encoder and decoder.\n\nUnlike sequential circuits, combinational circuits do not require memory elements for their basic operation."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Combinational Logic Circuits",
+        "question": "Explain a half adder.",
+        "answer": "A half adder adds two one-bit binary numbers. It produces two outputs: Sum and Carry.\n\nEquations:\nSum = A XOR B\nCarry = A AND B\n\nDiagram:\nA ----\\             /--> Sum\n       XOR ---------\nB ----/             \n\nA ----\\             /--> Carry\n       AND ---------\nB ----/\n\nIt is called a half adder because it does not accept an input carry from a previous stage."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Sequential Logic Circuits",
+        "question": "What is a sequential circuit?",
+        "answer": "A sequential circuit is a digital circuit whose output depends on present inputs as well as the previous state. Therefore, it contains memory elements.\n\nDiagram:\nInputs -> Combinational Logic -> Outputs\n             ^          |\n             |          v\n          Memory <--- Clock\n\nFlip-flops are commonly used as memory elements. Examples include counters, registers and shift registers."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Sequential Logic Circuits",
+        "question": "What is a JK flip-flop?",
+        "answer": "A JK flip-flop is a clocked sequential circuit with J and K inputs and complementary outputs Q and Q̅. It removes the invalid input condition associated with the basic SR flip-flop.\n\nBlock diagram:\n        +-----------+\nJ ----->|           |----> Q\nCLK --->| JK Flip   |\nK ----->|  Flop     |----> Q̅\n        +-----------+\n\nOperation:\nJ=0,K=0: No change\nJ=0,K=1: Reset\nJ=1,K=0: Set\nJ=1,K=1: Toggle"
+    },
+    {
+        "subject": "DLD",
+        "topic": "Introduction to 8086 Microprocessor",
+        "question": "Explain the basic architecture of 8086.",
+        "answer": "8086 is a 16-bit microprocessor. Its architecture is broadly divided into the Bus Interface Unit (BIU) and Execution Unit (EU).\n\nDiagram:\n+---------------------------+\n|            8086           |\n| +----------+ +----------+ |\n| |   BIU    | |    EU    | |\n| | CS DS SS | | ALU      | |\n| | ES, IP   | | Registers| |\n| | Queue    | | Control  | |\n| +----------+ +----------+ |\n+---------------------------+\n\nBIU handles instruction fetching, address generation and bus operations. EU decodes and executes instructions."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Introduction to 8086 Microprocessor",
+        "question": "What are the main registers of 8086?",
+        "answer": "8086 has general-purpose registers AX, BX, CX and DX; pointer/index registers SP, BP, SI and DI; segment registers CS, DS, SS and ES; and special registers IP and FLAGS.\n\nRegister grouping:\nGeneral: AX BX CX DX\nPointer/Index: SP BP SI DI\nSegment: CS DS SS ES\nSpecial: IP FLAGS\n\nRegisters provide fast temporary storage and help the processor perform arithmetic, addressing and control operations."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Assembly Language Programming of 8086",
+        "question": "What is an assembly language program?",
+        "answer": "Assembly language is a low-level language in which instructions are written using mnemonics such as MOV, ADD, SUB, INC and JMP. An assembler translates these mnemonics into machine code.\n\nFlow:\nAssembly Source\n      |\n      v\n   Assembler\n      |\n      v\nMachine/Object Code\n      |\n      v\n   Execution\n\nAssembly language gives close control over processor registers and hardware resources."
+    },
+    {
+        "subject": "DLD",
+        "topic": "Assembly Language Programming of 8086",
+        "question": "Explain the MOV instruction with an example.",
+        "answer": "MOV is used to copy data from a source operand to a destination operand.\n\nExample:\nMOV AX, 1234H\n\nHere, the hexadecimal value 1234H is loaded into the AX register.\n\nAnother example:\nMOV BX, AX\n\nThis copies the contents of AX into BX. MOV does not perform arithmetic; it transfers data between compatible operands."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Principles of Object Oriented Programming",
+        "question": "What is object-oriented programming? Explain its main principles.",
+        "answer": "Object-oriented programming (OOP) is a programming approach that organizes software around objects containing data and functions.\n\nMain principles:\n1. Encapsulation - combines data and methods in a class.\n2. Abstraction - shows essential features and hides unnecessary details.\n3. Inheritance - allows a new class to acquire features of an existing class.\n4. Polymorphism - allows one interface to represent different implementations.\n\nDiagram:\n             OOP\n              |\n   +----------+----------+\n   |      |       |      |\nEncapsulation Abstraction Inheritance Polymorphism"
+    },
+    {
+        "subject": "OOP",
+        "topic": "Principles of Object Oriented Programming",
+        "question": "What is encapsulation?",
+        "answer": "Encapsulation is the process of wrapping data and the functions that operate on that data into a single unit called a class. Access specifiers such as private, protected and public control access.\n\nDiagram:\n+----------------------+\n|        Class         |\n|  +----------------+  |\n|  | Data           |  |\n|  +----------------+  |\n|  | Member Methods |  |\n|  +----------------+  |\n+----------------------+\n\nIt improves data protection and makes programs easier to maintain."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Classes and Objects",
+        "question": "What is a class and what is an object?",
+        "answer": "A class is a user-defined blueprint that defines data members and member functions. An object is a real instance of that class.\n\nExample:\nclass Student {\n    int rollNo;\n    void display();\n};\n\nStudent s1;\n\nRelationship:\nClass (Blueprint) ----creates----> Object\n                         |\n                         +--> s1\n\nA class describes what an object contains, while the object occupies memory when it is created."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Classes and Objects",
+        "question": "How are objects created in C++?",
+        "answer": "Objects are created by declaring a variable of the class type.\n\nExample:\nclass Student {\npublic:\n    int rollNo;\n};\n\nStudent s1;\n\nHere, Student is the class and s1 is an object. When s1 is created, memory is allocated for its data members. Member functions can be accessed using the dot operator, such as s1.rollNo."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Constructors and Destructors",
+        "question": "What is a constructor?",
+        "answer": "A constructor is a special member function that is automatically called when an object is created. It has the same name as the class and has no return type.\n\nExample:\nclass Student {\npublic:\n    Student() {\n        // initialization\n    }\n};\n\nTypes commonly discussed are default, parameterized and copy constructors.\n\nObject creation -> Constructor called -> Object initialized"
+    },
+    {
+        "subject": "OOP",
+        "topic": "Constructors and Destructors",
+        "question": "What is a destructor?",
+        "answer": "A destructor is a special member function called automatically when an object is destroyed. Its name is the class name preceded by ~ and it has no return type or parameters.\n\nExample:\n~Student() {\n    // cleanup\n}\n\nFlow:\nObject created -> Constructor\nObject used\nObject destroyed -> Destructor\n\nDestructors are useful for releasing resources associated with an object."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Extending Classes using Inheritance",
+        "question": "What is inheritance? Explain its types.",
+        "answer": "Inheritance is an OOP feature in which a derived class acquires properties and functions of a base class.\n\nDiagram:\n          Base Class\n              |\n       +------+------+\n       |             |\n   Derived A      Derived B\n\nCommon types include single, multilevel, multiple, hierarchical and hybrid inheritance.\n\nInheritance promotes code reuse and allows related classes to be organized into a hierarchy."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Extending Classes using Inheritance",
+        "question": "What is multiple inheritance in C++?",
+        "answer": "Multiple inheritance occurs when one derived class inherits from more than one base class.\n\nDiagram:\nBase A       Base B\n   \\           /\n    \\         /\n     \\       /\n      Derived\n\nExample:\nclass C : public A, public B {\n};\n\nThe derived class can use accessible members of both base classes. Proper design is important when both bases contain members with the same name."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Pointers and Polymorphism in C++",
+        "question": "What is a pointer in C++?",
+        "answer": "A pointer is a variable that stores the memory address of another variable.\n\nExample:\nint x = 10;\nint *p = &x;\n\nDiagram:\np -----> [ address of x ] -----> [ x = 10 ]\n\nThe & operator obtains an address and the * operator is used for pointer declaration/dereferencing. Pointers are useful for dynamic memory, arrays, functions and object-oriented programming."
+    },
+    {
+        "subject": "OOP",
+        "topic": "Pointers and Polymorphism in C++",
+        "question": "What is polymorphism?",
+        "answer": "Polymorphism means 'many forms'. In C++, the same interface or function name can behave differently depending on the context.\n\nTwo broad forms are:\n1. Compile-time polymorphism, such as function/operator overloading.\n2. Run-time polymorphism, commonly achieved using virtual functions and overriding.\n\nDiagram:\n              Function Call\n                    |\n          +---------+---------+\n          |                   |\n     Compile time        Run time\n     Overloading       Virtual/Override\n\nPolymorphism improves flexibility and allows common interfaces for different object types."
+    },
+    {
+        "subject": "OOP",
+        "topic": "File Operations",
+        "question": "What are file operations in C++?",
+        "answer": "File operations are used to store and retrieve data from files. The fstream library provides file stream classes.\n\nCommon classes:\nifstream - input/read\nofstream - output/write\nfstream - input and output\n\nDiagram:\nProgram <----> File Stream <----> File\n       write / read\n\nBasic operations include open, read/write, close and checking file status."
+    },
+    {
+        "subject": "OOP",
+        "topic": "File Operations",
+        "question": "How do you write data to a file in C++?",
+        "answer": "An ofstream object can be used to write data to a file.\n\nExample:\nofstream file(\"data.txt\");\nfile << \"EduMate\";\nfile.close();\n\nFlow:\nCreate stream -> Open file -> Write data -> Close file\n\nClosing the file is important because it completes the file operation and releases the associated resource."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Introduction to JavaScript",
+        "question": "What is JavaScript?",
+        "answer": "JavaScript is a high-level scripting/programming language widely used to make web pages interactive and dynamic. It can respond to user actions, manipulate HTML/CSS and work with browser storage.\n\nTypical web structure:\nHTML -> Structure\nCSS  -> Presentation\nJS   -> Behaviour\n\nJavaScript can be written inside a <script> element or placed in an external .js file."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Introduction to JavaScript",
+        "question": "What are variables in JavaScript?",
+        "answer": "Variables are named storage locations used to hold values. Modern JavaScript commonly uses let and const, while var is the older declaration keyword.\n\nExample:\nlet name = \"Asha\";\nconst age = 17;\n\nlet can be reassigned, while a const variable cannot be reassigned. JavaScript is dynamically typed, so a variable can hold different types of values during execution."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Array, Functions and String",
+        "question": "What is an array in JavaScript?",
+        "answer": "An array stores multiple values in an ordered collection. JavaScript arrays use zero-based indexing.\n\nExample:\nlet marks = [80, 75, 90];\n\nDiagram:\nIndex:   0    1    2\nValue:  80   75   90\n\nCommon methods include push(), pop(), shift(), unshift() and length. Arrays are useful for storing and processing lists of related values."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Array, Functions and String",
+        "question": "What is a function in JavaScript?",
+        "answer": "A function is a reusable block of code designed to perform a specific task.\n\nExample:\nfunction add(a, b) {\n    return a + b;\n}\n\nFlow:\nInput -> Function -> Processing -> Return Value\n\nFunctions reduce repetition, improve organization and make programs easier to maintain. They may accept parameters and may return a value."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Form & Event Handling",
+        "question": "What is event handling in JavaScript?",
+        "answer": "Event handling means responding to actions such as click, input, focus, blur, submit or reset.\n\nExample:\nbutton.addEventListener(\"click\", function() {\n    alert(\"Clicked\");\n});\n\nFlow:\nUser Action -> Browser Event -> Event Handler -> JavaScript Code -> Result\n\nEvent handling makes forms and web pages interactive."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Form & Event Handling",
+        "question": "How is form validation performed using JavaScript?",
+        "answer": "Form validation checks whether user-entered data satisfies required rules before processing the form.\n\nExamples:\n- Required field should not be empty.\n- Email should follow a valid pattern.\n- Mobile number should contain the expected digits.\n\nFlow:\nUser enters data -> Validation -> Valid? -> Submit\n                              |\n                              No -> Show error\n\nJavaScript can use conditions, string methods and regular expressions for validation."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Cookies, Session & Regular Expression",
+        "question": "What is a cookie?",
+        "answer": "A cookie is a small piece of text data stored by a website in the browser. It can be used for preferences, identifiers and limited state information.\n\nDiagram:\nWeb Page <----> Browser Cookie Store\n    |                   |\n    +------ data -------+\n\nIn JavaScript, document.cookie can be used to create and read cookies subject to browser security rules. Cookies may have attributes such as expiry and path."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Cookies, Session & Regular Expression",
+        "question": "What is a regular expression?",
+        "answer": "A regular expression, or regex, is a pattern used to search, match or validate text.\n\nExample:\n^[0-9]{10}$\n\nThis pattern represents exactly 10 digits.\n\nCommon uses:\n1. Mobile number validation.\n2. Email pattern checking.\n3. URL validation.\n4. Finding specific text.\n\nFlow:\nInput String -> Regex Pattern -> Match / No Match"
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Object & Document Object Model",
+        "question": "What is the DOM?",
+        "answer": "DOM stands for Document Object Model. It represents an HTML document as a tree of objects. JavaScript can use the DOM to read, change, add or remove elements.\n\nDiagram:\nDocument\n   |\n  HTML\n /    Head   Body\n       |\n      Div\n       |\n      P\n\nMethods such as getElementById(), querySelector() and createElement() are commonly used for DOM manipulation."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "Object & Document Object Model",
+        "question": "What is an object in JavaScript?",
+        "answer": "An object is a collection of related properties and methods represented using key-value pairs.\n\nExample:\nlet student = {\n  name: \"Asha\",\n  marks: 85\n};\n\nDiagram:\nstudent\n  |\n  +-- name : Asha\n  +-- marks: 85\n\nObjects are useful for representing real-world entities and structured data."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "JavaScript Framework & Cross-Platform Runtime Environment",
+        "question": "What is a JavaScript framework?",
+        "answer": "A JavaScript framework provides a structured set of tools, conventions and components for developing applications. Frameworks help developers organize larger applications and reduce repetitive work.\n\nConcept:\nJavaScript\n   |\nFramework\n   |\nComponents + Routing + State/Tools\n   |\nApplication\n\nExamples in the wider JavaScript ecosystem include frameworks and libraries used for web application development. The exact choice depends on the application requirements."
+    },
+    {
+        "subject": "JavaScript",
+        "topic": "JavaScript Framework & Cross-Platform Runtime Environment",
+        "question": "What is a cross-platform runtime environment?",
+        "answer": "A runtime environment provides the facilities needed to execute JavaScript outside or beyond the traditional browser environment. A cross-platform runtime can run on more than one operating system.\n\nGeneral flow:\nJavaScript Code\n      |\n Runtime Environment\n      |\n+-----+-----+\n|           |\nWindows    Linux/macOS\n\nThis approach allows developers to use JavaScript for applications beyond browser-only scripting."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Fundamentals of Data Communication and Computer Network",
+        "question": "What is a computer network?",
+        "answer": "A computer network is a collection of interconnected devices that communicate and share data or resources.\n\nBasic diagram:\nComputer A ----                [Network] ---- Computer C\nComputer B ----/\n\nImportant components include sender, receiver, transmission medium, protocols and networking devices. Networks support resource sharing, communication and distributed services."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Fundamentals of Data Communication and Computer Network",
+        "question": "What are the basic components of data communication?",
+        "answer": "The main components are sender, receiver, message, transmission medium and protocol.\n\nDiagram:\nSender -> Medium -> Receiver\n   |                    |\n   +---- Message -------+\n          Protocol\n\nThe sender generates data, the receiver accepts it, the message is the information being transmitted, the medium carries it and the protocol defines communication rules."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Line Configuration",
+        "question": "What is line configuration?",
+        "answer": "Line configuration describes how communication devices are connected to a transmission link.\n\nTwo common types are:\n1. Point-to-point: dedicated link between two devices.\n2. Multipoint: multiple devices share one link.\n\nDiagram:\nPoint-to-point:\nA ---------------- B\n\nMultipoint:\nA ----+\nB ----+---- Shared Link\nC ----+\n\nThe choice depends on cost, required bandwidth and communication needs."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Line Configuration",
+        "question": "Differentiate point-to-point and multipoint configuration.",
+        "answer": "Point-to-point uses a dedicated communication path between two devices. It generally provides the full link capacity to those two endpoints.\n\nMultipoint allows multiple devices to share a single communication link.\n\nDiagram:\nPoint-to-point: A <----------> B\nMultipoint:      A                   B ---> Shared Link\n                  C /\n\nPoint-to-point is simple and dedicated; multipoint can reduce cabling when many devices share a medium."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Network Reference Model and Network Devices",
+        "question": "Explain the OSI reference model.",
+        "answer": "The OSI model divides network communication into seven layers:\n7 Application\n6 Presentation\n5 Session\n4 Transport\n3 Network\n2 Data Link\n1 Physical\n\nDiagram:\n+-------------+ 7 Application\n+-------------+ 6 Presentation\n+-------------+ 5 Session\n+-------------+ 4 Transport\n+-------------+ 3 Network\n+-------------+ 2 Data Link\n+-------------+ 1 Physical\n\nEach layer has specific responsibilities and interacts with adjacent layers. The model helps understand and troubleshoot network communication."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Network Reference Model and Network Devices",
+        "question": "What is the difference between a switch and a router?",
+        "answer": "A switch primarily connects devices within a LAN and forwards frames using MAC addresses. A router connects different networks and forwards packets using IP addresses.\n\nDiagram:\nPC --PC --- Switch ---- Router ---- Internet\nPC --/\n\nA switch is mainly used for local network connectivity, while a router provides communication between different networks."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Error Detection and Correction",
+        "question": "What is error detection?",
+        "answer": "Error detection is the process of determining whether transmitted data has been changed or corrupted during communication.\n\nCommon methods include parity bit, checksum and CRC.\n\nFlow:\nOriginal Data -> Transmission -> Received Data\n                         |\n                      Error?\n                         |\n                   Detection Method\n\nIf an error is detected, a suitable retransmission or correction mechanism can be used depending on the protocol."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Error Detection and Correction",
+        "question": "What is CRC?",
+        "answer": "CRC stands for Cyclic Redundancy Check. It is an error-detection technique based on binary polynomial division.\n\nBasic flow:\nData + CRC bits\n      |\n   Transmit\n      |\nReceiver divides received bits by generator\n      |\nRemainder = 0 -> likely no detected error\nRemainder != 0 -> error detected\n\nCRC is effective for detecting many common transmission errors."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "TCP/IP Protocol",
+        "question": "What is TCP/IP?",
+        "answer": "TCP/IP is a suite of communication protocols used for networking and Internet communication. TCP provides reliable, connection-oriented transport, while IP provides addressing and packet delivery between networks.\n\nSimplified model:\nApplication\nTransport (TCP/UDP)\nInternet (IP)\nNetwork Access\n\nThe suite enables different networks and devices to communicate using standardized protocols."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "TCP/IP Protocol",
+        "question": "Differentiate TCP and UDP.",
+        "answer": "TCP is connection-oriented and provides reliable, ordered delivery using acknowledgements and retransmission mechanisms. UDP is connectionless and provides a simpler, lower-overhead service without the same reliability guarantees.\n\nTCP: Application -> Reliable connection -> Receiver\nUDP: Application -> Datagrams -> Receiver\n\nTCP is suitable where reliability is important; UDP is useful when low overhead or timing is more important."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Remote Logging, Electronic Mail and File Transfer Protocol",
+        "question": "What is FTP?",
+        "answer": "FTP stands for File Transfer Protocol. It is used for transferring files between a client and a server over a network.\n\nDiagram:\nFTP Client <---- FTP Connection ----> FTP Server\n     |                                  |\n   Upload                             Download\n\nFTP supports operations such as uploading, downloading and managing files according to the server's permissions and configuration."
+    },
+    {
+        "subject": "Computer Networks",
+        "topic": "Remote Logging, Electronic Mail and File Transfer Protocol",
+        "question": "What is electronic mail in computer networking?",
+        "answer": "Electronic mail, or email, is a network service used to send and receive electronic messages. Mail systems use protocols for sending and retrieving messages.\n\nSimplified flow:\nSender -> Mail Server -> Internet -> Receiver Mail Server -> Receiver\n\nSMTP is commonly associated with sending mail, while protocols such as POP3 and IMAP are used for retrieving/accessing mail. Remote logging refers to accessing a remote system or service through a network using an appropriate remote-access protocol."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Basics of C Programming",
+        "question": "What is C programming language?",
+        "answer": "C is a general-purpose procedural programming language. It provides variables, data types, operators, control structures, functions, arrays, pointers, structures and other features.\n\nBasic program flow:\nSource Code -> Compiler -> Object/Executable -> Execution\n\nC is widely used for system programming and applications where efficient control of memory and hardware is useful."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Basics of C Programming",
+        "question": "What are the basic parts of a C program?",
+        "answer": "A C program commonly contains preprocessor directives, declarations, the main() function and executable statements. Functions can be defined to divide a program into smaller modules.\n\nExample structure:\n#include <stdio.h>\nint main() {\n    printf(\"Hello\");\n    return 0;\n}\n\nExecution generally begins from main()."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Control Structures",
+        "question": "What are control structures in C?",
+        "answer": "Control structures control the order in which statements execute.\n\nMain types:\n1. Sequence\n2. Selection: if, if-else, switch\n3. Iteration: for, while, do-while\n\nDiagram:\n        Program\n           |\n    +------+------+\n    |      |      |\n Sequence Selection Loop\n\nThey allow programs to make decisions and repeat operations."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Control Structures",
+        "question": "Differentiate while and do-while loops.",
+        "answer": "In a while loop, the condition is checked before the loop body, so the body may execute zero times. In a do-while loop, the body executes first and the condition is checked afterward, so it executes at least once.\n\nwhile:\nCondition -> Body -> Condition\n\ndo-while:\nBody -> Condition -> Body\n\nBoth are used for repetition, but their condition-checking position is different."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Arrays and Strings",
+        "question": "What is an array in C?",
+        "answer": "An array is a collection of elements of the same data type stored in contiguous memory locations.\n\nExample:\nint marks[4] = {70,80,90,85};\n\nDiagram:\nIndex:  0    1    2    3\n       +----+----+----+----+\n       | 70 | 80 | 90 | 85 |\n       +----+----+----+----+\n\nArrays allow efficient access using an index."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Arrays and Strings",
+        "question": "What is a string in C?",
+        "answer": "A string in C is a sequence of characters terminated by the null character '\\0'. It is commonly stored in a character array.\n\nExample:\nchar name[] = \"RAM\";\n\nMemory:\n+---+---+---+----+\n| R | A | M | \\0 |\n+---+---+---+----+\n\nFunctions from string.h, such as strlen(), strcpy() and strcmp(), are commonly used for string operations."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Functions",
+        "question": "What is a function in C? Explain its advantages.",
+        "answer": "A function is a named block of statements that performs a specific task. A function can accept parameters and may return a value.\n\nStructure:\nCalling Function\n      |\n      v\n+-------------+\n| Function    |\n| Parameters  |\n| Statements  |\n+-------------+\n      |\n      v\nReturn Value\n\nFunctions improve modularity, code reuse, readability and testing."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Functions",
+        "question": "What is the difference between call by value and call by reference?",
+        "answer": "In call by value, a copy of the argument is passed, so changes to the parameter do not directly change the original variable.\n\nIn C, reference-like modification is commonly achieved by passing an address using a pointer.\n\nValue:\nx -> copy -> function\n\nAddress:\nx -> address -> pointer parameter -> modifies x\n\nThis distinction is important when functions need to modify caller data."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Structures",
+        "question": "What is a structure in C?",
+        "answer": "A structure is a user-defined data type that groups variables of different data types under one name.\n\nExample:\nstruct Student {\n    int roll;\n    char name[20];\n    float marks;\n};\n\nDiagram:\nStudent\n+----------------+\n| roll           |\n| name           |\n| marks          |\n+----------------+\n\nStructures are useful for representing records containing different kinds of related data."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Structures",
+        "question": "How is a structure different from an array?",
+        "answer": "An array stores multiple elements of the same data type, while a structure can contain members of different data types.\n\nArray:\n[10][20][30] -> same type\n\nStructure:\n+---------+\n| int     |\n| char[]  |\n| float   |\n+---------+\n\nBoth organize data, but they solve different modeling problems."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Pointers",
+        "question": "What is a pointer in C?",
+        "answer": "A pointer is a variable that stores the address of another variable.\n\nExample:\nint x = 10;\nint *p = &x;\n\nDiagram:\np\n|\nv\n+--------+\n|  10    |  x\n+--------+\n\nThe address-of operator & obtains an address and the dereference operator * accesses the value at that address. Pointers are important for arrays, functions, dynamic memory and data structures."
+    },
+    {
+        "subject": "C Programming",
+        "topic": "Pointers",
+        "question": "What is a null pointer?",
+        "answer": "A null pointer is a pointer that does not point to a valid object or memory location. It can be used to indicate that a pointer currently has no valid target.\n\nExample:\nint *p = NULL;\n\nConceptual diagram:\np -----> NULL\n\nA null pointer should not be dereferenced. Checking a pointer before using it helps avoid invalid memory access."
+    }
+];
+
+let currentUser = JSON.parse(localStorage.getItem("currentUser"));
+if (!currentUser) window.location.href = "index.html";
+
+let selectedSubject="", selectedTopic="", selectedType="";
+let questions=[], currentQuestion=0, score=0, results=[];
+
+function getTeacherQuestions(){
+    return JSON.parse(localStorage.getItem("eduMateVivaQuestions")) || [];
+}
+
+function loadTopics(){
+    selectedSubject=document.getElementById("subject").value;
+    const topic=document.getElementById("topic");
+    const msg=document.getElementById("setupMessage");
+    topic.innerHTML='<option value="">-- Select Topic --</option>';
+    msg.textContent="";
+    if(!selectedSubject){topic.disabled=true;return;}
+    let topics=[...(topicMap[selectedSubject]||[])];
+    getTeacherQuestions().forEach(q=>{
+        if(String(q.subject||"").trim()===selectedSubject && q.topic && !topics.includes(q.topic)) topics.push(q.topic);
+    });
+    topics.forEach(t=>{
+        const o=document.createElement("option"); o.value=t; o.textContent=t; topic.appendChild(o);
+    });
+    topic.disabled=false;
+    msg.textContent=topics.length+" topic(s) available.";
+}
+
+function startQuiz(){
+    selectedSubject=document.getElementById("subject").value;
+    selectedTopic=document.getElementById("topic").value;
+    selectedType=document.getElementById("questionType").value;
+    if(!selectedSubject){alert("Please select a subject.");return;}
+    if(!selectedTopic){alert("Please select a topic.");return;}
+    questions=[];
+    if(selectedType==="builtin"||selectedType==="all"){
+        vivaData.forEach(q=>{
+            if(q.subject===selectedSubject && q.topic===selectedTopic)
+                questions.push({question:q.question,answer:q.answer,topic:q.topic,source:"Built-in"});
+        });
+    }
+    if(selectedType==="teacher"||selectedType==="all"){
+        getTeacherQuestions().forEach(q=>{
+            if(String(q.subject||"").trim()===selectedSubject && String(q.topic||"").trim()===selectedTopic)
+                questions.push({question:q.question,answer:q.answer,topic:q.topic,source:"Teacher Added"});
+        });
+    }
+    if(!questions.length){
+        alert("No questions are available for this selection.");
+        document.getElementById("setupMessage").textContent="No questions are available for this topic.";
+        return;
+    }
+    currentQuestion=0;score=0;results=[];
+    document.getElementById("setupBox").style.display="none";
+    document.getElementById("resultBox").style.display="none";
+    document.getElementById("quizBox").style.display="block";
+    showQuestion();
+}
+
+function showQuestion(){
+    const q=questions[currentQuestion];
+    document.getElementById("questionNumber").textContent="Question "+(currentQuestion+1)+" of "+questions.length;
+    const badge=document.getElementById("sourceBadge");
+    badge.textContent=q.source==="Teacher Added"?"👩‍🏫 Teacher Added":"📚 Built-in";
+    badge.className="badge "+(q.source==="Teacher Added"?"teacher-badge":"builtin-badge");
+    document.getElementById("topicBadge").textContent="📖 "+q.topic;
+    document.getElementById("question").textContent=q.question;
+    document.getElementById("studentAnswer").value="";
+    document.getElementById("studentAnswer").disabled=false;
+    document.getElementById("submitButton").style.display="inline-block";
+    document.getElementById("nextButton").style.display="none";
+    document.getElementById("feedback").style.display="none";
+    document.getElementById("answerBox").style.display="none";
+}
+
+function normalizeAnswer(s){
+    return String(s||"").toLowerCase().trim().replace(/[.,!?;:]/g,"").replace(/\s+/g," ");
+}
+
+function getKeywords(answer){
+    return normalizeAnswer(answer)
+      .replace(/\([^)]*\)/g," ")
+      .split(/\s+/)
+      .filter(w=>w.length>=5)
+      .filter((w,i,a)=>a.indexOf(w)===i)
+      .slice(0,12);
+}
+
+function checkAnswer(student, correct){
+    if(student===correct || student.includes(correct) || correct.includes(student)) return true;
+    const keys=getKeywords(correct);
+    if(!keys.length) return false;
+    let hits=keys.filter(k=>student.includes(k)).length;
+    return hits >= Math.max(2, Math.ceil(keys.length*0.35));
+}
+
+function formatAnswer(text){
+    // Preserve theory and ASCII diagrams while escaping HTML.
+    const escaped=escapeHTML(text);
+    return escaped.replace(/(Diagram:|Flow:|Example:|Equations:|Operation:|Basic flow:|Register grouping:|Main functions:|Advantages:|Common types:)/g,"<br><strong>$1</strong>");
+}
+
+function submitAnswer(){
+    const q=questions[currentQuestion];
+    const raw=document.getElementById("studentAnswer").value.trim();
+    if(!raw){alert("Please enter your answer.");return;}
+    const isCorrect=checkAnswer(normalizeAnswer(raw),normalizeAnswer(q.answer));
+    if(isCorrect){
+        score++;
+        document.getElementById("feedback").className="feedback correct";
+        document.getElementById("feedback").innerHTML="✅ Correct! <strong>+1 mark</strong>";
+    }else{
+        document.getElementById("feedback").className="feedback wrong";
+        document.getElementById("feedback").innerHTML="❌ Your answer does not sufficiently match the model answer. <strong>0 marks</strong>";
+    }
+    results.push({question:q.question,studentAnswer:raw,correctAnswer:q.answer,correct:isCorrect,source:q.source,topic:q.topic});
+    document.getElementById("feedback").style.display="block";
+    document.getElementById("correctAnswer").innerHTML=formatAnswer(q.answer);
+    document.getElementById("answerBox").style.display="block";
+    document.getElementById("studentAnswer").disabled=true;
+    document.getElementById("submitButton").style.display="none";
+    document.getElementById("nextButton").style.display="inline-block";
+}
+
+function nextQuestion(){
+    currentQuestion++;
+    if(currentQuestion<questions.length) showQuestion();
+    else showResult();
+}
+
+function showResult(){
+    const total=questions.length, percentage=Math.round(score/total*100);
+    document.getElementById("quizBox").style.display="none";
+    document.getElementById("resultBox").style.display="block";
+    document.getElementById("score").textContent="Score: "+score+" / "+total;
+    document.getElementById("percentage").textContent="Percentage: "+percentage+"%";
+    document.getElementById("message").textContent=percentage>=80?"🌟 Excellent! Keep practicing.":percentage>=50?"👍 Good work! Practice more to improve.":"📚 Keep practicing. You can improve.";
+    if(currentUser && currentUser.email){
+        localStorage.setItem("vivaScore_"+currentUser.email,JSON.stringify({subject:selectedSubject,topic:selectedTopic,type:selectedType,score,total,percentage}));
+    }
+    showReview();
+}
+
+function showReview(){
+    const box=document.getElementById("reviewBox");
+    box.innerHTML="<h3>📋 Answer Review</h3>";
+    results.forEach((r,i)=>{
+        const div=document.createElement("div");
+        div.className="review-item "+(r.correct?"review-correct":"review-wrong");
+        div.innerHTML="<strong>Q"+(i+1)+":</strong> "+escapeHTML(r.question)+
+          "<br><br><strong>Your Answer:</strong> "+escapeHTML(r.studentAnswer)+
+          "<br><br><strong>Model Answer:</strong><div class='answer-content'>"+formatAnswer(r.correctAnswer)+"</div>"+
+          "<br><strong>Source:</strong> "+escapeHTML(r.source)+
+          "<br><strong>Topic:</strong> "+escapeHTML(r.topic);
+        box.appendChild(div);
+    });
+}
+
+function escapeHTML(text){
+    const div=document.createElement("div"); div.textContent=text||""; return div.innerHTML;
+}
+
+function restartQuiz(){
+    document.getElementById("resultBox").style.display="none";
+    document.getElementById("quizBox").style.display="none";
+    document.getElementById("setupBox").style.display="block";
+    document.getElementById("subject").value="";
+    document.getElementById("topic").innerHTML='<option value="">-- Select Topic --</option>';
+    document.getElementById("topic").disabled=true;
+    document.getElementById("setupMessage").textContent="";
+}
+
+function goBack(){
+    window.location.assign("student.html");
+}
+
+document.addEventListener("DOMContentLoaded",()=>{
+    document.getElementById("topic").disabled=true;
+});
+</script>
+</body>
+</html>
