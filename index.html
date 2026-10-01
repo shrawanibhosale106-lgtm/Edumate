@@ -1,0 +1,1079 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EduMate — Learn, Practice, Improve</title>
+
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary: #5b5bd6;
+    --primary-dark: #4545ad;
+    --secondary: #7c5cff;
+    --text: #20213a;
+    --muted: #70738a;
+    --card: rgba(255,255,255,0.88);
+    --border: rgba(91,91,214,0.12);
+    --shadow: 0 18px 50px rgba(42,42,90,0.12);
+}
+
+body {
+    font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    color: var(--text);
+    background:
+        radial-gradient(circle at 10% 10%, rgba(124,92,255,.16), transparent 28%),
+        radial-gradient(circle at 90% 15%, rgba(91,91,214,.15), transparent 26%),
+        #f7f8ff;
+    min-height: 100vh;
+}
+
+button, input, select {
+    font: inherit;
+}
+
+.navbar {
+    width: min(1180px, 92%);
+    margin: 0 auto;
+    padding: 22px 0;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 24px;
+}
+
+.logo-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 13px;
+    display: grid;
+    place-items: center;
+    color: white;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 10px 25px rgba(91,91,214,.25);
+}
+
+.nav-links {
+    display: flex;
+    align-items: center;
+    gap: 26px;
+}
+
+.nav-links a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.nav-login {
+    border: 0;
+    background: #fff;
+    color: var(--primary);
+    padding: 11px 19px;
+    border-radius: 12px;
+    font-weight: 700;
+    cursor: pointer;
+    box-shadow: 0 8px 25px rgba(40,40,80,.08);
+}
+
+.hero {
+    width: min(1180px, 92%);
+    margin: 35px auto 0;
+    display: grid;
+    grid-template-columns: 1.1fr .9fr;
+    gap: 55px;
+    align-items: center;
+    min-height: 540px;
+}
+
+.badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(91,91,214,.09);
+    color: var(--primary);
+    padding: 9px 14px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 20px;
+}
+
+.hero h1 {
+    font-size: clamp(44px, 6vw, 72px);
+    line-height: .98;
+    letter-spacing: -3px;
+    margin-bottom: 22px;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+}
+
+.hero p {
+    color: var(--muted);
+    font-size: 18px;
+    line-height: 1.7;
+    max-width: 600px;
+}
+
+.hero-buttons {
+    display: flex;
+    gap: 14px;
+    margin-top: 30px;
+    flex-wrap: wrap;
+}
+
+.primary-btn, .secondary-btn {
+    border: 0;
+    border-radius: 14px;
+    padding: 14px 22px;
+    font-weight: 750;
+    cursor: pointer;
+}
+
+.primary-btn {
+    color: white;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    box-shadow: 0 12px 28px rgba(91,91,214,.25);
+}
+
+.secondary-btn {
+    color: var(--text);
+    background: white;
+    border: 1px solid var(--border);
+}
+
+.hero-visual {
+    position: relative;
+    min-height: 440px;
+    display: grid;
+    place-items: center;
+}
+
+.dashboard-card {
+    width: min(430px, 100%);
+    background: var(--card);
+    border: 1px solid rgba(255,255,255,.8);
+    border-radius: 28px;
+    padding: 24px;
+    box-shadow: var(--shadow);
+    backdrop-filter: blur(18px);
+    transform: rotate(2deg);
+}
+
+.mini-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 22px;
+}
+
+.avatar {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #ececff;
+}
+
+.progress-box {
+    padding: 18px;
+    border-radius: 18px;
+    background: linear-gradient(135deg, #f0efff, #fafaff);
+    margin-bottom: 15px;
+}
+
+.progress-line {
+    height: 8px;
+    background: #dedff0;
+    border-radius: 20px;
+    overflow: hidden;
+    margin-top: 12px;
+}
+
+.progress-line span {
+    display: block;
+    width: 72%;
+    height: 100%;
+    background: linear-gradient(90deg, var(--primary), var(--secondary));
+    border-radius: inherit;
+}
+
+.quick-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 12px;
+}
+
+.quick-item {
+    padding: 16px;
+    border-radius: 17px;
+    background: white;
+    border: 1px solid #eeeeF7;
+}
+
+.quick-item strong {
+    display: block;
+    margin-top: 8px;
+}
+
+.float-card {
+    position: absolute;
+    background: white;
+    padding: 14px 17px;
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    font-size: 13px;
+    font-weight: 700;
+}
+
+.float-one { top: 8%; right: -2%; }
+.float-two { bottom: 8%; left: -5%; }
+
+.features {
+    width: min(1180px, 92%);
+    margin: 25px auto 80px;
+}
+
+.section-heading {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+.section-heading h2 {
+    font-size: 34px;
+    margin-bottom: 10px;
+}
+
+.section-heading p {
+    color: var(--muted);
+}
+
+.feature-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+}
+
+.feature-card {
+    background: white;
+    padding: 25px;
+    border-radius: 22px;
+    border: 1px solid var(--border);
+    box-shadow: 0 10px 30px rgba(42,42,90,.06);
+}
+
+.feature-icon {
+    width: 48px;
+    height: 48px;
+    border-radius: 15px;
+    display: grid;
+    place-items: center;
+    background: #f0efff;
+    font-size: 22px;
+    margin-bottom: 17px;
+}
+
+.feature-card p {
+    color: var(--muted);
+    line-height: 1.6;
+    margin-top: 8px;
+    font-size: 14px;
+}
+
+.auth-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(24,25,48,.55);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    z-index: 100;
+}
+
+.auth-overlay.show {
+    display: flex;
+}
+
+.auth-card {
+    width: min(920px, 100%);
+    max-height: 92vh;
+    overflow-y: auto;
+    background: white;
+    border-radius: 28px;
+    box-shadow: 0 30px 90px rgba(20,20,50,.3);
+    display: grid;
+    grid-template-columns: .8fr 1.2fr;
+    overflow: hidden;
+}
+
+.auth-side {
+    padding: 40px;
+    color: white;
+    background: linear-gradient(145deg, #4d4dc0, #7c5cff);
+}
+
+.auth-side h2 {
+    font-size: 34px;
+    margin: 35px 0 15px;
+}
+
+.auth-side p {
+    opacity: .88;
+    line-height: 1.7;
+}
+
+.auth-side ul {
+    list-style: none;
+    margin-top: 28px;
+}
+
+.auth-side li {
+    margin: 15px 0;
+}
+
+.auth-form {
+    padding: 35px;
+}
+
+.auth-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.close-btn {
+    border: 0;
+    background: #f2f2f8;
+    width: 38px;
+    height: 38px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 18px;
+}
+
+.auth-tabs {
+    display: flex;
+    background: #f4f4fa;
+    padding: 5px;
+    border-radius: 12px;
+    margin-bottom: 22px;
+}
+
+.auth-tabs button {
+    flex: 1;
+    border: 0;
+    background: transparent;
+    padding: 11px;
+    border-radius: 9px;
+    cursor: pointer;
+    font-weight: 700;
+    color: var(--muted);
+}
+
+.auth-tabs button.active {
+    background: white;
+    color: var(--primary);
+    box-shadow: 0 4px 12px rgba(0,0,0,.06);
+}
+
+.auth-panel {
+    display: none;
+}
+
+.auth-panel.active {
+    display: block;
+}
+
+.form-group {
+    margin-bottom: 14px;
+}
+
+.form-group label {
+    display: block;
+    font-size: 13px;
+    font-weight: 700;
+    margin-bottom: 7px;
+}
+
+.form-group input, .form-group select {
+    width: 100%;
+    padding: 13px 14px;
+    border: 1px solid #ddddec;
+    border-radius: 11px;
+    outline: none;
+    background: #fafaff;
+}
+
+.form-group input:focus, .form-group select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(91,91,214,.09);
+}
+
+.password-row {
+    display: flex;
+    gap: 8px;
+}
+
+.password-row input {
+    flex: 1;
+}
+
+.eye-btn {
+    width: 46px;
+    border: 1px solid #ddddec;
+    border-radius: 11px;
+    background: white;
+    cursor: pointer;
+}
+
+.form-submit {
+    width: 100%;
+    margin-top: 8px;
+    padding: 14px;
+    border: 0;
+    border-radius: 12px;
+    color: white;
+    font-weight: 800;
+    cursor: pointer;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+}
+
+.form-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+.form-options {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 13px;
+    margin: 5px 0 15px;
+}
+
+.form-options button {
+    border: 0;
+    background: transparent;
+    color: var(--primary);
+    cursor: pointer;
+    font-weight: 700;
+}
+
+.remember {
+    display: flex;
+    gap: 7px;
+    align-items: center;
+}
+
+@media (max-width: 850px) {
+    .hero {
+        grid-template-columns: 1fr;
+        text-align: center;
+    }
+
+    .hero p {
+        margin: auto;
+    }
+
+    .hero-buttons {
+        justify-content: center;
+    }
+
+    .hero-visual {
+        min-height: 400px;
+    }
+
+    .feature-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .auth-card {
+        grid-template-columns: 1fr;
+    }
+
+    .auth-side {
+        display: none;
+    }
+}
+
+@media (max-width: 600px) {
+    .nav-links a {
+        display: none;
+    }
+
+    .hero h1 {
+        font-size: 46px;
+    }
+
+    .feature-grid, .form-row {
+        grid-template-columns: 1fr;
+    }
+
+    .dashboard-card {
+        transform: none;
+    }
+
+    .float-one, .float-two {
+        display: none;
+    }
+}
+</style>
+</head>
+
+<body>
+
+<header class="navbar">
+    <div class="logo">
+        <div class="logo-icon">📚</div>
+        EduMate
+    </div>
+
+    <nav class="nav-links">
+        <a href="#features">Features</a>
+        <a href="#about">About</a>
+        <button class="nav-login" onclick="openAuth('login')">Login</button>
+    </nav>
+</header>
+
+<main>
+<section class="hero" id="about">
+    <div>
+        <div class="badge">✨ Your Digital Learning Companion</div>
+
+        <h1>
+            Learn Smarter.<br>
+            <span class="gradient-text">Practice Better.</span>
+        </h1>
+
+        <p>
+            EduMate brings notes, AI learning, practicals, viva preparation,
+            assignments and performance tracking together in one student-friendly platform.
+        </p>
+
+        <div class="hero-buttons">
+            <button class="primary-btn" onclick="openAuth('register')">
+                Get Started →
+            </button>
+
+            <button class="secondary-btn" onclick="openAuth('login')">
+                I already have an account
+            </button>
+        </div>
+    </div>
+
+    <div class="hero-visual">
+        <div class="float-card float-one">🤖 AI Learn</div>
+
+        <div class="dashboard-card">
+            <div class="mini-header">
+                <div>
+                    <small style="color:#777;">Welcome back</small>
+                    <h3>Student Dashboard</h3>
+                </div>
+                <div class="avatar">👩‍🎓</div>
+            </div>
+
+            <div class="progress-box">
+                <small>Overall Learning Progress</small>
+                <h2 style="margin-top:7px;">72%</h2>
+                <div class="progress-line"><span></span></div>
+            </div>
+
+            <div class="quick-grid">
+                <div class="quick-item">
+                    📖
+                    <strong>Smart Notes</strong>
+                    <small style="color:#777;">Learn topics</small>
+                </div>
+
+                <div class="quick-item">
+                    🧪
+                    <strong>Practicals</strong>
+                    <small style="color:#777;">Practice</small>
+                </div>
+
+                <div class="quick-item">
+                    🎤
+                    <strong>Viva</strong>
+                    <small style="color:#777;">Prepare</small>
+                </div>
+
+                <div class="quick-item">
+                    📊
+                    <strong>Analytics</strong>
+                    <small style="color:#777;">Track progress</small>
+                </div>
+            </div>
+        </div>
+
+        <div class="float-card float-two">📈 Progress tracked</div>
+    </div>
+</section>
+
+<section class="features" id="features">
+    <div class="section-heading">
+        <h2>Everything you need to learn</h2>
+        <p>Designed to grow from a simple student tool into a complete learning platform.</p>
+    </div>
+
+    <div class="feature-grid">
+        <div class="feature-card">
+            <div class="feature-icon">🤖</div>
+            <h3>AI Learn</h3>
+            <p>Understand difficult topics with simple explanations and guided learning.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📖</div>
+            <h3>Smart Notes</h3>
+            <p>Access subject-wise and topic-wise notes without mixing content between chapters.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🧪</div>
+            <h3>Practicals</h3>
+            <p>Keep practical work, instructions and submissions organized in one place.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎤</div>
+            <h3>Viva Preparation</h3>
+            <p>Prepare oral questions topic by topic before practical examinations.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📝</div>
+            <h3>Assignments</h3>
+            <p>See assigned work, due dates and submission status clearly.</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Performance</h3>
+            <p>Track learning activity and identify areas that need more practice.</p>
+        </div>
+    </div>
+</section>
+</main>
+
+<!-- AUTH MODAL -->
+<div class="auth-overlay" id="authOverlay">
+    <div class="auth-card">
+
+        <div class="auth-side">
+            <div class="logo">
+                <div class="logo-icon">📚</div>
+                EduMate
+            </div>
+
+            <h2>Learn, Practice, Improve.</h2>
+
+            <p>
+                Your subjects, notes, practicals, viva preparation and
+                learning progress — organized in one place.
+            </p>
+
+            <ul>
+                <li>✓ Subject-wise learning</li>
+                <li>✓ Topic-wise notes</li>
+                <li>✓ AI-powered learning</li>
+                <li>✓ Student performance tracking</li>
+            </ul>
+        </div>
+
+        <div class="auth-form">
+            <div class="auth-top">
+                <div>
+                    <h2>Welcome to EduMate</h2>
+                    <p style="color:#777; margin-top:5px;">Access your learning workspace.</p>
+                </div>
+
+                <button class="close-btn" onclick="closeAuth()">✕</button>
+            </div>
+
+            <div class="auth-tabs">
+                <button id="loginTab" class="active" onclick="switchAuth('login')">Login</button>
+                <button id="registerTab" onclick="switchAuth('register')">Register</button>
+            </div>
+
+            <!-- LOGIN -->
+            <div class="auth-panel active" id="loginPanel">
+                <div class="form-group">
+                    <label>Enter Email</label>
+                    <input type="email" id="email" placeholder="you@example.com">
+                </div>
+
+                <div class="form-group">
+                    <label>Password</label>
+                    <div class="password-row">
+                        <input type="password" id="password" placeholder="Enter your password">
+                        <button class="eye-btn" type="button" onclick="showPassword()">👁️</button>
+                    </div>
+                </div>
+
+                <div class="form-options">
+                    <label class="remember">
+                        <input type="checkbox" id="remember">
+                        Remember Me
+                    </label>
+
+                    <button type="button" onclick="forgotPassword()">Forgot Password?</button>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Role</label>
+                    <select id="role">
+                        <option value="">Select Role</option>
+                        <option value="Student">Student</option>
+                        <option value="Teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <button class="form-submit" type="button" onclick="login()">Login to EduMate</button>
+
+                <button
+                    type="button"
+                    onclick="resetForm()"
+                    style="width:100%;margin-top:10px;border:0;background:transparent;color:#777;cursor:pointer;padding:8px;"
+                >
+                    Clear form
+                </button>
+            </div>
+
+            <!-- REGISTER -->
+            <div class="auth-panel" id="registerPanel">
+                <div class="form-group">
+                    <label>Full Name</label>
+                    <input type="text" id="regName" placeholder="Enter your name">
+                </div>
+
+                <div class="form-group">
+                    <label>Email</label>
+                    <input type="email" id="regEmail" placeholder="you@example.com">
+                </div>
+
+                <div class="form-row">
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="regPassword" placeholder="Create password">
+                    </div>
+
+                    <div class="form-group">
+                        <label>Confirm Password</label>
+                        <input type="password" id="regConfirmPassword" placeholder="Confirm password">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Select Role</label>
+                    <select id="regRole">
+                        <option value="">Select Role</option>
+                        <option value="Student">Student</option>
+                        <option value="Teacher">Teacher</option>
+                    </select>
+                </div>
+
+                <button class="form-submit" type="button" onclick="register()">Create EduMate Account</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function openAuth(mode) {
+    document.getElementById("authOverlay").classList.add("show");
+    switchAuth(mode || "login");
+}
+
+function closeAuth() {
+    document.getElementById("authOverlay").classList.remove("show");
+}
+
+function switchAuth(mode) {
+    const loginPanel = document.getElementById("loginPanel");
+    const registerPanel = document.getElementById("registerPanel");
+    const loginTab = document.getElementById("loginTab");
+    const registerTab = document.getElementById("registerTab");
+
+    if (mode === "register") {
+        loginPanel.classList.remove("active");
+        registerPanel.classList.add("active");
+        loginTab.classList.remove("active");
+        registerTab.classList.add("active");
+    } else {
+        registerPanel.classList.remove("active");
+        loginPanel.classList.add("active");
+        registerTab.classList.remove("active");
+        loginTab.classList.add("active");
+    }
+}
+
+document.getElementById("authOverlay").addEventListener("click", function(event) {
+    if (event.target === this) closeAuth();
+});
+
+/* ================= REGISTER ================= */
+
+function register() {
+
+    let name = document.getElementById("regName").value;
+    
+    let email = document.getElementById("regEmail").value;
+    
+    let password = document.getElementById("regPassword").value;
+    
+    let confirmPassword =
+        document.getElementById("regConfirmPassword").value;
+        
+    let role = document.getElementById("regRole").value;
+
+    if (name == "" || email == "" || password == "" ||
+        confirmPassword == "" || role == "") {
+
+        alert("Please fill all registration fields");
+        return;
+    }
+
+    if (password != confirmPassword) {
+
+        alert("Passwords do not match");
+        return;
+    }
+
+    /* Get existing users */
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    /* Check duplicate email */
+
+    let existingUser = users.find(function(user) {
+        return user.email == email;
+    });
+
+    if (existingUser) {
+
+        alert("This email is already registered");
+        return;
+    }
+
+    /* Create new user */
+
+    let newUser = {
+        name: name,
+        email: email,
+        password: password,
+        role: role
+    };
+
+    users.push(newUser);
+
+    /* Save users */
+
+    localStorage.setItem("users", JSON.stringify(users));
+
+    alert("Registration successful!");
+
+    /* Clear registration form */
+
+    document.getElementById("regName").value = "";
+    document.getElementById("regEmail").value = "";
+    document.getElementById("regPassword").value = "";
+    document.getElementById("regConfirmPassword").value = "";
+    document.getElementById("regRole").selectedIndex = 0;
+}
+
+
+/* ================= LOGIN ================= */
+
+function login() {
+
+    let email = document.getElementById("email").value;
+    let password = document.getElementById("password").value;
+    let role = document.getElementById("role").value;
+
+    if (email == "" || password == "" || role == "") {
+        alert("Please enter all login details");
+        return;
+    }
+
+    let users = JSON.parse(localStorage.getItem("users")) || [];
+
+    let user = users.find(function(user) {
+
+        return user.email == email &&
+               user.password == password &&
+               user.role == role;
+
+    });
+
+    if (user) {
+
+        alert("Login successful! Welcome " + user.name);
+
+        /* Save current logged-in user */
+        localStorage.setItem("currentUser", JSON.stringify(user));
+
+        /* Remember email */
+        if (document.getElementById("remember").checked) {
+            localStorage.setItem("rememberedEmail", email);
+        }
+        else {
+            localStorage.removeItem("rememberedEmail");
+        }
+
+        /* Open correct page */
+        if (role == "Student") {
+            window.location.href = "student.html";
+        }
+        else if (role == "Teacher") {
+            window.location.href = "teacher.html";
+        }
+
+    }
+    else {
+
+        alert("Incorrect email, password or role");
+
+    }
+}
+
+
+
+/* ================= SHOW / HIDE PASSWORD ================= */
+
+function showPassword() {
+
+    let password =
+        document.getElementById("password");
+
+    if (password.type == "password") {
+
+        password.type = "text";
+
+    }
+    else {
+
+        password.type = "password";
+
+    }
+}
+
+
+/* ================= FORGOT PASSWORD ================= */
+
+function forgotPassword() {
+
+    let users =
+        JSON.parse(localStorage.getItem("users")) || [];
+
+    if (users.length == 0) {
+
+        alert("No registered account found");
+        return;
+    }
+
+    let email =
+        prompt("Enter your registered email");
+
+    if (email == null || email == "") {
+
+        return;
+    }
+
+    let user = users.find(function(user) {
+
+        return user.email == email;
+
+    });
+
+
+    if (user) {
+
+        let newPassword =
+            prompt("Enter your new password");
+
+        if (newPassword != null && newPassword != "") {
+
+            user.password = newPassword;
+
+            localStorage.setItem(
+                "users",
+                JSON.stringify(users)
+            );
+
+            alert("Password reset successfully!");
+
+        }
+        else {
+
+            alert("Password cannot be empty");
+
+        }
+
+    }
+    else {
+
+        alert("Email not found");
+
+    }
+}
+
+
+/* ================= RESET LOGIN FORM ================= */
+
+function resetForm() {
+
+    document.getElementById("email").value = "";
+
+    document.getElementById("password").value = "";
+
+    document.getElementById("role").selectedIndex = 0;
+
+    document.getElementById("remember").checked = false;
+
+}
+
+
+/* ================= REMEMBERED EMAIL ================= */
+
+window.onload = function() {
+
+    let rememberedEmail =
+        localStorage.getItem("rememberedEmail");
+
+    if (rememberedEmail != null) {
+
+        document.getElementById("email").value =
+            rememberedEmail;
+
+        document.getElementById("remember").checked = true;
+    }
+
+};
+</script>
+
+</body>
+</html>
