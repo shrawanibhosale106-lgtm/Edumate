@@ -1,0 +1,1387 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta charset="UTF-8">
+
+<title>EduMate - My Progress</title>
+
+<!-- IMPORTANT:
+     Keep cirriculum.js in the same folder as this file.
+-->
+<script src="cirriculum.js"></script>
+
+<style>
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: Arial, sans-serif;
+    background-color: #f4f6f9;
+    padding: 25px;
+    color: #222;
+}
+
+.container {
+    max-width: 950px;
+    margin: auto;
+}
+
+h1 {
+    text-align: center;
+    margin-bottom: 8px;
+}
+
+.subtitle {
+    text-align: center;
+    color: #666;
+    margin-bottom: 25px;
+}
+
+
+/* =========================
+   OVERALL
+========================= */
+
+.overall {
+    background: white;
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.overall h2 {
+    margin-bottom: 12px;
+}
+
+.overall-score {
+    font-size: 48px;
+    font-weight: bold;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    width: 100%;
+    height: 20px;
+    background-color: #ddd;
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+.progress-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #4CAF50;
+    transition: width 0.5s;
+}
+
+
+/* =========================
+   SUMMARY
+========================= */
+
+.summary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.summary-box {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    text-align: center;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.summary-icon {
+    font-size: 28px;
+}
+
+.summary-number {
+    font-size: 24px;
+    font-weight: bold;
+    margin-top: 5px;
+}
+
+.summary-label {
+    color: #666;
+    font-size: 14px;
+    margin-top: 4px;
+}
+
+
+/* =========================
+   SUBJECT PROGRESS
+========================= */
+
+.section-title {
+    margin: 25px 0 12px;
+}
+
+.subject-card {
+    background: white;
+    padding: 18px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.08);
+}
+
+.subject-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
+.subject-name {
+    font-weight: bold;
+}
+
+.subject-percent {
+    font-weight: bold;
+}
+
+.subject-info {
+    color: #666;
+    font-size: 13px;
+    margin-bottom: 8px;
+}
+
+.card-bar {
+    width: 100%;
+    height: 11px;
+    background-color: #ddd;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.card-fill {
+    height: 100%;
+    width: 0%;
+    background-color: #2196F3;
+    transition: width 0.5s;
+}
+
+
+/* =========================
+   PROGRESS CARDS
+========================= */
+
+.cards {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 18px;
+}
+
+.card {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.card h2 {
+    margin-bottom: 8px;
+}
+
+.percentage {
+    font-size: 30px;
+    font-weight: bold;
+    margin: 8px 0;
+}
+
+.card-info {
+    color: #666;
+    font-size: 14px;
+    margin-bottom: 10px;
+}
+
+
+/* =========================
+   RECOMMENDATION
+========================= */
+
+.recommendation {
+    background: white;
+    padding: 20px;
+    border-radius: 15px;
+    margin-top: 25px;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
+.recommendation h2 {
+    margin-bottom: 10px;
+}
+
+.recommendation p {
+    color: #555;
+    line-height: 1.5;
+}
+
+
+/* =========================
+   BACK BUTTON
+========================= */
+
+.back-btn {
+    display: block;
+    margin: 30px auto 0;
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+    font-size: 16px;
+}
+
+.back-btn:hover {
+    background-color: #555;
+}
+
+
+/* =========================
+   MOBILE
+========================= */
+
+@media screen and (max-width: 768px) {
+
+    body {
+        padding: 12px;
+    }
+
+    .container {
+        width: 100%;
+    }
+
+    h1 {
+        font-size: 25px;
+    }
+
+    .summary {
+        grid-template-columns: 1fr;
+    }
+
+    .cards {
+        grid-template-columns: 1fr;
+    }
+
+    .overall {
+        padding: 18px;
+    }
+
+    .overall-score {
+        font-size: 40px;
+    }
+
+    .card {
+        padding: 16px;
+    }
+
+    .subject-card {
+        padding: 15px;
+    }
+
+    .back-btn {
+        width: 100%;
+    }
+}
+
+</style>
+</head>
+
+
+<body>
+
+<div class="container">
+
+    <h1>📊 My Progress</h1>
+
+    <p class="subtitle">
+        Track your EduMate learning journey 🚀
+    </p>
+
+
+    <!-- =========================
+         OVERALL PROGRESS
+    ========================== -->
+
+    <div class="overall">
+
+        <h2>⭐ Overall Progress</h2>
+
+        <div class="overall-score" id="overallScore">
+            0%
+        </div>
+
+        <div class="progress-bar">
+            <div
+                class="progress-fill"
+                id="overallFill">
+            </div>
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         QUICK SUMMARY
+    ========================== -->
+
+    <div class="summary">
+
+        <div class="summary-box">
+
+            <div class="summary-icon">
+                📚
+            </div>
+
+            <div
+                class="summary-number"
+                id="completedLearning">
+                0
+            </div>
+
+            <div class="summary-label">
+                Topics Completed
+            </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+            <div class="summary-icon">
+                🧪
+            </div>
+
+            <div
+                class="summary-number"
+                id="practicalCount">
+                0
+            </div>
+
+            <div class="summary-label">
+                Practicals Completed
+            </div>
+
+        </div>
+
+
+        <div class="summary-box">
+
+            <div class="summary-icon">
+                ❓
+            </div>
+
+            <div
+                class="summary-number"
+                id="doubtCount">
+                0
+            </div>
+
+            <div class="summary-label">
+                Doubts Asked
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================
+         SUBJECT PROGRESS
+    ========================== -->
+
+    <h2 class="section-title">
+        📚 Subject-wise Progress
+    </h2>
+
+    <div id="subjectProgress">
+
+        <p>
+            Loading subject progress...
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         OTHER PROGRESS
+    ========================== -->
+
+    <h2 class="section-title">
+        📈 Other Activities
+    </h2>
+
+
+    <div class="cards">
+
+
+        <!-- LEARNING -->
+
+        <div class="card">
+
+            <h2>
+                📖 Learning
+            </h2>
+
+            <div
+                class="percentage"
+                id="learnPercentage">
+                0%
+            </div>
+
+            <div
+                class="card-info"
+                id="learnInfo">
+                0 of 0 subtopics completed
+            </div>
+
+            <div class="card-bar">
+
+                <div
+                    class="card-fill"
+                    id="learnFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- PRACTICAL -->
+
+        <div class="card">
+
+            <h2>
+                🧪 Practicals
+            </h2>
+
+            <div
+                class="percentage"
+                id="practicalPercentage">
+                0
+            </div>
+
+            <div
+                class="card-info"
+                id="practicalInfo">
+                Practicals completed
+            </div>
+
+        </div>
+
+
+        <!-- VIVA -->
+
+        <div class="card">
+
+            <h2>
+                🎤 Viva
+            </h2>
+
+            <div
+                class="percentage"
+                id="vivaPercentage">
+                0%
+            </div>
+
+            <div
+                class="card-info"
+                id="vivaInfo">
+                No viva attempt yet
+            </div>
+
+            <div class="card-bar">
+
+                <div
+                    class="card-fill"
+                    id="vivaFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- DOUBTS -->
+
+        <div class="card">
+
+            <h2>
+                ❓ Doubts
+            </h2>
+
+            <div
+                class="percentage"
+                id="doubtPercentage">
+                0%
+            </div>
+
+            <div
+                class="card-info"
+                id="doubtInfo">
+                No doubts asked yet
+            </div>
+
+            <div class="card-bar">
+
+                <div
+                    class="card-fill"
+                    id="doubtFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- STUDY PLANS -->
+
+        <div class="card">
+
+            <h2>
+                📝 Study Plans
+            </h2>
+
+            <div
+                class="percentage"
+                id="planPercentage">
+                0%
+            </div>
+
+            <div
+                class="card-info"
+                id="planInfo">
+                No study plan data available
+            </div>
+
+            <div class="card-bar">
+
+                <div
+                    class="card-fill"
+                    id="planFill">
+                </div>
+
+            </div>
+
+        </div>
+
+
+    </div>
+
+
+    <!-- =========================
+         RECOMMENDATION
+    ========================== -->
+
+    <div class="recommendation">
+
+        <h2>
+            🎯 Recommended Next Step
+        </h2>
+
+        <p id="recommendationText">
+            Complete a few learning topics to build your progress.
+        </p>
+
+    </div>
+
+
+    <!-- =========================
+         BACK
+    ========================== -->
+
+    <button
+        class="back-btn"
+        onclick="goBack()">
+
+        ← Back to Dashboard
+
+    </button>
+
+</div>
+
+
+<script>
+
+
+/* ==================================================
+   CHECK LOGGED-IN STUDENT
+================================================== */
+
+/*
+   NEW LOGIN SYSTEM:
+   sessionStorage → loggedInUser
+*/
+
+let currentUser =
+    JSON.parse(
+        sessionStorage.getItem("loggedInUser")
+    );
+
+
+/*
+   Small fallback for older login data.
+   This helps during development if an older
+   page still uses currentUser.
+*/
+
+if (!currentUser) {
+
+    currentUser =
+        JSON.parse(
+            localStorage.getItem("currentUser")
+        );
+
+}
+
+
+if (!currentUser) {
+
+    window.location.href = "index.html";
+
+}
+
+
+/* ==================================================
+   USER EMAIL
+================================================== */
+
+const userEmail = currentUser.email;
+
+
+/* ==================================================
+   GET COMPLETED LEARNING TOPICS
+================================================== */
+
+let completedTopics =
+    JSON.parse(
+        localStorage.getItem(
+            "completedTopics_" + userEmail
+        )
+    ) || [];
+
+
+/* Remove duplicate completed topics */
+
+completedTopics =
+    [...new Set(completedTopics)];
+
+
+/* ==================================================
+   CALCULATE TOTAL SUBTOPICS
+================================================== */
+
+let totalSubtopics = 0;
+
+
+/*
+   syllabusData comes from cirriculum.js
+*/
+
+if (typeof syllabusData !== "undefined") {
+
+    for (let subjectKey in syllabusData) {
+
+        let subject =
+            syllabusData[subjectKey];
+
+        if (!subject.units) continue;
+
+        subject.units.forEach(function(unit) {
+
+            if (!unit.topics) return;
+
+            unit.topics.forEach(function(topic) {
+
+                if (topic.subtopics) {
+
+                    totalSubtopics +=
+                        topic.subtopics.length;
+
+                }
+
+            });
+
+        });
+
+    }
+
+}
+
+
+/* ==================================================
+   OVERALL LEARNING PROGRESS
+================================================== */
+
+let learnProgress = 0;
+
+if (totalSubtopics > 0) {
+
+    learnProgress =
+        Math.round(
+            (
+                completedTopics.length /
+                totalSubtopics
+            ) * 100
+        );
+
+}
+
+
+/* Keep between 0 and 100 */
+
+learnProgress =
+    Math.max(
+        0,
+        Math.min(100, learnProgress)
+    );
+
+
+/* ==================================================
+   SUBJECT-WISE PROGRESS
+================================================== */
+
+function calculateSubjectProgress(
+    subjectKey
+) {
+
+    if (
+        typeof syllabusData === "undefined" ||
+        !syllabusData[subjectKey]
+    ) {
+
+        return {
+            completed: 0,
+            total: 0,
+            percentage: 0
+        };
+
+    }
+
+
+    let subject =
+        syllabusData[subjectKey];
+
+    let total = 0;
+    let completed = 0;
+
+
+    subject.units.forEach(function(unit, unitIndex) {
+
+        unit.topics.forEach(function(topic, topicIndex) {
+
+            topic.subtopics.forEach(function(subtopic) {
+
+                total++;
+
+
+                /*
+                   Same key format used in learn.html
+                */
+
+                let key =
+                    subjectKey +
+                    "_" +
+                    unitIndex +
+                    "_" +
+                    topicIndex +
+                    "_" +
+                    subtopic;
+
+
+                if (
+                    completedTopics.includes(key)
+                ) {
+
+                    completed++;
+
+                }
+
+            });
+
+        });
+
+    });
+
+
+    let percentage = 0;
+
+    if (total > 0) {
+
+        percentage =
+            Math.round(
+                (completed / total) * 100
+            );
+
+    }
+
+
+    return {
+        completed: completed,
+        total: total,
+        percentage: percentage
+    };
+
+}
+
+
+/* ==================================================
+   SUBJECT NAME / ICON
+================================================== */
+
+const subjectIcons = {
+
+    HDBS: "🗄️",
+    HDLD: "🔌",
+    HOOP: "💻",
+    HCLS: "🌐",
+    HCON: "🌍",
+    HEIC: "📜"
+
+};
+
+
+/* ==================================================
+   DISPLAY SUBJECT PROGRESS
+================================================== */
+
+function displaySubjectProgress() {
+
+    let box =
+        document.getElementById(
+            "subjectProgress"
+        );
+
+
+    box.innerHTML = "";
+
+
+    if (
+        typeof syllabusData === "undefined"
+    ) {
+
+        box.innerHTML =
+            "<p>⚠️ Syllabus data could not be loaded.</p>";
+
+        return;
+
+    }
+
+
+    for (
+        let subjectKey in syllabusData
+    ) {
+
+        let subject =
+            syllabusData[subjectKey];
+
+
+        let result =
+            calculateSubjectProgress(
+                subjectKey
+            );
+
+
+        let card =
+            document.createElement("div");
+
+        card.className =
+            "subject-card";
+
+
+        let icon =
+            subjectIcons[subjectKey] || "📘";
+
+
+        card.innerHTML = `
+
+            <div class="subject-top">
+
+                <div class="subject-name">
+
+                    ${icon}
+                    ${subject.subjectName}
+
+                </div>
+
+                <div class="subject-percent">
+
+                    ${result.percentage}%
+
+                </div>
+
+            </div>
+
+
+            <div class="subject-info">
+
+                ${result.completed}
+                of
+                ${result.total}
+                subtopics completed
+
+            </div>
+
+
+            <div class="card-bar">
+
+                <div
+                    class="card-fill"
+                    style="width:${result.percentage}%">
+
+                </div>
+
+            </div>
+
+        `;
+
+
+        box.appendChild(card);
+
+    }
+
+}
+
+
+/* ==================================================
+   PRACTICAL PROGRESS
+================================================== */
+
+let practicalCount =
+    Number(
+        localStorage.getItem(
+            "practicalCount_" + userEmail
+        )
+    ) || 0;
+
+
+/*
+   We currently know how many practicals
+   are completed, but the existing storage
+   does not tell us the total number.
+
+   Therefore we DO NOT falsely show 100%.
+*/
+
+document.getElementById(
+    "practicalCount"
+).innerHTML = practicalCount;
+
+
+document.getElementById(
+    "practicalPercentage"
+).innerHTML =
+    practicalCount;
+
+
+document.getElementById(
+    "practicalInfo"
+).innerHTML =
+    practicalCount === 1
+        ? "1 practical completed"
+        : practicalCount + " practicals completed";
+
+
+/* ==================================================
+   VIVA PROGRESS
+================================================== */
+
+let vivaData =
+    JSON.parse(
+        localStorage.getItem(
+            "vivaScore_" + userEmail
+        )
+    );
+
+
+let vivaPercentage = 0;
+
+
+if (
+    vivaData &&
+    vivaData.total > 0
+) {
+
+    vivaPercentage =
+        Math.round(
+            (
+                vivaData.score /
+                vivaData.total
+            ) * 100
+        );
+
+
+    document.getElementById(
+        "vivaInfo"
+    ).innerHTML =
+        "Score: " +
+        vivaData.score +
+        " / " +
+        vivaData.total;
+
+}
+
+
+document.getElementById(
+    "vivaPercentage"
+).innerHTML =
+    vivaPercentage + "%";
+
+
+document.getElementById(
+    "vivaFill"
+).style.width =
+    vivaPercentage + "%";
+
+
+/* ==================================================
+   DOUBTS PROGRESS
+================================================== */
+
+let allDoubts =
+    JSON.parse(
+        localStorage.getItem("doubts")
+    ) || [];
+
+
+let userDoubts =
+    allDoubts.filter(function(doubt) {
+
+        return (
+            doubt.studentEmail ==
+            userEmail
+        );
+
+    });
+
+
+let answeredDoubts =
+    userDoubts.filter(function(doubt) {
+
+        return (
+            doubt.status == "Answered"
+        );
+
+    });
+
+
+let doubtProgress = 0;
+
+
+if (userDoubts.length > 0) {
+
+    doubtProgress =
+        Math.round(
+            (
+                answeredDoubts.length /
+                userDoubts.length
+            ) * 100
+        );
+
+}
+
+
+document.getElementById(
+    "doubtCount"
+).innerHTML =
+    userDoubts.length;
+
+
+document.getElementById(
+    "doubtPercentage"
+).innerHTML =
+    doubtProgress + "%";
+
+
+document.getElementById(
+    "doubtFill"
+).style.width =
+    doubtProgress + "%";
+
+
+if (userDoubts.length > 0) {
+
+    document.getElementById(
+        "doubtInfo"
+    ).innerHTML =
+        answeredDoubts.length +
+        " answered • " +
+        (
+            userDoubts.length -
+            answeredDoubts.length
+        ) +
+        " pending";
+
+}
+
+
+/* ==================================================
+   STUDY PLAN PROGRESS
+================================================== */
+
+let plans =
+    JSON.parse(
+        localStorage.getItem("studyPlans")
+    ) || [];
+
+
+let completedPlans = 0;
+
+
+/*
+   Try common completion fields.
+
+   This keeps the page compatible with
+   different versions of the study planner.
+*/
+
+plans.forEach(function(plan) {
+
+    if (
+        plan.completed === true ||
+        plan.completed === "true" ||
+        plan.status === "Completed" ||
+        plan.status === "completed" ||
+        plan.isCompleted === true
+    ) {
+
+        completedPlans++;
+
+    }
+
+});
+
+
+let planProgress = 0;
+
+
+if (plans.length > 0) {
+
+    planProgress =
+        Math.round(
+            (
+                completedPlans /
+                plans.length
+            ) * 100
+        );
+
+}
+
+
+document.getElementById(
+    "planPercentage"
+).innerHTML =
+    planProgress + "%";
+
+
+document.getElementById(
+    "planFill"
+).style.width =
+    planProgress + "%";
+
+
+if (plans.length > 0) {
+
+    document.getElementById(
+        "planInfo"
+    ).innerHTML =
+        completedPlans +
+        " of " +
+        plans.length +
+        " tasks completed";
+
+}
+
+
+/* ==================================================
+   LEARNING DISPLAY
+================================================== */
+
+document.getElementById(
+    "completedLearning"
+).innerHTML =
+    completedTopics.length;
+
+
+document.getElementById(
+    "learnPercentage"
+).innerHTML =
+    learnProgress + "%";
+
+
+document.getElementById(
+    "learnFill"
+).style.width =
+    learnProgress + "%";
+
+
+document.getElementById(
+    "learnInfo"
+).innerHTML =
+    completedTopics.length +
+    " of " +
+    totalSubtopics +
+    " subtopics completed";
+
+
+/* ==================================================
+   OVERALL PROGRESS
+================================================== */
+
+/*
+   Learning = strongest indicator.
+
+   Other sections use the data currently
+   available in the project.
+*/
+
+let progressValues = [
+    learnProgress,
+    vivaPercentage,
+    doubtProgress,
+    planProgress
+];
+
+
+/*
+   Only include practical percentage
+   when a practical total is available.
+
+   Current system stores count only,
+   so it is not included in the percentage
+   calculation.
+*/
+
+let validValues =
+    progressValues.filter(function(value) {
+
+        return typeof value === "number";
+
+    });
+
+
+let overall = 0;
+
+
+if (validValues.length > 0) {
+
+    overall =
+        Math.round(
+            validValues.reduce(
+                function(sum, value) {
+                    return sum + value;
+                },
+                0
+            ) /
+            validValues.length
+        );
+
+}
+
+
+document.getElementById(
+    "overallScore"
+).innerHTML =
+    overall + "%";
+
+
+document.getElementById(
+    "overallFill"
+).style.width =
+    overall + "%";
+
+
+/* ==================================================
+   RECOMMENDATION
+================================================== */
+
+function generateRecommendation() {
+
+    let recommendation =
+        document.getElementById(
+            "recommendationText"
+        );
+
+
+    if (learnProgress < 25) {
+
+        recommendation.innerHTML =
+            "📚 Start completing subtopics in the Learning section. Your first goal should be to complete a few topics from each subject.";
+
+        return;
+
+    }
+
+
+    if (learnProgress < 50) {
+
+        recommendation.innerHTML =
+            "🔥 Good start! Continue completing subtopics and try to keep your subjects balanced.";
+
+        return;
+
+    }
+
+
+    if (learnProgress < 75) {
+
+        recommendation.innerHTML =
+            "🚀 You are making strong progress! Focus on the subjects with the lowest percentages.";
+
+        return;
+
+    }
+
+
+    if (learnProgress < 100) {
+
+        recommendation.innerHTML =
+            "🏆 Almost there! Complete the remaining subtopics to finish your Learning syllabus.";
+
+        return;
+
+    }
+
+
+    recommendation.innerHTML =
+        "🎉 Excellent! You have completed all available Learning subtopics. Keep revising and practicing.";
+
+}
+
+
+/* ==================================================
+   START PAGE
+================================================== */
+
+displaySubjectProgress();
+
+generateRecommendation();
+
+
+/* ==================================================
+   BACK TO DASHBOARD
+================================================== */
+
+function goBack() {
+
+    window.location.href =
+        "student.html";
+
+}
+
+</script>
+
+</body>
+</html>
