@@ -1,0 +1,3302 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>EduMate - Student Dashboard</title>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script src="cirriculum.js"></script>
+
+<style>
+
+*{
+    box-sizing:border-box;
+    margin:0;
+    padding:0;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:#f5f7ff;
+    color:#172033;
+    overflow-x:hidden;
+}
+
+/* ================= HEADER ================= */
+
+header{
+    background:linear-gradient(135deg,#4338ca,#6366f1,#7c3aed);
+    color:white;
+    text-align:center;
+    padding:28px 15px;
+}
+
+header h1{
+    font-size:30px;
+    margin-bottom:7px;
+}
+
+header p{
+    font-size:14px;
+    opacity:.85;
+}
+
+/* ================= APP ================= */
+
+.app{
+    display:flex;
+    min-height:calc(100vh - 105px);
+}
+
+/* ================= SIDEBAR ================= */
+
+.sidebar{
+    width:245px;
+    min-width:245px;
+    background:white;
+    border-right:1px solid #e5e7eb;
+    padding:22px 14px;
+    display:flex;
+    flex-direction:column;
+    position:sticky;
+    top:0;
+    height:calc(100vh - 105px);
+}
+
+.logo{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    padding:10px;
+    margin-bottom:25px;
+}
+
+.logo-icon{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border-radius:12px;
+    color:white;
+    background:linear-gradient(135deg,#6366f1,#7c3aed);
+    font-size:21px;
+}
+
+.logo h2{
+    font-size:18px;
+}
+
+.logo small{
+    color:#94a3b8;
+}
+
+/* MENU */
+
+.menu-title{
+    color:#94a3b8;
+    font-size:10px;
+    font-weight:bold;
+    letter-spacing:1px;
+    margin:18px 10px 7px;
+}
+
+.nav-item{
+    width:100%;
+    border:0;
+    background:transparent;
+    padding:12px 13px;
+    border-radius:10px;
+    text-align:left;
+    cursor:pointer;
+    color:#64748b;
+    font-weight:600;
+    margin-bottom:4px;
+}
+
+.nav-item:hover{
+    background:#eef2ff;
+    color:#4f46e5;
+}
+
+.nav-item.active{
+    background:#eef2ff;
+    color:#4f46e5;
+}
+
+.logout{
+    margin-top:auto;
+    width:100%;
+    padding:11px;
+    border:0;
+    border-radius:10px;
+    background:#f8fafc;
+    color:#64748b;
+    cursor:pointer;
+    font-weight:bold;
+}
+
+.logout:hover{
+    background:#fee2e2;
+    color:#dc2626;
+}
+
+/* ================= MAIN ================= */
+
+.main{
+    flex:1;
+    min-width:0;
+}
+
+.mobile-bar{
+    display:none;
+}
+
+/* ================= DASHBOARD ================= */
+
+.page{
+    width:min(1100px,calc(100% - 40px));
+    margin:auto;
+    padding:35px 0;
+}
+
+.dashboard-top{
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    margin-bottom:25px;
+}
+
+.dashboard-top h1{
+    margin:7px 0;
+    font-size:32px;
+}
+
+.dashboard-top p{
+    color:#64748b;
+}
+
+.profile{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    background:white;
+    padding:9px 14px 9px 9px;
+    border-radius:14px;
+    box-shadow:0 5px 20px rgba(0,0,0,.06);
+}
+
+.avatar{
+    width:42px;
+    height:42px;
+    display:grid;
+    place-items:center;
+    border-radius:50%;
+    color:white;
+    font-weight:bold;
+    background:linear-gradient(135deg,#6366f1,#8b5cf6);
+}
+
+/* ================= HERO ================= */
+
+.hero{
+    background:linear-gradient(120deg,#4338ca,#6366f1,#7c3aed);
+    color:white;
+    padding:35px;
+    border-radius:22px;
+    margin-bottom:18px;
+    box-shadow:0 15px 35px rgba(79,70,229,.2);
+}
+
+.hero span{
+    font-size:11px;
+    font-weight:bold;
+    letter-spacing:1px;
+    opacity:.8;
+}
+
+.hero h2{
+    font-size:30px;
+    margin:12px 0 8px;
+}
+
+.hero p{
+    opacity:.8;
+    line-height:1.5;
+}
+
+.hero button{
+    margin-top:20px;
+    border:0;
+    background:white;
+    color:#4338ca;
+    padding:11px 17px;
+    border-radius:9px;
+    font-weight:bold;
+    cursor:pointer;
+}
+
+/* ================= STATS ================= */
+
+.stats{
+    display:grid;
+    grid-template-columns:repeat(4,1fr);
+    gap:14px;
+    margin:18px 0;
+}
+
+.stat{
+    background:white;
+    padding:17px;
+    border-radius:15px;
+    border:1px solid #e9edf5;
+}
+
+.stat span{
+    display:block;
+    color:#94a3b8;
+    font-size:11px;
+}
+
+.stat strong{
+    display:block;
+    font-size:20px;
+    margin-top:5px;
+}
+
+/* ================= PANELS ================= */
+
+.panels{
+    display:grid;
+    grid-template-columns:1.4fr .8fr;
+    gap:18px;
+}
+
+.panel{
+    background:white;
+    padding:21px;
+    border-radius:18px;
+    border:1px solid #e9edf5;
+}
+
+.panel h2{
+    margin:6px 0 17px;
+    font-size:18px;
+}
+
+.section-label{
+    color:#6366f1;
+    font-size:10px;
+    font-weight:bold;
+    letter-spacing:1px;
+}
+
+.recent{
+    display:grid;
+    gap:10px;
+}
+
+.recent-item{
+    padding:13px;
+    border:1px solid #edf0f5;
+    border-radius:11px;
+    cursor:pointer;
+}
+
+.recent-item:hover{
+    background:#f8faff;
+    border-color:#c7d2fe;
+}
+
+.recent-item strong{
+    font-size:13px;
+}
+
+.recent-item small{
+    display:block;
+    color:#94a3b8;
+    margin-top:4px;
+}
+
+/* ================= PROGRESS ================= */
+
+.progress-circle{
+    width:145px;
+    height:145px;
+    margin:15px auto 20px;
+    border-radius:50%;
+    display:grid;
+    place-items:center;
+    background:conic-gradient(#6366f1 0deg,#e5e7eb 0deg);
+    position:relative;
+}
+
+.progress-circle::before{
+    content:"";
+    position:absolute;
+    width:112px;
+    height:112px;
+    background:white;
+    border-radius:50%;
+}
+
+.progress-circle div{
+    position:relative;
+    z-index:1;
+    text-align:center;
+}
+
+.progress-circle strong{
+    font-size:25px;
+    display:block;
+}
+
+.progress-circle small{
+    color:#94a3b8;
+}
+
+/* ================= LEARNING ================= */
+
+.learning-page{
+    width:min(1100px,calc(100% - 40px));
+    margin:auto;
+    padding:35px 0;
+}
+
+.learning-page h1{
+    margin-bottom:20px;
+}
+
+.grid{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:17px;
+}
+
+.card{
+    background:white;
+    padding:28px 18px;
+    min-height:145px;
+    border-radius:17px;
+    border:1px solid #e5e7eb;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    cursor:pointer;
+    transition:.2s;
+}
+
+.card:hover{
+    transform:translateY(-4px);
+    border-color:#818cf8;
+    box-shadow:0 12px 28px rgba(79,70,229,.12);
+}
+
+.card .emoji{
+    font-size:38px;
+    margin-bottom:10px;
+}
+
+.card h3{
+    font-size:16px;
+}
+
+/* ================= BACK ================= */
+
+.back{
+    border:0;
+    background:#334155;
+    color:white;
+    padding:10px 16px;
+    border-radius:9px;
+    cursor:pointer;
+    margin-bottom:20px;
+}
+
+/* ================= AI ================= */
+
+.ai-box{
+    background:white;
+    padding:22px;
+    border-radius:17px;
+    border:1px solid #e5e7eb;
+}
+
+.ai-button{
+    width:100%;
+    border:0;
+    padding:14px;
+    border-radius:10px;
+    color:white;
+    background:linear-gradient(135deg,#6366f1,#7c3aed);
+    font-weight:bold;
+    cursor:pointer;
+    margin:15px 0;
+}
+
+.complete-button{
+    width:100%;
+    padding:13px;
+    border:0;
+    border-radius:10px;
+    color:white;
+    background:#10b981;
+    font-weight:bold;
+    cursor:pointer;
+    margin-top:15px;
+}
+
+.complete-button:disabled{
+    background:#94a3b8;
+    cursor:not-allowed;
+}
+
+/* ================= NOTES ================= */
+
+.teacher-note{
+    background:white;
+    padding:20px;
+    border-radius:15px;
+    border-left:5px solid #6366f1;
+    margin-top:15px;
+}
+
+.teacher-note h3{
+    margin-bottom:8px;
+}
+
+.teacher-note p{
+    line-height:1.6;
+    color:#475569;
+}
+
+.teacher-note a{
+    display:inline-block;
+    margin-top:10px;
+    color:#4f46e5;
+    font-weight:bold;
+}
+
+/* ================= MODAL ================= */
+
+.modal{
+    display:none;
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.65);
+    z-index:1000;
+    align-items:center;
+    justify-content:center;
+    padding:15px;
+}
+
+.modal.show{
+    display:flex;
+}
+
+.modal-box{
+    width:min(550px,100%);
+    max-height:90vh;
+    overflow:auto;
+    background:white;
+    border-radius:20px;
+    padding:25px;
+}
+
+.modal-box h2{
+    margin-bottom:8px;
+}
+
+.modal-box p{
+    color:#64748b;
+    margin-bottom:17px;
+}
+
+.ai-tools{
+    display:grid;
+    grid-template-columns:1fr 1fr;
+    gap:10px;
+}
+
+.ai-tool{
+    border:1px solid #e2e8f0;
+    background:#f8fafc;
+    padding:13px;
+    border-radius:9px;
+    cursor:pointer;
+    text-align:left;
+    font-weight:bold;
+}
+
+.ai-tool:hover{
+    background:#eef2ff;
+    border-color:#818cf8;
+}
+
+.custom-form{
+    display:none;
+    margin-top:15px;
+}
+
+.custom-form.show{
+    display:block;
+}
+
+.custom-form input{
+    width:100%;
+    padding:11px;
+    border:1px solid #cbd5e1;
+    border-radius:8px;
+    margin:7px 0 12px;
+}
+
+.close{
+    width:100%;
+    border:0;
+    padding:12px;
+    background:#e2e8f0;
+    border-radius:9px;
+    margin-top:12px;
+    cursor:pointer;
+}
+
+/* ================= OTHER PAGES ================= */
+
+.secondary{
+    display:none;
+}
+
+.page-title{
+    margin-bottom:25px;
+}
+
+.page-title h1{
+    font-size:30px;
+    margin:6px 0;
+}
+
+.page-title p{
+    color:#64748b;
+}
+
+/* ================= MOBILE ================= */
+
+@media(max-width:850px){
+
+    .sidebar{
+        position:fixed;
+        left:-260px;
+        top:0;
+        height:100vh;
+        z-index:100;
+        transition:.25s;
+    }
+
+    .sidebar.open{
+        left:0;
+    }
+
+    .mobile-bar{
+        display:flex;
+        align-items:center;
+        justify-content:space-between;
+        padding:12px 15px;
+        background:white;
+        border-bottom:1px solid #e5e7eb;
+        position:sticky;
+        top:0;
+        z-index:50;
+    }
+
+    .mobile-bar button{
+        border:0;
+        background:transparent;
+        font-size:23px;
+        cursor:pointer;
+    }
+
+    .mobile-title{
+        font-weight:bold;
+    }
+
+    .stats{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .panels{
+        grid-template-columns:1fr;
+    }
+
+    .grid{
+        grid-template-columns:1fr 1fr;
+    }
+
+    .profile{
+        display:none;
+    }
+}
+
+@media(max-width:600px){
+
+    header{
+        padding:22px 12px;
+    }
+
+    header h1{
+        font-size:24px;
+    }
+
+    .page,
+    .learning-page{
+        width:calc(100% - 22px);
+        padding:25px 0;
+    }
+
+    .dashboard-top h1{
+        font-size:25px;
+    }
+
+    .hero{
+        padding:25px 20px;
+    }
+
+    .hero h2{
+        font-size:24px;
+    }
+
+    .grid{
+        grid-template-columns:1fr;
+    }
+
+    .card{
+        min-height:100px;
+        flex-direction:row;
+        justify-content:flex-start;
+        text-align:left;
+        padding:18px;
+    }
+
+    .card .emoji{
+        margin:0 15px 0 0;
+        font-size:30px;
+    }
+
+    .ai-tools{
+        grid-template-columns:1fr;
+    }
+
+}
+
+</style>
+
+</head>
+
+
+<body>
+
+
+<!-- ================= HEADER ================= -->
+
+<header>
+
+<h1 id="welcomeGreeting">
+👋 Welcome to EduMate
+</h1>
+
+<p>
+📚 AI Powered Learning Platform
+</p>
+
+</header>
+
+
+
+<!-- ================= APP ================= -->
+
+<div class="app">
+
+
+<!-- ================= SIDEBAR ================= -->
+
+<aside class="sidebar" id="sidebar">
+
+<div class="logo">
+
+<div class="logo-icon">
+📚
+</div>
+
+<div>
+<h2>EduMate</h2>
+<small>Student Portal</small>
+</div>
+
+</div>
+
+
+<div class="menu-title">
+LEARN
+</div>
+
+
+<button
+class="nav-item active"
+data-view="dashboard"
+onclick="showDashboard()">
+
+🏠 Dashboard
+
+</button>
+
+
+<button
+class="nav-item"
+data-view="courses"
+onclick="showCourses()">
+
+📚 My Courses
+
+</button>
+
+
+<div class="menu-title">
+PRACTICE
+</div>
+
+
+<button
+class="nav-item"
+onclick="openPage('practicals.html')">
+
+🧪 Practicals
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="openPage('assignments.html')">
+
+📝 Assignments
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="openPage('viva.html')">
+
+🎤 Viva Preparation
+
+</button>
+
+
+<div class="menu-title">
+SUPPORT
+</div>
+
+
+<button
+class="nav-item"
+onclick="openPage('doubts.html')">
+
+💬 My Doubts
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="openPage('planner.html')">
+
+📅 Study Planner
+
+</button>
+
+
+<div class="menu-title">
+PERFORMANCE
+</div>
+
+
+<button
+class="nav-item"
+data-view="progress"
+onclick="showProgress()">
+
+📊 My Progress
+
+</button>
+
+
+<button
+class="nav-item"
+onclick="openAIToolFromDashboard()">
+
+✦ AI Study Tools
+
+</button>
+
+
+<button
+class="logout"
+onclick="logoutStudent()">
+
+↪ Logout
+
+</button>
+
+</aside>
+
+
+
+<!-- ================= MAIN ================= -->
+
+<main class="main">
+
+
+<!-- MOBILE BAR -->
+
+<div class="mobile-bar">
+
+<button onclick="toggleSidebar()">
+☰
+</button>
+
+<div class="mobile-title">
+📚 EduMate
+</div>
+
+<div>
+🎓
+</div>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- DASHBOARD -->
+<!-- ================================================= -->
+
+<section id="dashboardPage" class="page">
+
+
+<div class="dashboard-top">
+
+<div>
+
+<p style="color:#6366f1;font-size:11px;font-weight:bold;">
+STUDENT DASHBOARD
+</p>
+
+<h1 id="dashboardGreeting">
+Good Morning!
+</h1>
+
+<p>
+Keep learning, keep growing. 🌱
+</p>
+
+</div>
+
+
+<div class="profile">
+
+<div class="avatar" id="profileAvatar">
+S
+</div>
+
+<div>
+
+<strong id="profileName">
+Student
+</strong>
+
+<br>
+
+<small id="profileEmail">
+Learner
+</small>
+
+</div>
+
+</div>
+
+</div>
+
+
+
+<div class="hero">
+
+<span>
+✨ KEEP GOING
+</span>
+
+<h2>
+Make today a learning day.
+</h2>
+
+<p>
+Continue your studies and build your skills
+one topic at a time.
+</p>
+
+<button onclick="showCourses()">
+Explore Courses →
+</button>
+
+</div>
+
+
+
+<!-- STATS -->
+
+<div class="stats">
+
+
+<div class="stat">
+
+<span>
+Overall Progress
+</span>
+
+<strong id="dashProgress">
+0%
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<span>
+Learning Streak
+</span>
+
+<strong id="dashStreak">
+0 days
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<span>
+Topics Completed
+</span>
+
+<strong id="dashCompleted">
+0
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<span>
+Total Subjects
+</span>
+
+<strong id="dashSubjects">
+0
+</strong>
+
+</div>
+
+
+</div>
+
+
+
+<!-- PANELS -->
+
+<div class="panels">
+
+
+<div class="panel">
+
+<span class="section-label">
+CONTINUE LEARNING
+</span>
+
+<h2>
+Pick up where you left off
+</h2>
+
+<div id="recentTopics" class="recent">
+
+</div>
+
+</div>
+
+
+
+<div class="panel">
+
+<span class="section-label">
+YOUR PROGRESS
+</span>
+
+<h2>
+Learning Overview
+</h2>
+
+
+<div
+class="progress-circle"
+id="progressCircle">
+
+<div>
+
+<strong id="progressPercent">
+0%
+</strong>
+
+<small>
+completed
+</small>
+
+</div>
+
+</div>
+
+
+<p style="text-align:center;color:#64748b;">
+
+Completed:
+<strong id="completedCount">
+0
+</strong>
+
+&nbsp;&nbsp;
+
+Remaining:
+<strong id="remainingCount">
+0
+</strong>
+
+</p>
+
+
+</div>
+
+
+</div>
+
+</section>
+
+
+
+<!-- ================================================= -->
+<!-- COURSES -->
+<!-- ================================================= -->
+
+<section
+id="coursesPage"
+class="learning-page secondary">
+
+
+<div id="subjectSection">
+
+
+<h1>
+📚 My Courses
+</h1>
+
+<p style="color:#64748b;margin-bottom:20px;">
+Choose a subject to start learning.
+</p>
+
+
+<div class="grid">
+
+
+<div class="card"
+onclick="showUnits('HDBS')">
+
+<div class="emoji">
+🗄️
+</div>
+
+<h3>
+DBMS
+</h3>
+
+</div>
+
+
+<div class="card"
+onclick="showUnits('HDLD')">
+
+<div class="emoji">
+💡
+</div>
+
+<h3>
+Digital Logic & Microprocessor
+</h3>
+
+</div>
+
+
+<div class="card"
+onclick="showUnits('HOOP')">
+
+<div class="emoji">
+💻
+</div>
+
+<h3>
+OOP Using C++
+</h3>
+
+</div>
+
+
+<div class="card"
+onclick="showUnits('HCLS')">
+
+<div class="emoji">
+🌐
+</div>
+
+<h3>
+Client Side Scripting
+</h3>
+
+</div>
+
+
+<div class="card"
+onclick="showUnits('HCON')">
+
+<div class="emoji">
+📡
+</div>
+
+<h3>
+Computer Network
+</h3>
+
+</div>
+
+
+<div class="card"
+onclick="showUnits('HEIC')">
+
+<div class="emoji">
+📜
+</div>
+
+<h3>
+Indian Constitution
+</h3>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+
+<!-- UNITS -->
+
+<div
+id="unitSection"
+style="display:none;">
+
+<button
+class="back"
+onclick="backToSubjects()">
+
+← Subjects
+
+</button>
+
+<h1 id="unitTitle"></h1>
+
+<div
+id="units"
+class="grid">
+</div>
+
+</div>
+
+
+
+<!-- TOPICS -->
+
+<div
+id="topicSection"
+style="display:none;">
+
+<button
+class="back"
+onclick="backToUnits()">
+
+← Units
+
+</button>
+
+<h1 id="topicTitle"></h1>
+
+<div
+id="topics"
+class="grid">
+</div>
+
+</div>
+
+
+
+<!-- SUBTOPICS -->
+
+<div
+id="subtopicSection"
+style="display:none;">
+
+<button
+class="back"
+onclick="backToTopics()">
+
+← Topics
+
+</button>
+
+<h1 id="subtopicTitle"></h1>
+
+<div
+id="subtopics"
+class="grid">
+</div>
+
+</div>
+
+
+
+<!-- AI EXPLANATION -->
+
+<div
+id="aiSection"
+style="display:none;">
+
+<button
+class="back"
+onclick="backToSubtopics()">
+
+← Subtopics
+
+</button>
+
+<h1 id="selectedSubtopic"></h1>
+
+
+<button
+class="ai-button"
+onclick="getAIExplanation()">
+
+🤖 Explain with AI
+
+</button>
+
+
+<div class="ai-box">
+
+<h2>
+📖 AI Explanation
+</h2>
+
+<p id="aiResult">
+
+Select a subtopic and click
+"Explain with AI".
+
+</p>
+
+</div>
+
+
+<button
+id="completeButton"
+class="complete-button"
+onclick="markAsCompleted()">
+
+✅ Mark as Completed
+
+</button>
+
+
+<!-- TEACHER NOTES -->
+
+<div style="margin-top:30px;">
+
+<h2>
+📚 Teacher Notes
+</h2>
+
+<div id="teacherNotes">
+
+<p>
+Select a topic to view teacher notes.
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+
+</section>
+
+
+
+<!-- ================================================= -->
+<!-- PROGRESS -->
+<!-- ================================================= -->
+
+<section
+id="progressPage"
+class="learning-page secondary">
+
+
+<div class="page-title">
+
+<p style="color:#6366f1;font-size:11px;font-weight:bold;">
+LEARNING ANALYTICS
+</p>
+
+<h1>
+📊 My Progress
+</h1>
+
+<p>
+Track your learning journey.
+</p>
+
+</div>
+
+
+<div class="hero">
+
+<span>
+YOUR LEARNING PROGRESS
+</span>
+
+<h2 id="bigProgress">
+0%
+</h2>
+
+<p>
+Every completed topic moves you forward. 🚀
+</p>
+
+</div>
+
+
+<div class="stats">
+
+<div class="stat">
+
+<span>
+Completed Topics
+</span>
+
+<strong id="progressCompleted">
+0
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<span>
+Remaining Topics
+</span>
+
+<strong id="progressRemaining">
+0
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<span>
+Learning Streak
+</span>
+
+<strong id="progressStreak">
+0 days
+</strong>
+
+</div>
+
+
+<div class="stat">
+
+<span>
+Subjects
+</span>
+
+<strong id="progressSubjects">
+0
+</strong>
+
+</div>
+
+</div>
+
+
+</section>
+
+
+
+</main>
+
+</div>
+
+
+
+<!-- ================================================= -->
+<!-- AI TOOL MODAL -->
+<!-- ================================================= -->
+
+<div
+id="aiModal"
+class="modal"
+onclick="closeModal(event)">
+
+
+<div
+class="modal-box"
+onclick="event.stopPropagation()">
+
+
+<h2>
+🤖 Choose an AI Tool
+</h2>
+
+<p>
+Choose where you want EduMate to open
+the prepared explanation prompt.
+</p>
+
+
+<div class="ai-tools">
+
+
+<button
+class="ai-tool"
+onclick="openAITool('chatgpt')">
+
+🟢 ChatGPT
+
+</button>
+
+
+<button
+class="ai-tool"
+onclick="openAITool('gemini')">
+
+✨ Gemini
+
+</button>
+
+
+<button
+class="ai-tool"
+onclick="openAITool('claude')">
+
+🟠 Claude
+
+</button>
+
+
+<button
+class="ai-tool"
+onclick="openAITool('copilot')">
+
+🔵 Microsoft Copilot
+
+</button>
+
+
+<button
+class="ai-tool"
+onclick="openAITool('perplexity')">
+
+🔎 Perplexity
+
+</button>
+
+
+<button
+class="ai-tool"
+onclick="openAITool('google')">
+
+🌐 Google
+
+</button>
+
+
+<button
+class="ai-tool"
+onclick="showCustomTool()">
+
+➕ Other AI Tool
+
+</button>
+
+
+</div>
+
+
+
+<div
+id="customForm"
+class="custom-form">
+
+
+<label>
+AI Tool Name
+</label>
+
+<input
+id="customName"
+type="text"
+placeholder="Example: DeepSeek">
+
+
+<label>
+AI Tool Website
+</label>
+
+<input
+id="customURL"
+type="text"
+placeholder="https://example.com">
+
+
+<button
+class="ai-button"
+onclick="openCustomTool()">
+
+Open AI Tool
+
+</button>
+
+
+</div>
+
+
+<button
+class="close"
+onclick="closeModal()">
+
+Close
+
+</button>
+
+
+</div>
+
+</div>
+
+
+
+<script>
+
+/* =====================================================
+   SUPABASE
+===================================================== */
+
+const SUPABASE_URL =
+"https://gdzyfutuakotlnsmneml.supabase.co";
+
+const SUPABASE_KEY =
+"sb_publishable_g5kUKAcnVH3C6fQfPjbuCg_DAzntOwW";
+
+const supabaseClient =
+window.supabase.createClient(
+    SUPABASE_URL,
+    SUPABASE_KEY
+);
+
+
+/* =====================================================
+   LOGIN
+===================================================== */
+
+let currentUser =
+JSON.parse(
+    localStorage.getItem("currentUser")
+);
+
+
+if(!currentUser){
+
+    window.location.href="index.html";
+
+}
+
+
+/* =====================================================
+   VARIABLES
+===================================================== */
+
+let selectedSubject="";
+let selectedUnit=0;
+let selectedTopic=0;
+let selectedSubtopic="";
+
+
+/* =====================================================
+   USER NAME
+===================================================== */
+
+function getStudentName(){
+
+    let name =
+        currentUser?.name ||
+        currentUser?.full_name ||
+        currentUser?.fullName ||
+        currentUser?.username ||
+        (
+            currentUser?.email
+            ?
+            currentUser.email.split("@")[0]
+            :
+            "Student"
+        );
+
+    return String(name)
+        .replace(/[_-]+/g," ")
+        .replace(/\s+/g," ")
+        .trim();
+
+}
+
+
+/* =====================================================
+   GREETING
+===================================================== */
+
+function updateGreeting(){
+
+    let hour =
+        new Date().getHours();
+
+    let greeting="Good Morning";
+
+    if(hour>=12 && hour<17)
+        greeting="Good Afternoon";
+
+    else if(hour>=17 && hour<21)
+        greeting="Good Evening";
+
+    else if(hour>=21 || hour<5)
+        greeting="Good Night";
+
+
+    let name=getStudentName();
+
+
+    document.getElementById(
+        "welcomeGreeting"
+    ).innerHTML =
+        "👋 "+greeting+", "+name+"!";
+
+
+    document.getElementById(
+        "dashboardGreeting"
+    ).innerHTML =
+        greeting+", "+name+"!";
+
+
+    document.getElementById(
+        "profileName"
+    ).textContent=name;
+
+
+    document.getElementById(
+        "profileEmail"
+    ).textContent=
+        currentUser?.email || "Student";
+
+
+    document.getElementById(
+        "profileAvatar"
+    ).textContent=
+        name.charAt(0).toUpperCase();
+
+}
+
+
+/* =====================================================
+   NAVIGATION
+===================================================== */
+
+function openPage(page){
+
+    window.location.href=page;
+
+}
+
+
+function setActive(buttonView){
+
+    document
+    .querySelectorAll(".nav-item")
+    .forEach(function(button){
+
+        button.classList.remove("active");
+
+    });
+
+
+    let button=
+        document.querySelector(
+            '[data-view="'+buttonView+'"]'
+        );
+
+
+    if(button)
+        button.classList.add("active");
+
+}
+
+
+function hideAllPages(){
+
+    document.getElementById(
+        "dashboardPage"
+    ).style.display="none";
+
+    document.getElementById(
+        "coursesPage"
+    ).style.display="none";
+
+    document.getElementById(
+        "progressPage"
+    ).style.display="none";
+
+}
+
+
+function showDashboard(){
+
+    hideAllPages();
+
+    document.getElementById(
+        "dashboardPage"
+    ).style.display="block";
+
+    setActive("dashboard");
+
+    closeSidebar();
+
+    updateDashboard();
+
+}
+
+
+function showCourses(){
+
+    hideAllPages();
+
+    document.getElementById(
+        "coursesPage"
+    ).style.display="block";
+
+    setActive("courses");
+
+    closeSidebar();
+
+}
+
+
+function showProgress(){
+
+    hideAllPages();
+
+    document.getElementById(
+        "progressPage"
+    ).style.display="block";
+
+    setActive("progress");
+
+    closeSidebar();
+
+    updateProgressPage();
+
+}
+
+
+function toggleSidebar(){
+
+    document
+    .getElementById("sidebar")
+    .classList.toggle("open");
+
+}
+
+
+function closeSidebar(){
+
+    document
+    .getElementById("sidebar")
+    .classList.remove("open");
+
+}
+
+
+/* =====================================================
+   COURSE NAVIGATION
+===================================================== */
+
+function showUnits(subjectKey){
+
+    selectedSubject=subjectKey;
+
+
+    let subject=
+        syllabusData[subjectKey];
+
+
+    if(!subject){
+
+        alert(
+            "Syllabus data not found!"
+        );
+
+        return;
+
+    }
+
+
+    document.getElementById(
+        "subjectSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "unitSection"
+    ).style.display="block";
+
+
+    document.getElementById(
+        "topicSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "subtopicSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "aiSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "unitTitle"
+    ).innerHTML=
+        "📖 "+subject.subjectName+
+        " - Select Unit";
+
+
+    let box=
+        document.getElementById("units");
+
+
+    box.innerHTML="";
+
+
+    subject.units.forEach(
+        function(unit,index){
+
+            let card=
+                document.createElement("div");
+
+            card.className="card";
+
+
+            card.innerHTML=
+                `
+                <div class="emoji">
+                📘
+                </div>
+
+                <h3>
+                ${unit.unitName}
+                </h3>
+                `;
+
+
+            card.onclick=
+                function(){
+
+                    showTopics(index);
+
+                };
+
+
+            box.appendChild(card);
+
+        }
+    );
+
+}
+
+
+function showTopics(unitIndex){
+
+    selectedUnit=unitIndex;
+
+
+    let unit=
+        syllabusData[
+            selectedSubject
+        ].units[unitIndex];
+
+
+    document.getElementById(
+        "unitSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "topicSection"
+    ).style.display="block";
+
+
+    document.getElementById(
+        "topicTitle"
+    ).innerHTML=
+        "📚 "+unit.unitName+
+        " - Select Topic";
+
+
+    let box=
+        document.getElementById("topics");
+
+
+    box.innerHTML="";
+
+
+    unit.topics.forEach(
+        function(topic,index){
+
+            let card=
+                document.createElement("div");
+
+            card.className="card";
+
+
+            card.innerHTML=
+                `
+                <div class="emoji">
+                📌
+                </div>
+
+                <h3>
+                ${topic.topicName}
+                </h3>
+                `;
+
+
+            card.onclick=
+                function(){
+
+                    showSubtopics(index);
+
+                };
+
+
+            box.appendChild(card);
+
+        }
+    );
+
+}
+
+
+function showSubtopics(topicIndex){
+
+    selectedTopic=topicIndex;
+
+
+    let topic=
+        syllabusData[
+            selectedSubject
+        ]
+        .units[selectedUnit]
+        .topics[topicIndex];
+
+
+    document.getElementById(
+        "topicSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "subtopicSection"
+    ).style.display="block";
+
+
+    document.getElementById(
+        "subtopicTitle"
+    ).innerHTML=
+        "📌 "+topic.topicName+
+        " - Select Subtopic";
+
+
+    let box=
+        document.getElementById("subtopics");
+
+
+    box.innerHTML="";
+
+
+    topic.subtopics.forEach(
+        function(subtopic){
+
+            let card=
+                document.createElement("div");
+
+            card.className="card";
+
+
+            card.innerHTML=
+                `
+                <div class="emoji">
+                🔹
+                </div>
+
+                <h3>
+                ${subtopic}
+                </h3>
+                `;
+
+
+            card.onclick=
+                function(){
+
+                    showAIScreen(subtopic);
+
+                };
+
+
+            box.appendChild(card);
+
+        }
+    );
+
+}
+
+
+/* =====================================================
+   AI SCREEN
+===================================================== */
+
+function showAIScreen(subtopic){
+
+    selectedSubtopic=subtopic;
+
+
+    let topic=
+        syllabusData[
+            selectedSubject
+        ]
+        .units[selectedUnit]
+        .topics[selectedTopic];
+
+
+    document.getElementById(
+        "subtopicSection"
+    ).style.display="none";
+
+
+    document.getElementById(
+        "aiSection"
+    ).style.display="block";
+
+
+    document.getElementById(
+        "selectedSubtopic"
+    ).innerHTML=
+        "🤖 "+
+        topic.topicName+
+        " → "+
+        selectedSubtopic;
+
+
+    document.getElementById(
+        "aiResult"
+    ).innerHTML=
+        "Click 'Explain with AI' to get an explanation.";
+
+
+    showTeacherNotes();
+
+
+    updateCompletionButton();
+
+}
+
+
+/* =====================================================
+   BACK BUTTONS
+===================================================== */
+
+function backToSubjects(){
+
+    document.getElementById(
+        "unitSection"
+    ).style.display="none";
+
+    document.getElementById(
+        "subjectSection"
+    ).style.display="block";
+
+}
+
+
+function backToUnits(){
+
+    document.getElementById(
+        "topicSection"
+    ).style.display="none";
+
+    document.getElementById(
+        "unitSection"
+    ).style.display="block";
+
+}
+
+
+function backToTopics(){
+
+    document.getElementById(
+        "subtopicSection"
+    ).style.display="none";
+
+    document.getElementById(
+        "topicSection"
+    ).style.display="block";
+
+}
+
+
+function backToSubtopics(){
+
+    document.getElementById(
+        "aiSection"
+    ).style.display="none";
+
+    document.getElementById(
+        "subtopicSection"
+    ).style.display="block";
+
+}
+
+
+/* =====================================================
+   TOTAL TOPICS
+===================================================== */
+
+function getTotalTopics(){
+
+    let total=0;
+
+
+    for(let subject in syllabusData){
+
+        syllabusData[
+            subject
+        ].units.forEach(
+            function(unit){
+
+                unit.topics.forEach(
+                    function(topic){
+
+                        total +=
+                            topic.subtopics.length;
+
+                    }
+                );
+
+            }
+        );
+
+    }
+
+
+    return total;
+
+}
+
+
+/* =====================================================
+   COMPLETED TOPICS
+===================================================== */
+
+function getCompletedTopics(){
+
+    return JSON.parse(
+
+        localStorage.getItem(
+            "completedTopics_"+
+            currentUser.email
+        )
+
+        ||
+
+        "[]"
+
+    );
+
+}
+
+
+/* =====================================================
+   UPDATE DASHBOARD
+===================================================== */
+
+function updateDashboard(){
+
+    let completed=
+        getCompletedTopics();
+
+    let total=
+        getTotalTopics();
+
+    let percent=
+        total
+        ?
+        Math.round(
+            completed.length/total*100
+        )
+        :
+        0;
+
+
+    document.getElementById(
+        "dashProgress"
+    ).textContent=
+        percent+"%";
+
+
+    document.getElementById(
+        "progressPercent"
+    ).textContent=
+        percent+"%";
+
+
+    document.getElementById(
+        "dashCompleted"
+    ).textContent=
+        completed.length;
+
+
+    document.getElementById(
+        "dashSubjects"
+    ).textContent=
+        Object.keys(syllabusData).length;
+
+
+    document.getElementById(
+        "completedCount"
+    ).textContent=
+        completed.length;
+
+
+    document.getElementById(
+        "remainingCount"
+    ).textContent=
+        Math.max(
+            total-completed.length,
+            0
+        );
+
+
+    document.getElementById(
+        "dashStreak"
+    ).textContent=
+        getStreak()+" days";
+
+
+    let degrees=
+        percent*3.6;
+
+
+    document.getElementById(
+        "progressCircle"
+    ).style.background=
+        `conic-gradient(
+            #6366f1 ${degrees}deg,
+            #e5e7eb ${degrees}deg
+        )`;
+
+
+    showRecentTopics(
+        completed
+    );
+
+}
+
+
+/* =====================================================
+   STREAK
+===================================================== */
+
+function getStreak(){
+
+    let key=
+        "eduMateStudyDays_"+
+        currentUser.email;
+
+
+    let days=
+        JSON.parse(
+            localStorage.getItem(key)
+            ||
+            "[]"
+        );
+
+
+    let today=
+        new Date()
+        .toISOString()
+        .slice(0,10);
+
+
+    if(!days.includes(today)){
+
+        days.push(today);
+
+        localStorage.setItem(
+            key,
+            JSON.stringify(days)
+        );
+
+    }
+
+
+    return 1;
+
+}
+
+
+/* =====================================================
+   RECENT TOPICS
+===================================================== */
+
+function showRecentTopics(completed){
+
+    let box=
+        document.getElementById(
+            "recentTopics"
+        );
+
+
+    if(!completed.length){
+
+        box.innerHTML=
+            `
+            <div
+            class="recent-item"
+            onclick="showCourses()">
+
+            <strong>
+            📚 Start Learning
+            </strong>
+
+            <small>
+            Choose a course and begin your learning journey.
+            </small>
+
+            </div>
+            `;
+
+        return;
+
+    }
+
+
+    let html="";
+
+
+    completed
+    .slice(-3)
+    .reverse()
+    .forEach(
+        function(key){
+
+            let parts=
+                key.split("_");
+
+
+            let subject=
+                syllabusData[
+                    parts[0]
+                ];
+
+
+            if(!subject)
+                return;
+
+
+            let unit=
+                subject.units[
+                    Number(parts[1])
+                ];
+
+
+            let topic=
+                unit?.topics[
+                    Number(parts[2])
+                ];
+
+
+            if(topic){
+
+                html+=
+                    `
+                    <div
+                    class="recent-item">
+
+                    <strong>
+                    ✅ ${topic.topicName}
+                    </strong>
+
+                    <small>
+                    ${subject.subjectName}
+                    </small>
+
+                    </div>
+                    `;
+
+            }
+
+        }
+    );
+
+
+    box.innerHTML=
+        html ||
+        `
+        <div class="recent-item">
+        <strong>📚 Keep Learning</strong>
+        <small>Continue your studies.</small>
+        </div>
+        `;
+
+}
+
+
+/* =====================================================
+   PROGRESS PAGE
+===================================================== */
+
+function updateProgressPage(){
+
+    let completed=
+        getCompletedTopics();
+
+    let total=
+        getTotalTopics();
+
+    let percent=
+        total
+        ?
+        Math.round(
+            completed.length/total*100
+        )
+        :
+        0;
+
+
+    document.getElementById(
+        "bigProgress"
+    ).textContent=
+        percent+"%";
+
+
+    document.getElementById(
+        "progressCompleted"
+    ).textContent=
+        completed.length;
+
+
+    document.getElementById(
+        "progressRemaining"
+    ).textContent=
+        Math.max(
+            total-completed.length,
+            0
+        );
+
+
+    document.getElementById(
+        "progressStreak"
+    ).textContent=
+        getStreak()+" days";
+
+
+    document.getElementById(
+        "progressSubjects"
+    ).textContent=
+        Object.keys(syllabusData).length;
+
+}
+
+
+/* =====================================================
+   MARK COMPLETED
+===================================================== */
+
+function markAsCompleted(){
+
+    let completed=
+        getCompletedTopics();
+
+
+    let key=
+        selectedSubject+
+        "_"+
+        selectedUnit+
+        "_"+
+        selectedTopic+
+        "_"+
+        selectedSubtopic;
+
+
+    if(!completed.includes(key)){
+
+        completed.push(key);
+
+
+        localStorage.setItem(
+
+            "completedTopics_"+
+            currentUser.email,
+
+            JSON.stringify(completed)
+
+        );
+
+    }
+
+
+    updateCompletionButton();
+
+
+    updateDashboard();
+
+
+    alert(
+        "🎉 Topic completed!\n"+
+        "Your progress has been updated."
+    );
+
+}
+
+
+function updateCompletionButton(){
+
+    let completed=
+        getCompletedTopics();
+
+
+    let key=
+        selectedSubject+
+        "_"+
+        selectedUnit+
+        "_"+
+        selectedTopic+
+        "_"+
+        selectedSubtopic;
+
+
+    let button=
+        document.getElementById(
+            "completeButton"
+        );
+
+
+    if(completed.includes(key)){
+
+        button.textContent=
+            "✅ Completed";
+
+        button.disabled=true;
+
+    }
+
+    else{
+
+        button.textContent=
+            "✅ Mark as Completed";
+
+        button.disabled=false;
+
+    }
+
+}
+
+
+/* =====================================================
+   AI PROMPT
+===================================================== */
+
+function buildAIPrompt(){
+
+    let subject=
+        syllabusData[
+            selectedSubject
+        ];
+
+    let unit=
+        subject.units[
+            selectedUnit
+        ];
+
+    let topic=
+        unit.topics[
+            selectedTopic
+        ];
+
+
+    return `
+I am a Diploma Information Technology student.
+
+Explain this topic in simple and exam-friendly language.
+
+Subject: ${subject.subjectName}
+
+Unit: ${unit.unitName}
+
+Topic: ${topic.topicName}
+
+Subtopic: ${selectedSubtopic}
+
+
+Please give:
+
+1. Simple definition
+2. Main points
+3. Step-by-step explanation
+4. Simple real-life example
+5. Important theory exam points
+6. Short viva answer
+
+Keep it suitable for a Diploma IT student.
+`;
+
+}
+
+
+/* =====================================================
+   OPEN AI
+===================================================== */
+
+function getAIExplanation(){
+
+    if(!selectedSubtopic){
+
+        alert(
+            "Please select a subtopic first."
+        );
+
+        return;
+
+    }
+
+
+    document
+    .getElementById("aiModal")
+    .classList.add("show");
+
+}
+
+
+function openAIToolFromDashboard(){
+
+    if(!selectedSubtopic){
+
+        alert(
+            "First open a topic from My Courses.\n\nThen AI Study Tools can create a topic-specific explanation prompt."
+        );
+
+        showCourses();
+
+        return;
+
+    }
+
+
+    getAIExplanation();
+
+}
+
+
+function openAITool(tool){
+
+    let prompt=
+        encodeURIComponent(
+            buildAIPrompt()
+        );
+
+
+    let urls={
+
+        chatgpt:
+        "https://chatgpt.com/?q="+prompt,
+
+        gemini:
+        "https://gemini.google.com/app?query="+prompt,
+
+        claude:
+        "https://claude.ai/new?q="+prompt,
+
+        copilot:
+        "https://copilot.microsoft.com/?q="+prompt,
+
+        perplexity:
+        "https://www.perplexity.ai/search/new?q="+prompt,
+
+        google:
+        "https://www.google.com/search?q="+prompt
+
+    };
+
+
+    if(urls[tool]){
+
+        window.open(
+            urls[tool],
+            "_blank"
+        );
+
+    }
+
+
+    closeModal();
+
+}
+
+
+/* =====================================================
+   CUSTOM AI
+===================================================== */
+
+function showCustomTool(){
+
+    document
+    .getElementById("customForm")
+    .classList.add("show");
+
+}
+
+
+function openCustomTool(){
+
+    let name=
+        document.getElementById(
+            "customName"
+        ).value.trim();
+
+
+    let url=
+        document.getElementById(
+            "customURL"
+        ).value.trim();
+
+
+    if(!name || !url){
+
+        alert(
+            "Please enter AI tool name and website."
+        );
+
+        return;
+
+    }
+
+
+    if(
+        !url.startsWith("http://") &&
+        !url.startsWith("https://")
+    ){
+
+        url="https://"+url;
+
+    }
+
+
+    let prompt=
+        encodeURIComponent(
+            buildAIPrompt()
+        );
+
+
+    let separator=
+        url.includes("?")
+        ?
+        "&"
+        :
+        "?";
+
+
+    window.open(
+        url+
+        separator+
+        "prompt="+
+        prompt,
+        "_blank"
+    );
+
+
+    closeModal();
+
+}
+
+
+/* =====================================================
+   MODAL
+===================================================== */
+
+function closeModal(event){
+
+    if(
+        event &&
+        event.target !==
+        document.getElementById("aiModal")
+    ){
+
+        return;
+
+    }
+
+
+    document
+    .getElementById("aiModal")
+    .classList.remove("show");
+
+
+    document
+    .getElementById("customForm")
+    .classList.remove("show");
+
+}
+
+
+/* =====================================================
+   TEACHER NOTES
+===================================================== */
+
+async function showTeacherNotes(){
+
+    let box=
+        document.getElementById(
+            "teacherNotes"
+        );
+
+
+    box.innerHTML=
+        "<p>🔄 Loading teacher notes...</p>";
+
+
+    let subjectMap={
+
+        HDBS:"DBMS",
+
+        HDLD:"DLD",
+
+        HOOP:"OOP",
+
+        HCLS:"JavaScript",
+
+        HCON:"Computer Networks",
+
+        HEIC:"C Programming"
+
+    };
+
+
+    let noteSubject=
+        subjectMap[selectedSubject] ||
+        selectedSubject;
+
+
+    let subject=
+        syllabusData[
+            selectedSubject
+        ];
+
+
+    let topic=
+        subject
+        ?.units[selectedUnit]
+        ?.topics[selectedTopic];
+
+
+    if(!topic){
+
+        box.innerHTML=
+            "<p>❌ Topic not found.</p>";
+
+        return;
+
+    }
+
+
+    function clean(value){
+
+        return String(value || "")
+        .toLowerCase()
+        .replace(/&/g,"and")
+        .replace(/[^a-z0-9]+/g," ")
+        .trim();
+
+    }
+
+
+    let wantedSubject=
+        clean(noteSubject);
+
+
+    let wantedTopic=
+        clean(topic.topicName);
+
+
+    try{
+
+        let result=
+            await supabaseClient
+            .from("notes")
+            .select("*")
+            .order(
+                "created_at",
+                {
+                    ascending:false
+                }
+            );
+
+
+        if(!result.error){
+
+            let notes=
+                result.data || [];
+
+
+            notes=
+                notes.filter(
+                    function(note){
+
+                        let subject=
+                            clean(
+                                note.subject ||
+                                note.subject_name ||
+                                note.subjectName
+                            );
+
+
+                        let topicName=
+                            clean(
+                                note.topic ||
+                                note.topic_name ||
+                                note.topicName ||
+                                note.chapter
+                            );
+
+
+                        return(
+                            (
+                                subject===
+                                wantedSubject
+                            )
+                            &&
+                            (
+                                topicName===
+                                wantedTopic ||
+                                topicName.includes(
+                                    wantedTopic
+                                ) ||
+                                wantedTopic.includes(
+                                    topicName
+                                )
+                            )
+                        );
+
+                    }
+                );
+
+
+            if(notes.length){
+
+                renderTeacherNotes(
+                    notes
+                );
+
+                return;
+
+            }
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(
+            "Supabase error:",
+            error
+        );
+
+    }
+
+
+    /* LOCAL STORAGE FALLBACK */
+
+    try{
+
+        let notes=
+            JSON.parse(
+                localStorage.getItem(
+                    "eduMateNotes"
+                )
+                ||
+                "[]"
+            );
+
+
+        notes=
+            notes.filter(
+                function(note){
+
+                    return(
+                        clean(
+                            note.subject
+                        )===
+                        wantedSubject
+                    )
+                    &&
+                    clean(
+                        note.topic
+                    ).includes(
+                        wantedTopic
+                    );
+
+                }
+            );
+
+
+        if(notes.length){
+
+            renderTeacherNotes(
+                notes
+            );
+
+            return;
+
+        }
+
+    }
+
+    catch(error){
+
+        console.log(error);
+
+    }
+
+
+    box.innerHTML=
+        `
+        <div class="teacher-note">
+
+        <h3>
+        📚 No notes found
+        </h3>
+
+        <p>
+        No teacher note is available for:
+        </p>
+
+        <p>
+        <strong>
+        ${topic.topicName}
+        </strong>
+        </p>
+
+        </div>
+        `;
+
+}
+
+
+function renderTeacherNotes(notes){
+
+    let box=
+        document.getElementById(
+            "teacherNotes"
+        );
+
+
+    box.innerHTML="";
+
+
+    notes.forEach(
+        function(note){
+
+            let div=
+                document.createElement(
+                    "div"
+                );
+
+
+            div.className=
+                "teacher-note";
+
+
+            let title=
+                note.title ||
+                note.note_title ||
+                "Teacher Note";
+
+
+            let content=
+                note.content ||
+                note.note_content ||
+                note.description ||
+                "";
+
+
+            div.innerHTML=
+                `
+                <h3>
+                📄 ${escapeHTML(title)}
+                </h3>
+
+                ${
+                    content
+                    ?
+                    `
+                    <p>
+                    ${
+                        escapeHTML(
+                            content
+                        )
+                        .replace(
+                            /\n/g,
+                            "<br>"
+                        )
+                    }
+                    </p>
+                    `
+                    :
+                    ""
+                }
+
+                ${
+                    note.pdf_url
+                    ?
+                    `
+                    <p>
+                    <a
+                    href="${escapeHTML(note.pdf_url)}"
+                    target="_blank">
+
+                    📥 View PDF
+
+                    </a>
+                    </p>
+                    `
+                    :
+                    ""
+                }
+
+                <p>
+                <small>
+                👨‍🏫 Uploaded by:
+                ${
+                    escapeHTML(
+                        note.teacher ||
+                        note.teacher_name ||
+                        "Teacher"
+                    )
+                }
+                </small>
+                </p>
+                `;
+
+
+            box.appendChild(div);
+
+        }
+    );
+
+}
+
+
+function escapeHTML(value){
+
+    return String(value || "")
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+
+}
+
+
+/* =====================================================
+   LOGOUT
+===================================================== */
+
+function logoutStudent(){
+
+    localStorage.removeItem(
+        "currentUser"
+    );
+
+    window.location.href=
+        "index.html";
+
+}
+
+
+/* =====================================================
+   START
+===================================================== */
+
+updateGreeting();
+
+updateDashboard();
+
+showDashboard();
+
+</script>
+
+
+</body>
+
+</html>

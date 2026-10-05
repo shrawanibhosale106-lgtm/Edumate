@@ -1,0 +1,708 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>EduMate - Assignments</title>
+
+    <style>
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: #f5f7fb;
+            color: #222;
+        }
+
+        /* HEADER */
+
+        .header {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+            color: white;
+            padding: 22px 30px;
+        }
+
+        .header h1 {
+            font-size: 28px;
+            margin-bottom: 6px;
+        }
+
+        .header p {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+
+        /* BACK BUTTON */
+
+        .back-btn {
+            margin: 20px 30px 5px;
+        }
+
+        .back-btn button {
+            border: none;
+            background: white;
+            color: #4f46e5;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .back-btn button:hover {
+            background: #eef2ff;
+        }
+
+        /* MAIN CONTAINER */
+
+        .container {
+            padding: 25px 30px;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        /* SUMMARY CARDS */
+
+        .summary {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 18px;
+            margin-bottom: 30px;
+        }
+
+        .summary-card {
+            background: white;
+            padding: 20px;
+            border-radius: 14px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+        }
+
+        .summary-card .icon {
+            font-size: 28px;
+            margin-bottom: 10px;
+        }
+
+        .summary-card h2 {
+            font-size: 25px;
+            color: #4f46e5;
+        }
+
+        .summary-card p {
+            color: #666;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* SECTION TITLE */
+
+        .section-title {
+            margin-bottom: 18px;
+        }
+
+        .section-title h2 {
+            font-size: 22px;
+        }
+
+        .section-title p {
+            color: #777;
+            margin-top: 5px;
+            font-size: 14px;
+        }
+
+        /* ASSIGNMENT CARDS */
+
+        .assignments {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 20px;
+        }
+
+        .assignment-card {
+            background: white;
+            border-radius: 14px;
+            padding: 22px;
+            box-shadow: 0 3px 12px rgba(0,0,0,0.07);
+            border-left: 5px solid #4f46e5;
+        }
+
+        .assignment-card h3 {
+            margin-bottom: 8px;
+            color: #222;
+        }
+
+        .subject {
+            display: inline-block;
+            background: #eef2ff;
+            color: #4f46e5;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 12px;
+        }
+
+        .assignment-card p {
+            color: #666;
+            font-size: 14px;
+            line-height: 1.5;
+            margin-bottom: 8px;
+        }
+
+        .details {
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+
+        .details p {
+            margin-bottom: 6px;
+        }
+
+        /* STATUS */
+
+        .status {
+            display: inline-block;
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+        }
+
+        .pending {
+            background: #fff7ed;
+            color: #ea580c;
+        }
+
+        .submitted {
+            background: #ecfdf5;
+            color: #059669;
+        }
+
+        .overdue {
+            background: #fef2f2;
+            color: #dc2626;
+        }
+
+        /* BUTTON */
+
+        .submit-btn {
+            margin-top: 15px;
+            border: none;
+            background: #4f46e5;
+            color: white;
+            padding: 10px 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .submit-btn:hover {
+            background: #4338ca;
+        }
+
+        /* EMPTY MESSAGE */
+
+        .no-assignment {
+            background: white;
+            padding: 35px;
+            text-align: center;
+            border-radius: 14px;
+            color: #777;
+            display: none;
+        }
+
+        /* MOBILE */
+
+        @media (max-width: 800px) {
+
+            .summary {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .assignments {
+                grid-template-columns: 1fr;
+            }
+
+        }
+
+        @media (max-width: 500px) {
+
+            .header {
+                padding: 20px;
+            }
+
+            .header h1 {
+                font-size: 23px;
+            }
+
+            .container {
+                padding: 20px 15px;
+            }
+
+            .back-btn {
+                margin-left: 15px;
+            }
+
+            .summary {
+                grid-template-columns: 1fr 1fr;
+                gap: 10px;
+            }
+
+            .summary-card {
+                padding: 15px;
+            }
+
+            .summary-card h2 {
+                font-size: 21px;
+            }
+
+            .assignment-card {
+                padding: 18px;
+            }
+
+        }
+
+    </style>
+
+</head>
+
+
+<body>
+
+    <!-- HEADER -->
+
+    <div class="header">
+
+        <h1>📝 Assignments</h1>
+
+        <p>
+            Complete your assignments and keep track of your academic work.
+        </p>
+
+    </div>
+
+
+    <!-- BACK BUTTON -->
+
+    <div class="back-btn">
+
+        <button onclick="goBack()">
+            ← Back to Dashboard
+        </button>
+
+    </div>
+
+
+    <div class="container">
+
+
+        <!-- SUMMARY -->
+
+        <div class="summary">
+
+            <div class="summary-card">
+
+                <div class="icon">📚</div>
+
+                <h2 id="totalAssignments">
+                    6
+                </h2>
+
+                <p>
+                    Total Assignments
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="icon">⏳</div>
+
+                <h2 id="pendingAssignments">
+                    3
+                </h2>
+
+                <p>
+                    Pending
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="icon">✅</div>
+
+                <h2 id="submittedAssignments">
+                    2
+                </h2>
+
+                <p>
+                    Submitted
+                </p>
+
+            </div>
+
+
+            <div class="summary-card">
+
+                <div class="icon">⚠️</div>
+
+                <h2 id="overdueAssignments">
+                    1
+                </h2>
+
+                <p>
+                    Overdue
+                </p>
+
+            </div>
+
+        </div>
+
+
+        <!-- ASSIGNMENT SECTION -->
+
+        <div class="section-title">
+
+            <h2>
+                📋 My Assignments
+            </h2>
+
+            <p>
+                View your subject-wise assignments below.
+            </p>
+
+        </div>
+
+
+        <div class="assignments">
+
+
+            <!-- ASSIGNMENT 1 -->
+
+            <div class="assignment-card">
+
+                <span class="subject">
+                    HDBS
+                </span>
+
+                <h3>
+                    Assignment 1 – Data Structures
+                </h3>
+
+                <p>
+                    Explain different types of data structures
+                    with suitable examples.
+                </p>
+
+                <div class="details">
+
+                    <p>
+                        📅 <b>Due Date:</b> 10 October 2026
+                    </p>
+
+                    <p>
+                        🏆 <b>Marks:</b> 10
+                    </p>
+
+                    <p>
+                        <span class="status pending">
+                            Pending
+                        </span>
+                    </p>
+
+                </div>
+
+                <button
+                    class="submit-btn"
+                    onclick="submitAssignment('Assignment 1 – Data Structures')">
+
+                    Submit Assignment
+
+                </button>
+
+            </div>
+
+
+            <!-- ASSIGNMENT 2 -->
+
+            <div class="assignment-card">
+
+                <span class="subject">
+                    HDLD
+                </span>
+
+                <h3>
+                    Assignment 1 – Digital Logic
+                </h3>
+
+                <p>
+                    Solve Boolean expressions using Karnaugh Map
+                    and draw the required logic circuit.
+                </p>
+
+                <div class="details">
+
+                    <p>
+                        📅 <b>Due Date:</b> 12 October 2026
+                    </p>
+
+                    <p>
+                        🏆 <b>Marks:</b> 10
+                    </p>
+
+                    <p>
+                        <span class="status pending">
+                            Pending
+                        </span>
+                    </p>
+
+                </div>
+
+                <button
+                    class="submit-btn"
+                    onclick="submitAssignment('Assignment 1 – Digital Logic')">
+
+                    Submit Assignment
+
+                </button>
+
+            </div>
+
+
+            <!-- ASSIGNMENT 3 -->
+
+            <div class="assignment-card">
+
+                <span class="subject">
+                    HOOP
+                </span>
+
+                <h3>
+                    Assignment 1 – C++ OOP
+                </h3>
+
+                <p>
+                    Explain inheritance in C++ and describe
+                    its different types with examples.
+                </p>
+
+                <div class="details">
+
+                    <p>
+                        📅 <b>Due Date:</b> 15 October 2026
+                    </p>
+
+                    <p>
+                        🏆 <b>Marks:</b> 10
+                    </p>
+
+                    <p>
+                        <span class="status pending">
+                            Pending
+                        </span>
+                    </p>
+
+                </div>
+
+                <button
+                    class="submit-btn"
+                    onclick="submitAssignment('Assignment 1 – C++ OOP')">
+
+                    Submit Assignment
+
+                </button>
+
+            </div>
+
+
+            <!-- ASSIGNMENT 4 -->
+
+            <div class="assignment-card">
+
+                <span class="subject">
+                    HCLS
+                </span>
+
+                <h3>
+                    Assignment 1 – JavaScript
+                </h3>
+
+                <p>
+                    Create a web page using JavaScript
+                    validation and browser properties.
+                </p>
+
+                <div class="details">
+
+                    <p>
+                        📅 <b>Due Date:</b> 18 October 2026
+                    </p>
+
+                    <p>
+                        🏆 <b>Marks:</b> 10
+                    </p>
+
+                    <p>
+                        <span class="status submitted">
+                            Submitted
+                        </span>
+                    </p>
+
+                </div>
+
+                <button
+                    class="submit-btn"
+                    onclick="viewSubmission('Assignment 1 – JavaScript')">
+
+                    View Submission
+
+                </button>
+
+            </div>
+
+
+            <!-- ASSIGNMENT 5 -->
+
+            <div class="assignment-card">
+
+                <span class="subject">
+                    HCON
+                </span>
+
+                <h3>
+                    Assignment 1 – Computer Networks
+                </h3>
+
+                <p>
+                    Explain TCP/IP protocol suite and its
+                    different layers.
+                </p>
+
+                <div class="details">
+
+                    <p>
+                        📅 <b>Due Date:</b> 20 October 2026
+                    </p>
+
+                    <p>
+                        🏆 <b>Marks:</b> 10
+                    </p>
+
+                    <p>
+                        <span class="status submitted">
+                            Submitted
+                        </span>
+                    </p>
+
+                </div>
+
+                <button
+                    class="submit-btn"
+                    onclick="viewSubmission('Assignment 1 – Computer Networks')">
+
+                    View Submission
+
+                </button>
+
+            </div>
+
+
+            <!-- ASSIGNMENT 6 -->
+
+            <div class="assignment-card">
+
+                <span class="subject">
+                    HEIC
+                </span>
+
+                <h3>
+                    Assignment 1 – Electronics
+                </h3>
+
+                <p>
+                    Explain basic electronic components
+                    and their applications.
+                </p>
+
+                <div class="details">
+
+                    <p>
+                        📅 <b>Due Date:</b> 5 October 2026
+                    </p>
+
+                    <p>
+                        🏆 <b>Marks:</b> 10
+                    </p>
+
+                    <p>
+                        <span class="status overdue">
+                            Overdue
+                        </span>
+                    </p>
+
+                </div>
+
+                <button
+                    class="submit-btn"
+                    onclick="submitAssignment('Assignment 1 – Electronics')">
+
+                    Submit Assignment
+
+                </button>
+
+            </div>
+
+
+        </div>
+
+    </div>
+
+
+    <script>
+
+        /* BACK TO STUDENT DASHBOARD */
+
+        function goBack() {
+
+            window.location.href = "student(4).html";
+
+        }
+
+
+        /* SUBMIT ASSIGNMENT */
+
+        function submitAssignment(assignmentName) {
+
+            alert(
+                "📚 " + assignmentName +
+                "\n\nAssignment submission system will be connected soon! 🚀"
+            );
+
+        }
+
+
+        /* VIEW SUBMISSION */
+
+        function viewSubmission(assignmentName) {
+
+            alert(
+                "✅ " + assignmentName +
+                "\n\nYour assignment has already been submitted."
+            );
+
+        }
+
+    </script>
+
+</body>
+</html>
